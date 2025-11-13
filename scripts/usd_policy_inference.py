@@ -7,7 +7,7 @@
 This script demonstrates policy inference in a prebuilt USD environment.
 
 In this example, we use a locomotion policy to control the ANYmal-C robot. The robot was trained
-using Template-Quadrrl-Velocity-Rough-Anymal-C-v0. The robot is commanded to move forward at a constant velocity.
+using Template-Quadrrl-Velocity-Flat-Anymal-C-v0. The robot is commanded to move forward at a constant velocity.
 
 .. code-block:: bash
 
