@@ -1,135 +1,132 @@
-# Template for Isaac Lab Projects
+# Quadrrl: Isaac Lab Quadruped RL Project
 
-## Overview
+## 🐾 Overview
 
-This project/repository serves as a template for building projects or extensions based on Isaac Lab.
-It allows you to develop in an isolated environment, outside of the core Isaac Lab repository.
+Quadrrl builds on NVIDIA Isaac Lab to research and prototype deep reinforcement learning for quadruped robots.
+It includes locomotion and navigation tasks across flat and rough terrains, covering velocity tracking,
+goal-directed navigation, and multi-agent coordination. The repository installs as a standalone Python package
+or as an Omniverse/Isaac Lab extension so that training happens outside the core Isaac Lab tree.
 
-**Key Features:**
+**Highlights**
+- Unified training suite for ANYmal-C, ANYmal-D, and Unitree Go2 quadrupeds
+- Direct (Isaac Gym–style) and manager-based task variants for locomotion and navigation
+- Ready-to-run RL configs for `rl_games`, `rsl_rl`, and `skrl`
+- Optional Omniverse UI extension for quick visualization and debugging
 
-- `Isolation` Work outside the core Isaac Lab repository, ensuring that your development efforts remain self-contained.
-- `Flexibility` This template is set up to allow your code to be run as an extension in Omniverse.
+## 📋 Prerequisites
 
-**Keywords:** extension, template, isaaclab
+### Compute Requirements
+- **GPU**: NVIDIA GPU with CUDA support (RTX 3060 or better recommended)
+- **CPU**: Multi-core processor (8+ cores recommended for large batches)
+- **RAM**: 16 GB minimum, 32 GB recommended
+- **Storage**: 20 GB+ free space for Isaac Lab and generated logs
 
-## Installation
+### Software Requirements
+- **OS**: Linux (Ubuntu 20.04+) or Windows 10/11 (64-bit)
+- **Isaac Lab**: Installed per the [official guide](https://isaac-sim.github.io/IsaacLab/main/source/setup/installation/index.html)
+- **Python**: 3.10 or newer (conda, uv, or virtualenv)
+- **CUDA**: Match the version required by your Isaac Lab build
+- **Git**: For cloning this repository
+- Optional: Omniverse Kit / Isaac Sim for UI workflows
 
-- Install Isaac Lab by following the [installation guide](https://isaac-sim.github.io/IsaacLab/main/source/setup/installation/index.html).
-  We recommend using the conda or uv installation as it simplifies calling Python scripts from the terminal.
+## 📦 Installation
 
-- Clone or copy this project/repository separately from the Isaac Lab installation (i.e. outside the `IsaacLab` directory):
-
-- Using a python interpreter that has Isaac Lab installed, install the library in editable mode using:
-
-    ```bash
-    # use 'PATH_TO_isaaclab.sh|bat -p' instead of 'python' if Isaac Lab is not installed in Python venv or conda
-    python -m pip install -e source/quadrrl
-
-- Verify that the extension is correctly installed by:
-
-    - Listing the available tasks:
-
-        Note: It the task name changes, it may be necessary to update the search pattern `"Template-"`
-        (in the `scripts/list_envs.py` file) so that it can be listed.
-
-        ```bash
-        # use 'FULL_PATH_TO_isaaclab.sh|bat -p' instead of 'python' if Isaac Lab is not installed in Python venv or conda
-        python scripts/list_envs.py
-        ```
-
-    - Running a task:
-
-        ```bash
-        # use 'FULL_PATH_TO_isaaclab.sh|bat -p' instead of 'python' if Isaac Lab is not installed in Python venv or conda
-        python scripts/<RL_LIBRARY>/train.py --task=<TASK_NAME>
-        ```
-
-    - Running a task with dummy agents:
-
-        These include dummy agents that output zero or random agents. They are useful to ensure that the environments are configured correctly.
-
-        - Zero-action agent
-
-            ```bash
-            # use 'FULL_PATH_TO_isaaclab.sh|bat -p' instead of 'python' if Isaac Lab is not installed in Python venv or conda
-            python scripts/zero_agent.py --task=<TASK_NAME>
-            ```
-        - Random-action agent
-
-            ```bash
-            # use 'FULL_PATH_TO_isaaclab.sh|bat -p' instead of 'python' if Isaac Lab is not installed in Python venv or conda
-            python scripts/random_agent.py --task=<TASK_NAME>
-            ```
-
-### Set up IDE (Optional)
-
-To setup the IDE, please follow these instructions:
-
-- Run VSCode Tasks, by pressing `Ctrl+Shift+P`, selecting `Tasks: Run Task` and running the `setup_python_env` in the drop down menu.
-  When running this task, you will be prompted to add the absolute path to your Isaac Sim installation.
-
-If everything executes correctly, it should create a file .python.env in the `.vscode` directory.
-The file contains the python paths to all the extensions provided by Isaac Sim and Omniverse.
-This helps in indexing all the python modules for intelligent suggestions while writing code.
-
-### Setup as Omniverse Extension (Optional)
-
-We provide an example UI extension that will load upon enabling your extension defined in `source/quadrrl/quadrrl/ui_extension_example.py`.
-
-To enable your extension, follow these steps:
-
-1. **Add the search path of this project/repository** to the extension manager:
-    - Navigate to the extension manager using `Window` -> `Extensions`.
-    - Click on the **Hamburger Icon**, then go to `Settings`.
-    - In the `Extension Search Paths`, enter the absolute path to the `source` directory of this project/repository.
-    - If not already present, in the `Extension Search Paths`, enter the path that leads to Isaac Lab's extension directory directory (`IsaacLab/source`)
-    - Click on the **Hamburger Icon**, then click `Refresh`.
-
-2. **Search and enable your extension**:
-    - Find your extension under the `Third Party` category.
-    - Toggle it to enable your extension.
-
-## Code formatting
-
-We have a pre-commit template to automatically format your code.
-To install pre-commit:
+> Install Isaac Lab and Quadrrl in separate directories; do **not** nest Quadrrl inside the Isaac Lab repo.
 
 ```bash
+# Clone the repository
+git clone https://github.com/<your-org>/quadrrl.git /home/mahs/Development/quadrrl
+cd /home/mahs/Development/quadrrl
+
+# Activate the Python environment that already has Isaac Lab dependencies
+conda activate isaaclab    # or `source isaaclab.sh -p` depending on your setup
+
+# Install Quadrrl in editable mode
+python -m pip install -e /home/mahs/Development/quadrrl/source/quadrrl
+
+# (Optional) install developer tooling
 pip install pre-commit
+pre-commit install
 ```
 
-Then you can run pre-commit with:
+## 🚀 Running Quadrrl
+
+### Discover Tasks
 
 ```bash
-pre-commit run --all-files
+python /home/mahs/Development/quadrrl/scripts/list_envs.py
 ```
 
-## Troubleshooting
+### Train Policies
 
-### Pylance Missing Indexing of Extensions
+Replace `<RL_LIBRARY>` with `rl_games`, `rsl_rl`, or `skrl`, and supply any extra training flags.
 
-In some VsCode versions, the indexing of part of the extensions is missing.
-In this case, add the path to your extension in `.vscode/settings.json` under the key `"python.analysis.extraPaths"`.
-
-```json
-{
-    "python.analysis.extraPaths": [
-        "<path-to-ext-repo>/source/quadrrl"
-    ]
-}
+```bash
+python /home/mahs/Development/quadrrl/scripts/<RL_LIBRARY>/train.py --task=<TASK_NAME> --num_envs=4096 --seed=42
 ```
 
-### Pylance Crash
+### Smoke-Test Environments
 
-If you encounter a crash in `pylance`, it is probable that too many files are indexed and you run out of memory.
-A possible solution is to exclude some of omniverse packages that are not used in your project.
-To do so, modify `.vscode/settings.json` and comment out packages under the key `"python.analysis.extraPaths"`
-Some examples of packages that can likely be excluded are:
-
-```json
-"<path-to-isaac-sim>/extscache/omni.anim.*"         // Animation packages
-"<path-to-isaac-sim>/extscache/omni.kit.*"          // Kit UI tools
-"<path-to-isaac-sim>/extscache/omni.graph.*"        // Graph UI tools
-"<path-to-isaac-sim>/extscache/omni.services.*"     // Services tools
-...
+```bash
+python /home/mahs/Development/quadrrl/scripts/zero_agent.py --task=<TASK_NAME>
+python /home/mahs/Development/quadrrl/scripts/random_agent.py --task=<TASK_NAME>
 ```
+
+### Evaluate Saved Policies
+
+Play-mode tasks (suffix `-Play`) load evaluation checkpoints and curriculum settings.
+
+```bash
+python /home/mahs/Development/quadrrl/scripts/<RL_LIBRARY>/play.py --task=<TASK_NAME>-Play --checkpoint=/absolute/path/to/checkpoint.pth
+```
+
+Tip: Use `isaaclab.sh -p` or `isaaclab.bat -p` in place of `python` if Isaac Lab is not installed in the active Python environment.
+
+## 🌍 Available Environments
+
+| S. No. | Task Name                                           | Entry Point                                                         | Config                                                                                                  |
+|-------:|-----------------------------------------------------|---------------------------------------------------------------------|---------------------------------------------------------------------------------------------------------|
+| 1      | Template-Quadrrl-Velocity-Flat-Anymal-C-Direct-v0   | `quadrrl.tasks.direct.anymal_c.anymal_c_env:AnymalCEnv`             | `quadrrl.tasks.direct.anymal_c.anymal_c_env_cfg:AnymalCFlatEnvCfg`                                      |
+| 2      | Template-Quadrrl-Velocity-Rough-Anymal-C-Direct-v0  | `quadrrl.tasks.direct.anymal_c.anymal_c_env:AnymalCEnv`             | `quadrrl.tasks.direct.anymal_c.anymal_c_env_cfg:AnymalCRoughEnvCfg`                                     |
+| 3      | Template-Quadrrl-Marl-Direct-v0                     | `quadrrl.tasks.direct.quadrrl_marl.quadrrl_marl_env:QuadrrlMarlEnv` | `quadrrl.tasks.direct.quadrrl_marl.quadrrl_marl_env_cfg:QuadrrlMarlEnvCfg`                              |
+| 4      | Template-Quadrrl-Velocity-Flat-Anymal-C-v0          | `isaaclab.envs:ManagerBasedRLEnv`                                   | `quadrrl.tasks.manager_based.locomotion.velocity.config.anymal_c.flat_env_cfg:AnymalCFlatEnvCfg`        |
+| 5      | Template-Quadrrl-Velocity-Flat-Anymal-C-Play-v0     | `isaaclab.envs:ManagerBasedRLEnv`                                   | `quadrrl.tasks.manager_based.locomotion.velocity.config.anymal_c.flat_env_cfg:AnymalCFlatEnvCfg_PLAY`   |
+| 6      | Template-Quadrrl-Velocity-Rough-Anymal-C-v0         | `isaaclab.envs:ManagerBasedRLEnv`                                   | `quadrrl.tasks.manager_based.locomotion.velocity.config.anymal_c.rough_env_cfg:AnymalCRoughEnvCfg`      |
+| 7      | Template-Quadrrl-Velocity-Rough-Anymal-C-Play-v0    | `isaaclab.envs:ManagerBasedRLEnv`                                   | `quadrrl.tasks.manager_based.locomotion.velocity.config.anymal_c.rough_env_cfg:AnymalCRoughEnvCfg_PLAY` |
+| 8      | Template-Quadrrl-Velocity-Flat-Anymal-D-v0          | `isaaclab.envs:ManagerBasedRLEnv`                                   | `quadrrl.tasks.manager_based.locomotion.velocity.config.anymal_d.flat_env_cfg:AnymalDFlatEnvCfg`        |
+| 9      | Template-Quadrrl-Velocity-Flat-Anymal-D-Play-v0     | `isaaclab.envs:ManagerBasedRLEnv`                                   | `quadrrl.tasks.manager_based.locomotion.velocity.config.anymal_d.flat_env_cfg:AnymalDFlatEnvCfg_PLAY`   |
+| 10     | Template-Quadrrl-Velocity-Rough-Anymal-D-v0         | `isaaclab.envs:ManagerBasedRLEnv`                                   | `quadrrl.tasks.manager_based.locomotion.velocity.config.anymal_d.rough_env_cfg:AnymalDRoughEnvCfg`      |
+| 11     | Template-Quadrrl-Velocity-Rough-Anymal-D-Play-v0    | `isaaclab.envs:ManagerBasedRLEnv`                                   | `quadrrl.tasks.manager_based.locomotion.velocity.config.anymal_d.rough_env_cfg:AnymalDRoughEnvCfg_PLAY` |
+| 12     | Template-Quadrrl-Velocity-Flat-Unitree-Go2-v0       | `isaaclab.envs:ManagerBasedRLEnv`                                   | `quadrrl.tasks.manager_based.locomotion.velocity.config.go2.flat_env_cfg:UnitreeGo2FlatEnvCfg`          |
+| 13     | Template-Quadrrl-Velocity-Flat-Unitree-Go2-Play-v0  | `isaaclab.envs:ManagerBasedRLEnv`                                   | `quadrrl.tasks.manager_based.locomotion.velocity.config.go2.flat_env_cfg:UnitreeGo2FlatEnvCfg_PLAY`     |
+| 14     | Template-Quadrrl-Velocity-Rough-Unitree-Go2-v0      | `isaaclab.envs:ManagerBasedRLEnv`                                   | `quadrrl.tasks.manager_based.locomotion.velocity.config.go2.rough_env_cfg:UnitreeGo2RoughEnvCfg`        |
+| 15     | Template-Quadrrl-Velocity-Rough-Unitree-Go2-Play-v0 | `isaaclab.envs:ManagerBasedRLEnv`                                   | `quadrrl.tasks.manager_based.locomotion.velocity.config.go2.rough_env_cfg:UnitreeGo2RoughEnvCfg_PLAY`   |
+| 16     | Template-Quadrrl-Navigation-Flat-Anymal-C-v0        | `isaaclab.envs:ManagerBasedRLEnv`                                   | `quadrrl.tasks.manager_based.navigation.config.anymal_c.navigation_env_cfg:NavigationEnvCfg`            |
+| 17     | Template-Quadrrl-Navigation-Flat-Anymal-C-Play-v0   | `isaaclab.envs:ManagerBasedRLEnv`                                   | `quadrrl.tasks.manager_based.navigation.config.anymal_c.navigation_env_cfg:NavigationEnvCfg_PLAY`       |
+
+Update `/home/mahs/Development/quadrrl/scripts/list_envs.py` if you rename any tasks so that they continue to show up in listings.
+
+## 📂 Project Layout
+
+- `source/quadrrl/pyproject.toml` – package metadata for editable installs.
+- `source/quadrrl/quadrrl/robots` – robot asset wrappers (ANYmal variants and Unitree Go2).
+- `source/quadrrl/quadrrl/tasks/direct` – low-level Isaac Gym–style environments and multi-agent setups with RL configs.
+- `source/quadrrl/quadrrl/tasks/manager_based` – manager-based tasks with locomotion and navigation curricula, rewards, and symmetry helpers.
+- `source/quadrrl/quadrrl/ui_extension_example.py` – minimal Omniverse UI extension activated when the repo is enabled in Kit.
+- `source/quadrrl/scripts` – entry points for training, evaluation, and diagnostic agents for supported RL frameworks.
+- `source/quadrrl/docs/CHANGELOG.rst` – release notes for the project.
+
+Refer to `scripts/quadrupeds.py` for additional guidance on composing task configurations programmatically.
+
+## 🤝 Contributing
+
+- Fork the repository, create feature branches, and open pull requests with clear descriptions.
+- Run `pre-commit run --all-files` before submitting changes.
+- Add tests or evaluation scripts when introducing new environments or reward structures.
+- Update this README and `docs/CHANGELOG.rst` when you add new tasks or major capabilities.
+
+## 📚 Resources & Inspiration
+
+- NVIDIA Isaac Lab Documentation – <https://isaac-sim.github.io/IsaacLab/>
+- Quadrrl training examples in `scripts/quadrupeds.py`
+
