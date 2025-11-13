@@ -194,7 +194,7 @@ class AnymalCRoughDemo:
         if event.type == carb.input.KeyboardEventType.KEY_PRESS:
             # Arrow keys map to pre-defined command vectors to control navigation of robot
             if event.input.name in self._key_to_control:
-                if self._selected_id:
+                if self._selected_id is not None:
                     self.commands[self._selected_id] = self._key_to_control[event.input.name]
             # Escape key exits out of the current selected robot view
             elif event.input.name == "ESCAPE":
@@ -206,9 +206,9 @@ class AnymalCRoughDemo:
                         self.viewport.set_active_camera(self.perspective_path)
                     else:
                         self.viewport.set_active_camera(self.camera_path)
-        # On key release, the robot stops moving
+        # On key release, the robot stops moving (only for control keys)
         elif event.type == carb.input.KeyboardEventType.KEY_RELEASE:
-            if self._selected_id:
+            if event.input.name in self._key_to_control and self._selected_id is not None:
                 self.commands[self._selected_id] = self._key_to_control["ZEROS"]
 
     def update_selected_object(self):
@@ -267,7 +267,8 @@ def main():
             action = demo_anymal_c.policy(obs)
             obs, _, _, _ = demo_anymal_c.env.step(action)
             # overwrite command based on keyboard input
-            obs[:, 9:13] = demo_anymal_c.commands
+            # obs is a TensorDict/dict, so access the "policy" key first
+            obs["policy"][:, 9:13] = demo_anymal_c.commands
 
 
 if __name__ == "__main__":
