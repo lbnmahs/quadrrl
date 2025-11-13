@@ -1,3 +1,5 @@
+![Quadrrl Header](header-quadrrl.png)
+---
 # QUADRRL
 
 ## Overview

@@ -7,7 +7,7 @@ from isaaclab.utils import configclass
 
 from isaaclab_rl.rsl_rl import RslRlOnPolicyRunnerCfg, RslRlPpoActorCriticCfg, RslRlPpoAlgorithmCfg, RslRlSymmetryCfg
 
-from isaaclab_tasks.manager_based.locomotion.velocity.mdp.symmetry import anymal
+from quadrrl.tasks.manager_based.locomotion.velocity.mdp.symmetry import anymal
 
 
 @configclass
