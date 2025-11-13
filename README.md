@@ -7,7 +7,7 @@ It includes locomotion and navigation tasks across flat and rough terrains, cove
 goal-directed navigation, and multi-agent coordination.
 
 **Highlights**
-- Unified training suite for ANYmal-C, ANYmal-D, and Unitree Go2 quadrupeds
+- Unified training suite for ANYmal-C, ANYmal-D, and Unitree Go2 robots
 - Direct and manager-based task variants for locomotion and navigation
 - Ready-to-run configs for `rl_games`, `rsl_rl`, and `skrl` RL(Reinforcement Learning) frameworks
 - Optional Omniverse UI extension for quick visualization and debugging
