@@ -1,16 +1,15 @@
-# Quadrrl: Isaac Lab Quadruped RL Project
+# QUADRRL
 
-## 🐾 Overview
+## Overview
 
 Quadrrl builds on NVIDIA Isaac Lab to research and prototype deep reinforcement learning for quadruped robots.
 It includes locomotion and navigation tasks across flat and rough terrains, covering velocity tracking,
-goal-directed navigation, and multi-agent coordination. The repository installs as a standalone Python package
-or as an Omniverse/Isaac Lab extension so that training happens outside the core Isaac Lab tree.
+goal-directed navigation, and multi-agent coordination.
 
 **Highlights**
 - Unified training suite for ANYmal-C, ANYmal-D, and Unitree Go2 quadrupeds
-- Direct (Isaac Gym–style) and manager-based task variants for locomotion and navigation
-- Ready-to-run RL configs for `rl_games`, `rsl_rl`, and `skrl`
+- Direct and manager-based task variants for locomotion and navigation
+- Ready-to-run configs for `rl_games`, `rsl_rl`, and `skrl` RL(Reinforcement Learning) frameworks
 - Optional Omniverse UI extension for quick visualization and debugging
 
 ## 📋 Prerequisites
@@ -31,18 +30,16 @@ or as an Omniverse/Isaac Lab extension so that training happens outside the core
 
 ## 📦 Installation
 
-> Install Isaac Lab and Quadrrl in separate directories; do **not** nest Quadrrl inside the Isaac Lab repo.
-
 ```bash
 # Clone the repository
-git clone https://github.com/<your-org>/quadrrl.git /home/mahs/Development/quadrrl
-cd /home/mahs/Development/quadrrl
+git clone https://github.com/lbnmahs/quadrrl.git
+cd quadrrl
 
 # Activate the Python environment that already has Isaac Lab dependencies
 conda activate isaaclab    # or `source isaaclab.sh -p` depending on your setup
 
 # Install Quadrrl in editable mode
-python -m pip install -e /home/mahs/Development/quadrrl/source/quadrrl
+python -m pip install -e source/quadrrl
 
 # (Optional) install developer tooling
 pip install pre-commit
@@ -54,7 +51,7 @@ pre-commit install
 ### Discover Tasks
 
 ```bash
-python /home/mahs/Development/quadrrl/scripts/list_envs.py
+python scripts/list_envs.py
 ```
 
 ### Train Policies
@@ -62,14 +59,7 @@ python /home/mahs/Development/quadrrl/scripts/list_envs.py
 Replace `<RL_LIBRARY>` with `rl_games`, `rsl_rl`, or `skrl`, and supply any extra training flags.
 
 ```bash
-python /home/mahs/Development/quadrrl/scripts/<RL_LIBRARY>/train.py --task=<TASK_NAME> --num_envs=4096 --seed=42
-```
-
-### Smoke-Test Environments
-
-```bash
-python /home/mahs/Development/quadrrl/scripts/zero_agent.py --task=<TASK_NAME>
-python /home/mahs/Development/quadrrl/scripts/random_agent.py --task=<TASK_NAME>
+python scripts/<RL_LIBRARY>/train.py --task=<TASK_NAME> --num_envs=4096 --seed=42
 ```
 
 ### Evaluate Saved Policies
@@ -77,7 +67,7 @@ python /home/mahs/Development/quadrrl/scripts/random_agent.py --task=<TASK_NAME>
 Play-mode tasks (suffix `-Play`) load evaluation checkpoints and curriculum settings.
 
 ```bash
-python /home/mahs/Development/quadrrl/scripts/<RL_LIBRARY>/play.py --task=<TASK_NAME>-Play --checkpoint=/absolute/path/to/checkpoint.pth
+python scripts/<RL_LIBRARY>/play.py --task=<TASK_NAME>-Play --checkpoint=/absolute/path/to/checkpoint.pth
 ```
 
 Tip: Use `isaaclab.sh -p` or `isaaclab.bat -p` in place of `python` if Isaac Lab is not installed in the active Python environment.
@@ -89,7 +79,8 @@ Tip: Use `isaaclab.sh -p` or `isaaclab.bat -p` in place of `python` if Isaac Lab
 | 1      | Template-Quadrrl-Velocity-Flat-Anymal-C-Direct-v0   | `quadrrl.tasks.direct.anymal_c.anymal_c_env:AnymalCEnv`             | `quadrrl.tasks.direct.anymal_c.anymal_c_env_cfg:AnymalCFlatEnvCfg`                                      |
 | 2      | Template-Quadrrl-Velocity-Rough-Anymal-C-Direct-v0  | `quadrrl.tasks.direct.anymal_c.anymal_c_env:AnymalCEnv`             | `quadrrl.tasks.direct.anymal_c.anymal_c_env_cfg:AnymalCRoughEnvCfg`                                     |
 | 3      | Template-Quadrrl-Marl-Direct-v0                     | `quadrrl.tasks.direct.quadrrl_marl.quadrrl_marl_env:QuadrrlMarlEnv` | `quadrrl.tasks.direct.quadrrl_marl.quadrrl_marl_env_cfg:QuadrrlMarlEnvCfg`                              |
-| 4      | Template-Quadrrl-Velocity-Flat-Anymal-C-v0          | `isaaclab.envs:ManagerBasedRLEnv`                                   | `quadrrl.tasks.manager_based.locomotion.velocity.config.anymal_c.flat_env_cfg:AnymalCFlatEnvCfg`        |
+| 4      | Template-Quadrrl-Velocity-Flat-Anymal-C-v0          | `isaaclab.envs:ManagerBasedRLEnv`                                   | `quadrrl.tasks.manager_based.locomotion.velocity.config.anym- `source/quadrrl/pyproject.toml` – package metadata for editable installs.
+al_c.flat_env_cfg:AnymalCFlatEnvCfg`        |
 | 5      | Template-Quadrrl-Velocity-Flat-Anymal-C-Play-v0     | `isaaclab.envs:ManagerBasedRLEnv`                                   | `quadrrl.tasks.manager_based.locomotion.velocity.config.anymal_c.flat_env_cfg:AnymalCFlatEnvCfg_PLAY`   |
 | 6      | Template-Quadrrl-Velocity-Rough-Anymal-C-v0         | `isaaclab.envs:ManagerBasedRLEnv`                                   | `quadrrl.tasks.manager_based.locomotion.velocity.config.anymal_c.rough_env_cfg:AnymalCRoughEnvCfg`      |
 | 7      | Template-Quadrrl-Velocity-Rough-Anymal-C-Play-v0    | `isaaclab.envs:ManagerBasedRLEnv`                                   | `quadrrl.tasks.manager_based.locomotion.velocity.config.anymal_c.rough_env_cfg:AnymalCRoughEnvCfg_PLAY` |
@@ -108,13 +99,10 @@ Update `/home/mahs/Development/quadrrl/scripts/list_envs.py` if you rename any t
 
 ## 📂 Project Layout
 
-- `source/quadrrl/pyproject.toml` – package metadata for editable installs.
 - `source/quadrrl/quadrrl/robots` – robot asset wrappers (ANYmal variants and Unitree Go2).
 - `source/quadrrl/quadrrl/tasks/direct` – low-level Isaac Gym–style environments and multi-agent setups with RL configs.
 - `source/quadrrl/quadrrl/tasks/manager_based` – manager-based tasks with locomotion and navigation curricula, rewards, and symmetry helpers.
-- `source/quadrrl/quadrrl/ui_extension_example.py` – minimal Omniverse UI extension activated when the repo is enabled in Kit.
 - `source/quadrrl/scripts` – entry points for training, evaluation, and diagnostic agents for supported RL frameworks.
-- `source/quadrrl/docs/CHANGELOG.rst` – release notes for the project.
 
 Refer to `scripts/quadrupeds.py` for additional guidance on composing task configurations programmatically.
 
