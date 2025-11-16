@@ -31,6 +31,8 @@ goal-directed navigation, and multi-agent coordination.
 - **Git**: For cloning this repository
 - Optional: Omniverse Kit / Isaac Sim for UI workflows
 
+<br>
+
 ## 📦 Installation
 
 ```bash
@@ -48,15 +50,16 @@ python -m pip install -e source/quadrrl
 pip install pre-commit
 pre-commit install
 ```
+<br>
 
 ## 🚀 Running Quadrrl
-
-### Discover Tasks
 
 ```bash
 python scripts/list_envs.py
 ```
-### Single-Agent Tasks
+<br>
+
+**Single-Agent RL Environments**
 
 | S. No. | Task Name                                           | Environment File                    | Config File                          |
 |-------:|-----------------------------------------------------|-------------------------------------|--------------------------------------|
@@ -77,7 +80,9 @@ python scripts/list_envs.py
 | 15     | Template-Quadrrl-Navigation-Flat-Anymal-C-v0        | `ManagerBasedRLEnv`                 | `navigation_env_cfg.py`              |
 | 16     | Template-Quadrrl-Navigation-Flat-Anymal-C-Play-v0   | `ManagerBasedRLEnv`                 | `navigation_env_cfg.py`              |
 
-### Multi-Agent Tasks
+<br>
+
+**Multi-Agent RL Environments**
 
 | S. No. | Task Name                                           | Environment File                    | Config File                          | RL Framework |
 |-------:|-----------------------------------------------------|-------------------------------------|--------------------------------------|-------------|
@@ -89,6 +94,8 @@ python scripts/list_envs.py
 - Task 17: Direct MARL task with two ANYmal-C robots cooperatively carrying a bar to target locations (HARL only).
 - Tasks 18-19: Manager-based MARL task with Spot robot using 4 agents (one per leg) for velocity tracking on flat terrain. Supports RSL-RL, SKRL, and HARL frameworks.
 **Note:**  Update `scripts/list_envs.py` if you rename any tasks so that they continue to show up in listings.
+
+<br>
 
 ### Train Policies
 
@@ -118,6 +125,8 @@ python scripts/rsl_rl/train.py --task=Template-Quadrrl-Velocity-Flat-Spot-MARL-v
 python scripts/skrl/train.py --task=Template-Quadrrl-Velocity-Flat-Spot-MARL-v0 --num_envs=4096
 ```
 
+<br>
+
 ### Evaluate Saved Policies
 
 **Single-Agent Play Mode:**
@@ -146,6 +155,8 @@ python scripts/rsl_rl/play.py --task=Template-Quadrrl-Velocity-Flat-Spot-MARL-Pl
 python scripts/skrl/play.py --task=Template-Quadrrl-Velocity-Flat-Spot-MARL-Play-v0 --checkpoint=/path/to/checkpoint.pth
 ```
 
+<br>
+
 ### Demo Scripts
 
 Run example demonstrations and visualizations:
@@ -164,7 +175,7 @@ python scripts/demos/il_go2_rough.py
 
 Tip: Use `isaaclab.sh -p` or `isaaclab.bat -p` in place of `python` if Isaac Lab is not installed in the active Python environment.
 
-
+<br>
 
 ## 📂 Project Layout
 
@@ -179,6 +190,8 @@ Tip: Use `isaaclab.sh -p` or `isaaclab.bat -p` in place of `python` if Isaac Lab
   - `scripts/demos/` – demonstration and visualization scripts
 
 Refer to `scripts/demos/quadrupeds.py` for additional guidance on composing task configurations programmatically.
+
+<br>
 
 ## 🤖 Multi-Agent Reinforcement Learning
 
@@ -293,12 +306,16 @@ python scripts/skrl/play.py \
 - **Termination**: Robot falls or episode timeout
 - **Frameworks**: RSL-RL, SKRL, HARL
 
+<br>
+
 ## 🤝 Contributing
 
 - Fork the repository, create feature branches, and open pull requests with clear descriptions.
 - Run `pre-commit run --all-files` before submitting changes.
 - Add tests or evaluation scripts when introducing new environments or reward structures.
 - Update this README and `docs/CHANGELOG.rst` when you add new tasks or major capabilities.
+
+<br>
 
 ## 📚 Resources & Inspiration
 
