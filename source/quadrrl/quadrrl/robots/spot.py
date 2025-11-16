@@ -18,6 +18,9 @@ from isaaclab.utils.assets import ISAAC_NUCLEUS_DIR
 
 """The lookup table for the knee joint parameters of the Boston Dynamics Spot robot.
 
+Reference: https://bostondynamics.com/reinforcement-learning-researcher-kit/
+           https://theaiinstitute.com/
+
 This table describes the relationship between the joint angle (rad), the transmission ratio (in/out),
 and the output torque (N*m). It is used to interpolate the output torque based on the joint angle.
 """
