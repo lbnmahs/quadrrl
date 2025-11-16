@@ -4,12 +4,13 @@
 # SPDX-License-Identifier: BSD-3-Clause
 
 """
-This script demonstrates an interactive demo with the Unitree Go2 rough terrain environment.
+This script demonstrates an interactive demo with the Anymal D robot on a USD warehouse environment.
+
 
 .. code-block:: bash
 
     # Usage
-    python scripts/interactive_locomotion.py --checkpoint path/to/checkpoint.pt
+    python scripts/demos/il_anymal_d_usd.py --checkpoint path/to/checkpoint.pt
 
 """
 
@@ -41,7 +42,7 @@ from isaaclab.app import AppLauncher
 
 # add argparse arguments
 parser = argparse.ArgumentParser(
-    description="This script demonstrates an interactive demo with the Unitree Go2 rough terrain environment."
+    description="This script demonstrates an interactive demo with the Anymal D robot on a USD warehouse environment."
 )
 # append RSL-RL cli arguments (includes --checkpoint argument)
 cli_args.add_rsl_rl_args(parser)
@@ -66,30 +67,20 @@ from pxr import Gf, Sdf
 from rsl_rl.runners import OnPolicyRunner
 
 from isaaclab.envs import ManagerBasedRLEnv
+from isaaclab.terrains import TerrainImporterCfg
+from isaaclab.utils.assets import ISAAC_NUCLEUS_DIR
 from isaaclab.utils.math import quat_apply
 from isaaclab.utils.pretrained_checkpoint import get_published_pretrained_checkpoint
 
 from isaaclab_rl.rsl_rl import RslRlOnPolicyRunnerCfg, RslRlVecEnvWrapper
 
-from quadrrl.tasks.manager_based.locomotion.velocity.config.go2.rough_env_cfg import UnitreeGo2RoughEnvCfg_PLAY
+from quadrrl.tasks.manager_based.locomotion.velocity.config.anymal_d.rough_env_cfg import AnymalDRoughEnvCfg_PLAY
 
-TASK = "Template-Quadrrl-Velocity-Rough-Unitree-Go2-v0"
+TASK = "Template-Quadrrl-Velocity-Rough-Anymal-D-v0"
 RL_LIBRARY = "rsl_rl"
 
 
-class UnitreeGo2RoughDemo:
-    """This class provides an interactive demo for the Unitree Go2 rough terrain environment.
-    It loads a pre-trained checkpoint for the Template-Quadrrl-Velocity-Rough-Unitree-Go2-v0 task, trained with RSL RL
-    and defines a set of keyboard commands for directing motion of selected robots.
-
-    The following keyboard commands are available:
-    * W: go forward
-    * A: turn left
-    * D: turn right
-    * S: stop
-    * C: switch between third-person and perspective views
-    * ESC: exit current third-person view
-    """
+class AnymalDDemoUsdWarehouse:
 
     def __init__(self):
         """Initializes environment config designed for the interactive model and sets up the environment,
@@ -107,22 +98,31 @@ class UnitreeGo2RoughDemo:
                     f"No published pretrained checkpoint found for {TASK}. "
                     "Please provide a checkpoint path using --checkpoint <path>."
                 )
-        # create envionrment
-        env_cfg = UnitreeGo2RoughEnvCfg_PLAY()
-        env_cfg.scene.num_envs = 25
+        # create environment with USD warehouse terrain
+        env_cfg = AnymalDRoughEnvCfg_PLAY()
+        env_cfg.scene.num_envs = 3
         env_cfg.episode_length_s = 1000000
         env_cfg.curriculum = None
         env_cfg.commands.base_velocity.ranges.lin_vel_x = (0.0, 1.0)
         env_cfg.commands.base_velocity.ranges.heading = (-1.0, 1.0)
+        # Replace terrain with USD warehouse
+        env_cfg.scene.terrain = TerrainImporterCfg(
+            prim_path="/World/ground",
+            terrain_type="usd",
+            usd_path=f"{ISAAC_NUCLEUS_DIR}/Environments/Simple_Warehouse/warehouse.usd",
+        )
+        env_cfg.sim.device = args_cli.device if args_cli.device is not None else env_cfg.sim.device
+        if env_cfg.sim.device == "cpu":
+            env_cfg.sim.use_fabric = False
         # wrap around environment for rsl-rl
         self.env = RslRlVecEnvWrapper(ManagerBasedRLEnv(cfg=env_cfg))
         self.device = self.env.unwrapped.device
-        
+
         try:
             # Try to load as JIT model first
             jit_policy = torch.jit.load(checkpoint, map_location=self.device)
             jit_policy.eval()
-            
+
             def jit_policy_wrapper(obs):
                 try:
                     policy_obs = obs["policy"]
@@ -141,6 +141,7 @@ class UnitreeGo2RoughDemo:
                             f"Could not extract policy observations from {type(obs)}. "
                             "Expected dict/TensorDict with 'policy' key or tensor."
                         )
+
             self.policy = jit_policy_wrapper
         except Exception:
             # If JIT loading fails, try loading as regular checkpoint
@@ -212,7 +213,7 @@ class UnitreeGo2RoughDemo:
                 self.commands[self._selected_id] = self._key_to_control["ZEROS"]
 
     def update_selected_object(self):
-        """Determines which robot is currently selected and whether it is a valid Unitree Go2 robot.
+        """Determines which robot is currently selected and whether it is a valid Anymal C robot.
         For valid robots, we enter the third-person view for that robot.
         When a new robot is selected, we reset the command of the previously selected
         to continue random commands."""
@@ -233,7 +234,7 @@ class UnitreeGo2RoughDemo:
                     self.viewport.set_active_camera(self.camera_path)
                 self._update_camera()
             else:
-                print("The selected prim was not a Unitree Go2 robot")
+                print("The selected prim was not an Anymal C robot")
 
         # Reset commands for previously selected robot if a new one is selected
         if self._previous_selected_id is not None and self._previous_selected_id != self._selected_id:
@@ -244,7 +245,7 @@ class UnitreeGo2RoughDemo:
         """Updates the per-frame transform of the third-person view camera to follow
         the selected robot's torso transform."""
 
-        base_pos = self.env.unwrapped.scene["robot"].data.root_pos_w[self._selected_id, :]  # - env.scene.env_origins
+        base_pos = self.env.unwrapped.scene["robot"].data.root_pos_w[self._selected_id, :]
         base_quat = self.env.unwrapped.scene["robot"].data.root_quat_w[self._selected_id, :]
 
         camera_pos = quat_apply(base_quat, self._camera_local_transform) + base_pos
@@ -257,18 +258,17 @@ class UnitreeGo2RoughDemo:
 
 
 def main():
-    """Main function."""
-    demo_unitree_go2 = UnitreeGo2RoughDemo()
-    obs, _ = demo_unitree_go2.env.reset()
+    demo_anymal_d = AnymalDDemoUsdWarehouse()
+    obs, _ = demo_anymal_d.env.reset()
     while simulation_app.is_running():
         # check for selected robots
-        demo_unitree_go2.update_selected_object()
+        demo_anymal_d.update_selected_object()
         with torch.inference_mode():
-            action = demo_unitree_go2.policy(obs)
-            obs, _, _, _ = demo_unitree_go2.env.step(action)
+            action = demo_anymal_d.policy(obs)
+            obs, _, _, _ = demo_anymal_d.env.step(action)
             # overwrite command based on keyboard input
             # obs is a TensorDict/dict, so access the "policy" key first
-            obs["policy"][:, 9:13] = demo_unitree_go2.commands
+            obs["policy"][:, 9:13] = demo_anymal_d.commands
 
 
 if __name__ == "__main__":

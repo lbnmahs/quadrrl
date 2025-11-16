@@ -6,13 +6,13 @@
 """
 This script demonstrates policy inference in a prebuilt USD environment.
 
-In this example, we use a locomotion policy to control the ANYmal-C robot. The robot was trained
+In this example, we use a locomotion policy to control the robot. The robot was trained
 using Template-Quadrrl-Velocity-Flat-Anymal-C-v0. The robot is commanded to move forward at a constant velocity.
 
 .. code-block:: bash
 
         # Run the script
-        ./isaaclab.sh -p scripts/usd_policy_inference.py --checkpoint logs/rsl_rl/anymal_c_flat/EXPERIMENT_NAME/exported/policy.pt
+        ./isaaclab.sh -p scripts/demos/usd_policy_inference.py --checkpoint logs/rsl_rl/anymal_c_flat/EXPERIMENT_NAME/exported/policy.pt
 
 """
 
@@ -24,7 +24,7 @@ import argparse
 from isaaclab.app import AppLauncher
 
 # add argparse arguments
-parser = argparse.ArgumentParser(description="Tutorial on inferencing a policy on an ANYmal-C robot in a warehouse.")
+parser = argparse.ArgumentParser(description="Tutorial on inferencing a policy on a robot in a warehouse.")
 parser.add_argument("--checkpoint", type=str, help="Path to model checkpoint exported as jit.", required=True)
 
 # append AppLauncher cli args
