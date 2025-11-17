@@ -102,71 +102,28 @@ python scripts/list_envs.py
 
 **Note:** Update `scripts/list_envs.py` if you rename any tasks so that they continue to show up in listings.
 
+
 <br>
 
-### Train Policies
+## 🤖 Single-Agent Reinforcement Learning
 
 Replace `<RL_LIBRARY>` with `rl_games`, `rsl_rl`, `skrl`, or `harl`, and supply any extra training flags.
 
-**Single-Agent Tasks:**
 ```bash
 python scripts/reinforcement_learning/<RL_LIBRARY>/train.py --task=<TASK_NAME> --num_envs=4096 --seed=42
 ```
 
-**Multi-Agent Tasks:**
-
-*ANYmal-C Bar Carrying:*
-```bash
-python scripts/reinforcement_learning/harl/train.py --task=Template-Quadrrl-MARL-Direct-Anymal-C-v0 --num_envs=4096 --algorithm=happo --headless
-```
-
-*Spot Velocity Tracking:*
-```bash
-# Using HARL
-python scripts/reinforcement_learning/harl/train.py --task=Template-Quadrrl-Velocity-Flat-Spot-MARL-v0 --num_envs=4096 --algorithm=happo --headless
-
-# Using RSL-RL
-python scripts/reinforcement_learning/rsl_rl/train.py --task=Template-Quadrrl-Velocity-Flat-Spot-MARL-v0 --num_envs=4096
-
-# Using SKRL
-python scripts/reinforcement_learning/skrl/train.py --task=Template-Quadrrl-Velocity-Flat-Spot-MARL-v0 --num_envs=4096
-```
-
-<br>
-
 ### Evaluate Saved Policies
 
-**Single-Agent Play Mode:**
-Play-mode tasks (suffix `-Play`) load evaluation checkpoints and curriculum settings.
+Add the suffix `-Play` to load evaluation checkpoints and curriculum settings.
 
 ```bash
 python scripts/reinforcement_learning/<RL_LIBRARY>/play.py --task=<TASK_NAME>-Play --checkpoint=/absolute/path/to/checkpoint.pth
 ```
 
-**Multi-Agent Play Mode:**
-
-*ANYmal-C Bar Carrying:*
-```bash
-python scripts/reinforcement_learning/harl/play.py --task=Template-Quadrrl-MARL-Direct-Anymal-C-v0 --num_envs=5 --dir=/path/to/logs/harl/anymal_c_marl/EXPERIMENT_NAME
-```
-
-*Spot Velocity Tracking:*
-```bash
-# Using HARL
-python scripts/reinforcement_learning/harl/play.py --task=Template-Quadrrl-Velocity-Flat-Spot-MARL-Play-v0 --num_envs=5 --dir=/path/to/logs/harl/spot_marl/EXPERIMENT_NAME
-
-# Using RSL-RL
-python scripts/reinforcement_learning/rsl_rl/play.py --task=Template-Quadrrl-Velocity-Flat-Spot-MARL-Play-v0 --checkpoint=/path/to/checkpoint.pth
-
-# Using SKRL
-python scripts/reinforcement_learning/skrl/play.py --task=Template-Quadrrl-Velocity-Flat-Spot-MARL-Play-v0 --checkpoint=/path/to/checkpoint.pth
-```
-
-<br>
-
 ### Demo Scripts
 
-Run example demonstrations and visualizations:
+Run example demonstrations and visualizations using the trained policies:
 
 ```bash
 # Quadruped examples demo
@@ -182,21 +139,6 @@ python scripts/demos/il_go2_rough.py
 
 Tip: Use `isaaclab.sh -p` or `isaaclab.bat -p` in place of `python` if Isaac Lab is not installed in the active Python environment.
 
-<br>
-
-## 📂 Project Layout
-
-- `source/quadrrl/quadrrl/robots` – robot asset wrappers (ANYmal variants, Spot, and Unitree Go2).
-- `source/quadrrl/quadrrl/tasks/direct` – low-level Isaac Gym–style environments and multi-agent setups with RL configs.
-- `source/quadrrl/quadrrl/tasks/manager_based` – manager-based tasks with locomotion and navigation curricula, rewards, and symmetry helpers.
-- `source/quadrrl/scripts` – entry points for training, evaluation, and diagnostic agents for supported RL frameworks.
-  - `scripts/reinforcement_learning/rl_games/` – RL Games framework integration
-  - `scripts/reinforcement_learning/rsl_rl/` – RSL-RL framework integration
-  - `scripts/reinforcement_learning/skrl/` – SKRL framework integration
-  - `scripts/reinforcement_learning/harl/` – HARL framework integration (multi-agent RL)
-  - `scripts/demos/` – demonstration and visualization scripts
-
-Refer to `scripts/demos/quadrupeds.py` for additional guidance on composing task configurations programmatically.
 
 <br>
 
@@ -210,6 +152,39 @@ Quadrrl includes support for multi-agent reinforcement learning (MARL) with two 
 ### Setup HARL
 
 HARL is included as a submodule in `scripts/reinforcement_learning/harl/HARL/`. The framework has been customized for Isaac Lab integration and only includes code necessary for Isaac Lab environments.
+
+**HARL Supported Algorithms:**
+- `happo` – Hierarchical Actor-Critic PPO (default)
+- `hatrpo` – Hierarchical Actor-Critic TRPO
+- `haa2c` – Hierarchical Actor-Critic A2C
+- `mappo` – Multi-Agent PPO
+- `maddpg` – Multi-Agent DDPG
+- `matd3` – Multi-Agent TD3
+- `hasac` – Hierarchical Actor-Critic SAC
+- `hatd3` – Hierarchical Actor-Critic TD3
+- `had3qn` – Hierarchical Actor-Critic D3QN
+- `haddpg` – Hierarchical Actor-Critic DDPG
+
+### Multi-Agent Task Details
+
+**Template-Quadrrl-MARL-Direct-Anymal-C-v0** (Direct MARL):
+- **Agents**: Two ANYmal-C robots
+- **Objective**: Cooperatively carry a bar to randomly sampled target locations
+- **Observations**: Robot state, joint positions/velocities, target position relative to bar
+- **Actions**: Joint position commands (12 DoF per robot)
+- **Rewards**: Target distance (primary), target reached bonus, velocity tracking (smoothness)
+- **Termination**: Robot falls, bar falls/tilts, or episode timeout
+- **Framework**: HARL only
+
+**Template-Quadrrl-Velocity-Flat-Spot-MARL-v0** (Manager-Based MARL):
+- **Agents**: Four agents (agentFR, agentFL, agentHR, agentHL) - one per leg
+- **Objective**: Velocity tracking on flat terrain
+- **Observations**: Base velocity, angular velocity, projected gravity, velocity commands, joint positions/velocities (own leg + other legs), previous actions
+- **Actions**: Joint position commands per leg (3 DoF per leg)
+- **Rewards**: Velocity tracking, joint regulation, action rate, and other locomotion rewards
+- **Termination**: Robot falls or episode timeout
+- **Frameworks**: RSL-RL, SKRL, HARL
+
 
 ### Training Multi-Agent Policies
 
@@ -252,18 +227,6 @@ python scripts/reinforcement_learning/skrl/train.py \
     --num_envs=4096
 ```
 
-**HARL Supported Algorithms:**
-- `happo` – Hierarchical Actor-Critic PPO (default)
-- `hatrpo` – Hierarchical Actor-Critic TRPO
-- `haa2c` – Hierarchical Actor-Critic A2C
-- `mappo` – Multi-Agent PPO
-- `maddpg` – Multi-Agent DDPG
-- `matd3` – Multi-Agent TD3
-- `hasac` – Hierarchical Actor-Critic SAC
-- `hatd3` – Hierarchical Actor-Critic TD3
-- `had3qn` – Hierarchical Actor-Critic D3QN
-- `haddpg` – Hierarchical Actor-Critic DDPG
-
 ### Evaluating Multi-Agent Policies
 
 **ANYmal-C Bar Carrying:**
@@ -292,26 +255,6 @@ python scripts/reinforcement_learning/skrl/play.py \
     --task=Template-Quadrrl-Velocity-Flat-Spot-MARL-Play-v0 \
     --checkpoint=/path/to/checkpoint.pth
 ```
-
-### Multi-Agent Task Details
-
-**Template-Quadrrl-MARL-Direct-Anymal-C-v0** (Direct MARL):
-- **Agents**: Two ANYmal-C robots
-- **Objective**: Cooperatively carry a bar to randomly sampled target locations
-- **Observations**: Robot state, joint positions/velocities, target position relative to bar
-- **Actions**: Joint position commands (12 DoF per robot)
-- **Rewards**: Target distance (primary), target reached bonus, velocity tracking (smoothness)
-- **Termination**: Robot falls, bar falls/tilts, or episode timeout
-- **Framework**: HARL only
-
-**Template-Quadrrl-Velocity-Flat-Spot-MARL-v0** (Manager-Based MARL):
-- **Agents**: Four agents (agentFR, agentFL, agentHR, agentHL) - one per leg
-- **Objective**: Velocity tracking on flat terrain
-- **Observations**: Base velocity, angular velocity, projected gravity, velocity commands, joint positions/velocities (own leg + other legs), previous actions
-- **Actions**: Joint position commands per leg (3 DoF per leg)
-- **Rewards**: Velocity tracking, joint regulation, action rate, and other locomotion rewards
-- **Termination**: Robot falls or episode timeout
-- **Frameworks**: RSL-RL, SKRL, HARL
 
 <br>
 
