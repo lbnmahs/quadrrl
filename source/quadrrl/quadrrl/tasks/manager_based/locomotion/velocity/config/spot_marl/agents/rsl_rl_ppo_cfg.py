@@ -9,11 +9,11 @@ from isaaclab_tasks.utils.wrappers.rsl_rl import RslRlOnPolicyRunnerCfg, RslRlPp
 
 
 @configclass
-class SpotFlatPPORunnerCfg(RslRlOnPolicyRunnerCfg):
+class SpotMarlPPORunnerCfg(RslRlOnPolicyRunnerCfg):
     num_steps_per_env = 24
     max_iterations = 20000
     save_interval = 50
-    experiment_name = "spot_flat"
+    experiment_name = "spot_marl"
     empirical_normalization = False
     store_code_state = False
     policy = RslRlPpoActorCriticCfg(

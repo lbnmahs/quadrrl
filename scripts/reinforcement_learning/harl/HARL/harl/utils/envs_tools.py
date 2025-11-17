@@ -94,10 +94,17 @@ def make_train_env(env_name, seed, n_threads, env_args):
                     _env_class = _DirectMARLEnv
 
                 isaac_env = _env_class(cfg)
+                try:
+                    from isaaclab.envs import ManagerBasedRLEnv as _ManagerBasedRLEnv
+                except Exception:
+                    _ManagerBasedRLEnv = None
 
                 class _IsaacLabHARLEnv:
                     def __init__(self, wrapped_env, cfg_obj, _n_threads):
                         self._env = wrapped_env
+                        self._is_manager_env = (
+                            _ManagerBasedRLEnv is not None and isinstance(wrapped_env, _ManagerBasedRLEnv)
+                        )
                         self._n_threads = _n_threads
                         # agent ids order
                         if hasattr(cfg_obj, "possible_agents"):
@@ -147,12 +154,20 @@ def make_train_env(env_name, seed, n_threads, env_args):
                         return obs_per_env, share_obs_per_env, available_actions
 
                     def step(self, actions):
-                        # actions: (n_agents, act_dim) -> dict agent -> torch[1, act_dim]
-                        act_dict = {
-                            a: _torch.as_tensor(actions[idx][None, :], device=self._env.device, dtype=_torch.float32)
-                            for idx, a in enumerate(self._agent_ids)
-                        }
-                        obs, rew, terminated, truncated, info = self._env.step(act_dict)
+                        if self._is_manager_env:
+                            acts_np = _np.asarray(actions)
+                            if acts_np.ndim == 3:
+                                flat = _np.concatenate([acts_np[:, idx, :] for idx in range(self.n_agents)], axis=1)
+                            else:
+                                flat = _np.concatenate([acts_np[idx] for idx in range(self.n_agents)], axis=0)[None, :]
+                            act_tensor = _torch.as_tensor(flat, device=self._env.device, dtype=_torch.float32)
+                            obs, rew, terminated, truncated, info = self._env.step(act_tensor)
+                        else:
+                            act_dict = {
+                                a: _torch.as_tensor(actions[idx][None, :], device=self._env.device, dtype=_torch.float32)
+                                for idx, a in enumerate(self._agent_ids)
+                            }
+                            obs, rew, terminated, truncated, info = self._env.step(act_dict)
                         # Convert outputs
                         obs_primary = obs[0] if isinstance(obs, tuple) else obs
                         per_agent = []
@@ -162,16 +177,29 @@ def make_train_env(env_name, seed, n_threads, env_args):
                             per_agent.append(arr)
                         obs_per_env = _np.ascontiguousarray(_np.stack(per_agent, axis=0), dtype=_np.float32)  # (n_agents, obs_dim)
                         share_obs_per_env = obs_per_env.copy()
-                        rews = _np.stack(
-                            [rew[a].detach().cpu().numpy() for a in self._agent_ids], axis=0
-                        )  # (n_agents, 1)
-                        dones_per_agent = _np.array(
-                            [
-                                bool(terminated.get(a, False)) or bool(truncated.get(a, False))
-                                for a in self._agent_ids
-                            ],
-                            dtype=bool,
-                        )  # (n_agents,)
+                        if self._is_manager_env:
+                            rew_np = rew.detach().cpu().numpy() if hasattr(rew, "detach") else _np.asarray(rew)
+                            rew_np = rew_np.reshape(-1)
+                            rews = _np.repeat(rew_np[0:1], self.n_agents).reshape(self.n_agents, 1)
+                            term_np = (
+                                terminated.detach().cpu().numpy() if hasattr(terminated, "detach") else _np.asarray(terminated)
+                            ).reshape(-1)
+                            trunc_np = (
+                                truncated.detach().cpu().numpy() if hasattr(truncated, "detach") else _np.asarray(truncated)
+                            ).reshape(-1)
+                            dones_flag = bool(_np.logical_or(term_np, trunc_np)[0])
+                            dones_per_agent = _np.full((self.n_agents,), dones_flag, dtype=bool)
+                        else:
+                            rews = _np.stack(
+                                [rew[a].detach().cpu().numpy() for a in self._agent_ids], axis=0
+                            )  # (n_agents, 1)
+                            dones_per_agent = _np.array(
+                                [
+                                    bool(terminated.get(a, False)) or bool(truncated.get(a, False))
+                                    for a in self._agent_ids
+                                ],
+                                dtype=bool,
+                            )  # (n_agents,)
                         infos = [{agent_idx: {} for agent_idx in range(self.n_agents)}]
                         available_actions = None
                         return obs_per_env, share_obs_per_env, rews, dones_per_agent, infos, available_actions
@@ -243,10 +271,17 @@ def make_eval_env(env_name, seed, n_threads, env_args):
                     _env_class = _DirectMARLEnv
 
                 isaac_env = _env_class(cfg)
+                try:
+                    from isaaclab.envs import ManagerBasedRLEnv as _ManagerBasedRLEnv
+                except Exception:
+                    _ManagerBasedRLEnv = None
 
                 class _IsaacLabHARLEnv:
                     def __init__(self, wrapped_env, cfg_obj):
                         self._env = wrapped_env
+                        self._is_manager_env = (
+                            _ManagerBasedRLEnv is not None and isinstance(wrapped_env, _ManagerBasedRLEnv)
+                        )
                         if hasattr(cfg_obj, "possible_agents"):
                             self._agent_ids = list(cfg_obj.possible_agents)
                         elif hasattr(cfg_obj, "action_spaces"):
@@ -287,11 +322,20 @@ def make_eval_env(env_name, seed, n_threads, env_args):
                         return obs_stack, share_obs, available_actions
 
                     def step(self, actions):
-                        act_dict = {
-                            a: _torch.as_tensor(actions[idx][None, :], device=self._env.device, dtype=_torch.float32)
-                            for idx, a in enumerate(self._agent_ids)
-                        }
-                        obs, rew, terminated, truncated, info = self._env.step(act_dict)
+                        if self._is_manager_env:
+                            acts_np = _np.asarray(actions)
+                            if acts_np.ndim == 3:
+                                flat = _np.concatenate([acts_np[:, idx, :] for idx in range(self.n_agents)], axis=1)
+                            else:
+                                flat = _np.concatenate([acts_np[idx] for idx in range(self.n_agents)], axis=0)[None, :]
+                            act_tensor = _torch.as_tensor(flat, device=self._env.device, dtype=_torch.float32)
+                            obs, rew, terminated, truncated, info = self._env.step(act_tensor)
+                        else:
+                            act_dict = {
+                                a: _torch.as_tensor(actions[idx][None, :], device=self._env.device, dtype=_torch.float32)
+                                for idx, a in enumerate(self._agent_ids)
+                            }
+                            obs, rew, terminated, truncated, info = self._env.step(act_dict)
                         obs_primary = obs[0] if isinstance(obs, tuple) else obs
                         obs_stack = _np.stack(
                             [obs_primary[a].detach().cpu().numpy() for a in self._agent_ids], axis=0

@@ -61,6 +61,9 @@ except Exception:
     current_dir = os.path.dirname(os.path.abspath(__file__))
     if current_dir not in sys.path:
         sys.path.insert(0, current_dir)
+    harl_root = os.path.join(current_dir, "HARL")
+    if harl_root not in sys.path:
+        sys.path.insert(0, harl_root)
     from HARL.harl.runners import RUNNER_REGISTRY
 
 from isaaclab.envs import DirectMARLEnvCfg, DirectRLEnvCfg, ManagerBasedRLEnvCfg
@@ -89,7 +92,8 @@ def main(env_cfg: ManagerBasedRLEnvCfg | DirectRLEnvCfg | DirectMARLEnvCfg, agen
     default_num_envs = getattr(getattr(env_cfg, "scene", object()), "num_envs", None)
     resolved_num_envs = args["num_envs"] if args["num_envs"] is not None else default_num_envs
     args["num_envs"] = resolved_num_envs
-    algo_args["train"]["n_rollout_threads"] = resolved_num_envs
+    # Isaac Lab environments manage their own vectorization; keep HARL wrapper single-threaded
+    algo_args["train"]["n_rollout_threads"] = 1
     if args["num_env_steps"] is not None:
         algo_args["train"]["num_env_steps"] = args["num_env_steps"]
     if args["save_interval"] is not None:

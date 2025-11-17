@@ -61,38 +61,40 @@ python scripts/list_envs.py
 
 **Single-Agent RL Environments**
 
-| S. No. | Task Name                                           | Environment File                    | Config File                          |
-|-------:|-----------------------------------------------------|-------------------------------------|--------------------------------------|
-| 1      | Template-Quadrrl-Velocity-Flat-Anymal-C-Direct-v0   | `anymal_c_env.py`                   | `anymal_c_env_cfg.py`                |
-| 2      | Template-Quadrrl-Velocity-Rough-Anymal-C-Direct-v0  | `anymal_c_env.py`                   | `anymal_c_env_cfg.py`                |
-| 3      | Template-Quadrrl-Velocity-Flat-Anymal-C-v0          | `ManagerBasedRLEnv`                 | `flat_env_cfg.py`                    |
-| 4      | Template-Quadrrl-Velocity-Flat-Anymal-C-Play-v0     | `ManagerBasedRLEnv`                 | `flat_env_cfg.py`                    |
-| 5      | Template-Quadrrl-Velocity-Rough-Anymal-C-v0         | `ManagerBasedRLEnv`                 | `rough_env_cfg.py`                   |
-| 6      | Template-Quadrrl-Velocity-Rough-Anymal-C-Play-v0    | `ManagerBasedRLEnv`                 | `rough_env_cfg.py`                   |
-| 7      | Template-Quadrrl-Velocity-Flat-Anymal-D-v0          | `ManagerBasedRLEnv`                 | `flat_env_cfg.py`                    |
-| 8      | Template-Quadrrl-Velocity-Flat-Anymal-D-Play-v0     | `ManagerBasedRLEnv`                 | `flat_env_cfg.py`                    |
-| 9      | Template-Quadrrl-Velocity-Rough-Anymal-D-v0         | `ManagerBasedRLEnv`                 | `rough_env_cfg.py`                   |
-| 10     | Template-Quadrrl-Velocity-Rough-Anymal-D-Play-v0    | `ManagerBasedRLEnv`                 | `rough_env_cfg.py`                   |
-| 11     | Template-Quadrrl-Velocity-Flat-Unitree-Go2-v0       | `ManagerBasedRLEnv`                 | `flat_env_cfg.py`                    |
-| 12     | Template-Quadrrl-Velocity-Flat-Unitree-Go2-Play-v0  | `ManagerBasedRLEnv`                 | `flat_env_cfg.py`                    |
-| 13     | Template-Quadrrl-Velocity-Rough-Unitree-Go2-v0      | `ManagerBasedRLEnv`                 | `rough_env_cfg.py`                   |
-| 14     | Template-Quadrrl-Velocity-Rough-Unitree-Go2-Play-v0 | `ManagerBasedRLEnv`                 | `rough_env_cfg.py`                   |
-| 15     | Template-Quadrrl-Navigation-Flat-Anymal-C-v0        | `ManagerBasedRLEnv`                 | `navigation_env_cfg.py`              |
-| 16     | Template-Quadrrl-Navigation-Flat-Anymal-C-Play-v0   | `ManagerBasedRLEnv`                 | `navigation_env_cfg.py`              |
+| S. No. | Task Name                                           | Environment File          | Config File                               |
+|-------:|-----------------------------------------------------|---------------------------|-------------------------------------------|
+| 1      | Template-Quadrrl-Velocity-Flat-Anymal-C-Direct-v0   | `anymal_c_env.py`         | `anymal_c_env_cfg.py`                     |
+| 2      | Template-Quadrrl-Velocity-Rough-Anymal-C-Direct-v0  | `anymal_c_env.py`         | `anymal_c_env_cfg.py`                     |
+| 3      | Template-Quadrrl-Velocity-Flat-Anymal-C-v0          | `ManagerBasedRLEnv`       | `flat_env_cfg.py`                         |
+| 4      | Template-Quadrrl-Velocity-Flat-Anymal-C-Play-v0     | `ManagerBasedRLEnv`       | `flat_env_cfg.py`                         |
+| 5      | Template-Quadrrl-Velocity-Rough-Anymal-C-v0         | `ManagerBasedRLEnv`       | `rough_env_cfg.py`                        |
+| 6      | Template-Quadrrl-Velocity-Rough-Anymal-C-Play-v0    | `ManagerBasedRLEnv`       | `rough_env_cfg.py`                        |
+| 7      | Template-Quadrrl-Velocity-Flat-Anymal-D-v0          | `ManagerBasedRLEnv`       | `flat_env_cfg.py`                         |
+| 8      | Template-Quadrrl-Velocity-Flat-Anymal-D-Play-v0     | `ManagerBasedRLEnv`       | `flat_env_cfg.py`                         |
+| 9      | Template-Quadrrl-Velocity-Rough-Anymal-D-v0         | `ManagerBasedRLEnv`       | `rough_env_cfg.py`                        |
+| 10     | Template-Quadrrl-Velocity-Rough-Anymal-D-Play-v0    | `ManagerBasedRLEnv`       | `rough_env_cfg.py`                        |
+| 11     | Template-Quadrrl-Velocity-Flat-Unitree-Go2-v0       | `ManagerBasedRLEnv`       | `flat_env_cfg.py`                         |
+| 12     | Template-Quadrrl-Velocity-Flat-Unitree-Go2-Play-v0  | `ManagerBasedRLEnv`       | `flat_env_cfg.py`                         |
+| 13     | Template-Quadrrl-Velocity-Rough-Unitree-Go2-v0      | `ManagerBasedRLEnv`       | `rough_env_cfg.py`                        |
+| 14     | Template-Quadrrl-Velocity-Rough-Unitree-Go2-Play-v0 | `ManagerBasedRLEnv`       | `rough_env_cfg.py`                        |
+| 15     | Template-Quadrrl-Velocity-Flat-Spot-v0              | `ManagerBasedRLEnv`       | `spot/flat_env_cfg.py`                    |
+| 16     | Template-Quadrrl-Velocity-Flat-Spot-Play-v0         | `ManagerBasedRLEnv`       | `spot/flat_env_cfg.py`                    |
+| 17     | Template-Quadrrl-Navigation-Flat-Anymal-C-v0        | `ManagerBasedRLEnv`       | `navigation_env_cfg.py`                   |
+| 18     | Template-Quadrrl-Navigation-Flat-Anymal-C-Play-v0   | `ManagerBasedRLEnv`       | `navigation_env_cfg.py`                   |
 
 <br>
 
 **Multi-Agent RL Environments**
 
-| S. No. | Task Name                                           | Environment File                    | Config File                          | RL Framework |
-|-------:|-----------------------------------------------------|-------------------------------------|--------------------------------------|-------------|
-| 17     | Template-Quadrrl-MARL-Direct-Anymal-C-v0           | `anymal_c_marl_env.py`              | `anymal_c_marl_env_cfg.py`           | HARL        |
-| 18     | Template-Quadrrl-Velocity-Flat-Spot-MARL-v0        | `ManagerBasedMARLEnv`               | `spot_marl_cfg.py`                   | RSL-RL, SKRL, HARL |
-| 19     | Template-Quadrrl-Velocity-Flat-Spot-MARL-Play-v0  | `ManagerBasedMARLEnv`               | `spot_marl_cfg.py`                   | RSL-RL, SKRL, HARL |
+| S. No. | Task Name                                           | Environment File            | Config File                               | RL Framework           |
+|-------:|-----------------------------------------------------|-----------------------------|-------------------------------------------|------------------------|
+| 1      | Template-Quadrrl-MARL-Direct-Anymal-C-v0           | `anymal_c_marl_env.py`      | `anymal_c_marl_env_cfg.py`                | HARL                   |
+| 2      | Template-Quadrrl-Velocity-Flat-Spot-MARL-v0        | `ManagerBasedMARLEnv`       | `spot_marl_cfg.py`                        | RSL-RL, SKRL, HARL     |
+| 3      | Template-Quadrrl-Velocity-Flat-Spot-MARL-Play-v0   | `ManagerBasedMARLEnv`       | `spot_marl_cfg.py`                        | RSL-RL, SKRL, HARL     |
 
 **Note:**
-- Task 17: Direct MARL task with two ANYmal-C robots cooperatively carrying a bar to target locations (HARL only).
-- Tasks 18-19: Manager-based MARL task with Spot robot using 4 agents (one per leg) for velocity tracking on flat terrain. Supports RSL-RL, SKRL, and HARL frameworks.
+- Task 1: Direct MARL task with two ANYmal-C robots cooperatively carrying a bar to target locations (HARL only).
+- Tasks 2-3: Manager-based MARL task with Spot robot using 4 agents (one per leg) for velocity tracking on flat terrain. Supports RSL-RL, SKRL, and HARL frameworks.
 **Note:**  Update `scripts/list_envs.py` if you rename any tasks so that they continue to show up in listings.
 
 <br>
