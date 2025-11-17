@@ -59,6 +59,9 @@ except Exception:
     current_dir = os.path.dirname(os.path.abspath(__file__))
     if current_dir not in sys.path:
         sys.path.insert(0, current_dir)
+    harl_root = os.path.join(current_dir, "HARL")
+    if harl_root not in sys.path:
+        sys.path.insert(0, harl_root)
     from HARL.harl.runners import RUNNER_REGISTRY
 
 from isaaclab.envs import DirectMARLEnvCfg, DirectRLEnvCfg, ManagerBasedRLEnvCfg

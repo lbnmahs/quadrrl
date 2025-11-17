@@ -59,107 +59,71 @@ python scripts/list_envs.py
 ```
 <br>
 
-**Single-Agent RL Environments**
+<details>
+<summary><b>Single-Agent RL Environments</b> (Click to expand)</summary>
 
-| S. No. | Task Name                                           | Environment File                    | Config File                          |
-|-------:|-----------------------------------------------------|-------------------------------------|--------------------------------------|
-| 1      | Template-Quadrrl-Velocity-Flat-Anymal-C-Direct-v0   | `anymal_c_env.py`                   | `anymal_c_env_cfg.py`                |
-| 2      | Template-Quadrrl-Velocity-Rough-Anymal-C-Direct-v0  | `anymal_c_env.py`                   | `anymal_c_env_cfg.py`                |
-| 3      | Template-Quadrrl-Velocity-Flat-Anymal-C-v0          | `ManagerBasedRLEnv`                 | `flat_env_cfg.py`                    |
-| 4      | Template-Quadrrl-Velocity-Flat-Anymal-C-Play-v0     | `ManagerBasedRLEnv`                 | `flat_env_cfg.py`                    |
-| 5      | Template-Quadrrl-Velocity-Rough-Anymal-C-v0         | `ManagerBasedRLEnv`                 | `rough_env_cfg.py`                   |
-| 6      | Template-Quadrrl-Velocity-Rough-Anymal-C-Play-v0    | `ManagerBasedRLEnv`                 | `rough_env_cfg.py`                   |
-| 7      | Template-Quadrrl-Velocity-Flat-Anymal-D-v0          | `ManagerBasedRLEnv`                 | `flat_env_cfg.py`                    |
-| 8      | Template-Quadrrl-Velocity-Flat-Anymal-D-Play-v0     | `ManagerBasedRLEnv`                 | `flat_env_cfg.py`                    |
-| 9      | Template-Quadrrl-Velocity-Rough-Anymal-D-v0         | `ManagerBasedRLEnv`                 | `rough_env_cfg.py`                   |
-| 10     | Template-Quadrrl-Velocity-Rough-Anymal-D-Play-v0    | `ManagerBasedRLEnv`                 | `rough_env_cfg.py`                   |
-| 11     | Template-Quadrrl-Velocity-Flat-Unitree-Go2-v0       | `ManagerBasedRLEnv`                 | `flat_env_cfg.py`                    |
-| 12     | Template-Quadrrl-Velocity-Flat-Unitree-Go2-Play-v0  | `ManagerBasedRLEnv`                 | `flat_env_cfg.py`                    |
-| 13     | Template-Quadrrl-Velocity-Rough-Unitree-Go2-v0      | `ManagerBasedRLEnv`                 | `rough_env_cfg.py`                   |
-| 14     | Template-Quadrrl-Velocity-Rough-Unitree-Go2-Play-v0 | `ManagerBasedRLEnv`                 | `rough_env_cfg.py`                   |
-| 15     | Template-Quadrrl-Navigation-Flat-Anymal-C-v0        | `ManagerBasedRLEnv`                 | `navigation_env_cfg.py`              |
-| 16     | Template-Quadrrl-Navigation-Flat-Anymal-C-Play-v0   | `ManagerBasedRLEnv`                 | `navigation_env_cfg.py`              |
+| S. No. | Task Name                                           | Environment File          | Config File                               |
+|-------:|-----------------------------------------------------|---------------------------|-------------------------------------------|
+| 1      | Template-Quadrrl-Velocity-Flat-Anymal-C-Direct-v0   | `anymal_c_env.py`         | `anymal_c_env_cfg.py`                     |
+| 2      | Template-Quadrrl-Velocity-Rough-Anymal-C-Direct-v0  | `anymal_c_env.py`         | `anymal_c_env_cfg.py`                     |
+| 3      | Template-Quadrrl-Velocity-Flat-Anymal-C-v0          | `ManagerBasedRLEnv`       | `flat_env_cfg.py`                         |
+| 4      | Template-Quadrrl-Velocity-Flat-Anymal-C-Play-v0     | `ManagerBasedRLEnv`       | `flat_env_cfg.py`                         |
+| 5      | Template-Quadrrl-Velocity-Rough-Anymal-C-v0         | `ManagerBasedRLEnv`       | `rough_env_cfg.py`                        |
+| 6      | Template-Quadrrl-Velocity-Rough-Anymal-C-Play-v0    | `ManagerBasedRLEnv`       | `rough_env_cfg.py`                        |
+| 7      | Template-Quadrrl-Velocity-Flat-Anymal-D-v0          | `ManagerBasedRLEnv`       | `flat_env_cfg.py`                         |
+| 8      | Template-Quadrrl-Velocity-Flat-Anymal-D-Play-v0     | `ManagerBasedRLEnv`       | `flat_env_cfg.py`                         |
+| 9      | Template-Quadrrl-Velocity-Rough-Anymal-D-v0         | `ManagerBasedRLEnv`       | `rough_env_cfg.py`                        |
+| 10     | Template-Quadrrl-Velocity-Rough-Anymal-D-Play-v0    | `ManagerBasedRLEnv`       | `rough_env_cfg.py`                        |
+| 11     | Template-Quadrrl-Velocity-Flat-Unitree-Go2-v0       | `ManagerBasedRLEnv`       | `flat_env_cfg.py`                         |
+| 12     | Template-Quadrrl-Velocity-Flat-Unitree-Go2-Play-v0  | `ManagerBasedRLEnv`       | `flat_env_cfg.py`                         |
+| 13     | Template-Quadrrl-Velocity-Rough-Unitree-Go2-v0      | `ManagerBasedRLEnv`       | `rough_env_cfg.py`                        |
+| 14     | Template-Quadrrl-Velocity-Rough-Unitree-Go2-Play-v0 | `ManagerBasedRLEnv`       | `rough_env_cfg.py`                        |
+| 15     | Template-Quadrrl-Velocity-Flat-Spot-v0              | `ManagerBasedRLEnv`       | `spot/flat_env_cfg.py`                    |
+| 16     | Template-Quadrrl-Velocity-Flat-Spot-Play-v0         | `ManagerBasedRLEnv`       | `spot/flat_env_cfg.py`                    |
+| 17     | Template-Quadrrl-Navigation-Flat-Anymal-C-v0        | `ManagerBasedRLEnv`       | `navigation_env_cfg.py`                   |
+| 18     | Template-Quadrrl-Navigation-Flat-Anymal-C-Play-v0   | `ManagerBasedRLEnv`       | `navigation_env_cfg.py`                   |
 
-<br>
+</details>
 
-**Multi-Agent RL Environments**
+<details>
+<summary><b>Multi-Agent RL Environments</b> (Click to expand)</summary>
 
-| S. No. | Task Name                                           | Environment File                    | Config File                          | RL Framework |
-|-------:|-----------------------------------------------------|-------------------------------------|--------------------------------------|-------------|
-| 17     | Template-Quadrrl-MARL-Direct-Anymal-C-v0           | `anymal_c_marl_env.py`              | `anymal_c_marl_env_cfg.py`           | HARL        |
-| 18     | Template-Quadrrl-Velocity-Flat-Spot-MARL-v0        | `ManagerBasedMARLEnv`               | `spot_marl_cfg.py`                   | RSL-RL, SKRL, HARL |
-| 19     | Template-Quadrrl-Velocity-Flat-Spot-MARL-Play-v0  | `ManagerBasedMARLEnv`               | `spot_marl_cfg.py`                   | RSL-RL, SKRL, HARL |
+| S. No. | Task Name                                           | Environment File            | Config File                               | RL Framework           |
+|-------:|-----------------------------------------------------|-----------------------------|-------------------------------------------|------------------------|
+| 1      | Template-Quadrrl-MARL-Direct-Anymal-C-v0           | `anymal_c_marl_env.py`      | `anymal_c_marl_env_cfg.py`                | HARL                   |
+| 2      | Template-Quadrrl-Velocity-Flat-Spot-MARL-v0        | `ManagerBasedRLEnv`       | `spot_marl_env_cfg.py`                        | RSL-RL, SKRL, HARL     |
+| 3      | Template-Quadrrl-Velocity-Flat-Spot-MARL-Play-v0   | `ManagerBasedRLEnv`       | `spot_marl_env_cfg.py`                        | RSL-RL, SKRL, HARL     |
 
 **Note:**
-- Task 17: Direct MARL task with two ANYmal-C robots cooperatively carrying a bar to target locations (HARL only).
-- Tasks 18-19: Manager-based MARL task with Spot robot using 4 agents (one per leg) for velocity tracking on flat terrain. Supports RSL-RL, SKRL, and HARL frameworks.
-**Note:**  Update `scripts/list_envs.py` if you rename any tasks so that they continue to show up in listings.
+- Task 1: Direct MARL task with two ANYmal-C robots cooperatively carrying a bar to target locations (HARL only).
+- Tasks 2-3: Manager-based MARL task with Spot robot using 4 agents (one per leg) for velocity tracking on flat terrain. Supports RSL-RL, SKRL, and HARL frameworks.
+
+</details>
+
+**Note:** Update `scripts/list_envs.py` if you rename any tasks so that they continue to show up in listings.
+
 
 <br>
 
-### Train Policies
+## 🤖 Single-Agent Reinforcement Learning
 
 Replace `<RL_LIBRARY>` with `rl_games`, `rsl_rl`, `skrl`, or `harl`, and supply any extra training flags.
 
-**Single-Agent Tasks:**
 ```bash
-python scripts/<RL_LIBRARY>/train.py --task=<TASK_NAME> --num_envs=4096 --seed=42
+python scripts/reinforcement_learning/<RL_LIBRARY>/train.py --task=<TASK_NAME> --num_envs=4096 --seed=42
 ```
-
-**Multi-Agent Tasks:**
-
-*ANYmal-C Bar Carrying:*
-```bash
-python scripts/harl/train.py --task=Template-Quadrrl-MARL-Direct-Anymal-C-v0 --num_envs=4096 --algorithm=happo --headless
-```
-
-*Spot Velocity Tracking:*
-```bash
-# Using HARL
-python scripts/harl/train.py --task=Template-Quadrrl-Velocity-Flat-Spot-MARL-v0 --num_envs=4096 --algorithm=happo --headless
-
-# Using RSL-RL
-python scripts/rsl_rl/train.py --task=Template-Quadrrl-Velocity-Flat-Spot-MARL-v0 --num_envs=4096
-
-# Using SKRL
-python scripts/skrl/train.py --task=Template-Quadrrl-Velocity-Flat-Spot-MARL-v0 --num_envs=4096
-```
-
-<br>
 
 ### Evaluate Saved Policies
 
-**Single-Agent Play Mode:**
-Play-mode tasks (suffix `-Play`) load evaluation checkpoints and curriculum settings.
+Add the suffix `-Play` to load evaluation checkpoints and curriculum settings.
 
 ```bash
-python scripts/<RL_LIBRARY>/play.py --task=<TASK_NAME>-Play --checkpoint=/absolute/path/to/checkpoint.pth
+python scripts/reinforcement_learning/<RL_LIBRARY>/play.py --task=<TASK_NAME>-Play --checkpoint=/absolute/path/to/checkpoint.pth
 ```
-
-**Multi-Agent Play Mode:**
-
-*ANYmal-C Bar Carrying:*
-```bash
-python scripts/harl/play.py --task=Template-Quadrrl-MARL-Direct-Anymal-C-v0 --num_envs=5 --dir=/path/to/logs/harl/anymal_c_marl/EXPERIMENT_NAME
-```
-
-*Spot Velocity Tracking:*
-```bash
-# Using HARL
-python scripts/harl/play.py --task=Template-Quadrrl-Velocity-Flat-Spot-MARL-Play-v0 --num_envs=5 --dir=/path/to/logs/harl/spot_marl/EXPERIMENT_NAME
-
-# Using RSL-RL
-python scripts/rsl_rl/play.py --task=Template-Quadrrl-Velocity-Flat-Spot-MARL-Play-v0 --checkpoint=/path/to/checkpoint.pth
-
-# Using SKRL
-python scripts/skrl/play.py --task=Template-Quadrrl-Velocity-Flat-Spot-MARL-Play-v0 --checkpoint=/path/to/checkpoint.pth
-```
-
-<br>
 
 ### Demo Scripts
 
-Run example demonstrations and visualizations:
+Run example demonstrations and visualizations using the trained policies:
 
 ```bash
 # Quadruped examples demo
@@ -175,21 +139,6 @@ python scripts/demos/il_go2_rough.py
 
 Tip: Use `isaaclab.sh -p` or `isaaclab.bat -p` in place of `python` if Isaac Lab is not installed in the active Python environment.
 
-<br>
-
-## 📂 Project Layout
-
-- `source/quadrrl/quadrrl/robots` – robot asset wrappers (ANYmal variants, Spot, and Unitree Go2).
-- `source/quadrrl/quadrrl/tasks/direct` – low-level Isaac Gym–style environments and multi-agent setups with RL configs.
-- `source/quadrrl/quadrrl/tasks/manager_based` – manager-based tasks with locomotion and navigation curricula, rewards, and symmetry helpers.
-- `source/quadrrl/scripts` – entry points for training, evaluation, and diagnostic agents for supported RL frameworks.
-  - `scripts/rl_games/` – RL Games framework integration
-  - `scripts/rsl_rl/` – RSL-RL framework integration
-  - `scripts/skrl/` – SKRL framework integration
-  - `scripts/harl/` – HARL framework integration (multi-agent RL)
-  - `scripts/demos/` – demonstration and visualization scripts
-
-Refer to `scripts/demos/quadrupeds.py` for additional guidance on composing task configurations programmatically.
 
 <br>
 
@@ -202,48 +151,7 @@ Quadrrl includes support for multi-agent reinforcement learning (MARL) with two 
 
 ### Setup HARL
 
-HARL is included as a submodule in `scripts/harl/HARL/`. The framework has been customized for Isaac Lab integration and only includes code necessary for Isaac Lab environments.
-
-### Training Multi-Agent Policies
-
-**ANYmal-C Bar Carrying Task:**
-
-```bash
-# Train with HAPPO (default)
-python scripts/harl/train.py \
-    --task=Template-Quadrrl-MARL-Direct-Anymal-C-v0 \
-    --num_envs=4096 \
-    --algorithm=happo \
-    --headless
-
-# Train with other algorithms
-python scripts/harl/train.py \
-    --task=Template-Quadrrl-MARL-Direct-Anymal-C-v0 \
-    --num_envs=4096 \
-    --algorithm=mappo \
-    --headless
-```
-
-**Spot Velocity Tracking Task:**
-
-```bash
-# Using HARL
-python scripts/harl/train.py \
-    --task=Template-Quadrrl-Velocity-Flat-Spot-MARL-v0 \
-    --num_envs=4096 \
-    --algorithm=happo \
-    --headless
-
-# Using RSL-RL
-python scripts/rsl_rl/train.py \
-    --task=Template-Quadrrl-Velocity-Flat-Spot-MARL-v0 \
-    --num_envs=4096
-
-# Using SKRL
-python scripts/skrl/train.py \
-    --task=Template-Quadrrl-Velocity-Flat-Spot-MARL-v0 \
-    --num_envs=4096
-```
+HARL is included as a submodule in `scripts/reinforcement_learning/harl/HARL/`. The framework has been customized for Isaac Lab integration and only includes code necessary for Isaac Lab environments.
 
 **HARL Supported Algorithms:**
 - `happo` – Hierarchical Actor-Critic PPO (default)
@@ -256,35 +164,6 @@ python scripts/skrl/train.py \
 - `hatd3` – Hierarchical Actor-Critic TD3
 - `had3qn` – Hierarchical Actor-Critic D3QN
 - `haddpg` – Hierarchical Actor-Critic DDPG
-
-### Evaluating Multi-Agent Policies
-
-**ANYmal-C Bar Carrying:**
-```bash
-python scripts/harl/play.py \
-    --task=Template-Quadrrl-MARL-Direct-Anymal-C-v0 \
-    --num_envs=5 \
-    --dir=/path/to/logs/harl/anymal_c_marl/EXPERIMENT_NAME
-```
-
-**Spot Velocity Tracking:**
-```bash
-# Using HARL
-python scripts/harl/play.py \
-    --task=Template-Quadrrl-Velocity-Flat-Spot-MARL-Play-v0 \
-    --num_envs=5 \
-    --dir=/path/to/logs/harl/spot_marl/EXPERIMENT_NAME
-
-# Using RSL-RL
-python scripts/rsl_rl/play.py \
-    --task=Template-Quadrrl-Velocity-Flat-Spot-MARL-Play-v0 \
-    --checkpoint=/path/to/checkpoint.pth
-
-# Using SKRL
-python scripts/skrl/play.py \
-    --task=Template-Quadrrl-Velocity-Flat-Spot-MARL-Play-v0 \
-    --checkpoint=/path/to/checkpoint.pth
-```
 
 ### Multi-Agent Task Details
 
@@ -305,6 +184,77 @@ python scripts/skrl/play.py \
 - **Rewards**: Velocity tracking, joint regulation, action rate, and other locomotion rewards
 - **Termination**: Robot falls or episode timeout
 - **Frameworks**: RSL-RL, SKRL, HARL
+
+
+### Training Multi-Agent Policies
+
+**ANYmal-C Bar Carrying Task:**
+
+```bash
+# Train with HAPPO (default)
+python scripts/reinforcement_learning/harl/train.py \
+    --task=Template-Quadrrl-MARL-Direct-Anymal-C-v0 \
+    --num_envs=4096 \
+    --algorithm=happo \
+    --headless
+
+# Train with other algorithms
+python scripts/reinforcement_learning/harl/train.py \
+    --task=Template-Quadrrl-MARL-Direct-Anymal-C-v0 \
+    --num_envs=4096 \
+    --algorithm=mappo \
+    --headless
+```
+
+**Spot Velocity Tracking Task:**
+
+```bash
+# Using HARL
+python scripts/reinforcement_learning/harl/train.py \
+    --task=Template-Quadrrl-Velocity-Flat-Spot-MARL-v0 \
+    --num_envs=4096 \
+    --algorithm=happo \
+    --headless
+
+# Using RSL-RL
+python scripts/reinforcement_learning/rsl_rl/train.py \
+    --task=Template-Quadrrl-Velocity-Flat-Spot-MARL-v0 \
+    --num_envs=4096
+
+# Using SKRL
+python scripts/reinforcement_learning/skrl/train.py \
+    --task=Template-Quadrrl-Velocity-Flat-Spot-MARL-v0 \
+    --num_envs=4096
+```
+
+### Evaluating Multi-Agent Policies
+
+**ANYmal-C Bar Carrying:**
+```bash
+python scripts/reinforcement_learning/harl/play.py \
+    --task=Template-Quadrrl-MARL-Direct-Anymal-C-v0 \
+    --num_envs=5 \
+    --dir=/path/to/logs/harl/anymal_c_marl/EXPERIMENT_NAME
+```
+
+**Spot Velocity Tracking:**
+```bash
+# Using HARL
+python scripts/reinforcement_learning/harl/play.py \
+    --task=Template-Quadrrl-Velocity-Flat-Spot-MARL-Play-v0 \
+    --num_envs=5 \
+    --dir=/path/to/logs/harl/spot_marl/EXPERIMENT_NAME
+
+# Using RSL-RL
+python scripts/reinforcement_learning/rsl_rl/play.py \
+    --task=Template-Quadrrl-Velocity-Flat-Spot-MARL-Play-v0 \
+    --checkpoint=/path/to/checkpoint.pth
+
+# Using SKRL
+python scripts/reinforcement_learning/skrl/play.py \
+    --task=Template-Quadrrl-Velocity-Flat-Spot-MARL-Play-v0 \
+    --checkpoint=/path/to/checkpoint.pth
+```
 
 <br>
 
