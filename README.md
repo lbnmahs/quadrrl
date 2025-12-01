@@ -1,6 +1,6 @@
-![Quadrrl Header](header-quadrrl.png)
----
 # QUADRRL
+
+![Quadrrl Header](assets/repo_header.jpg)
 
 ## Overview
 
