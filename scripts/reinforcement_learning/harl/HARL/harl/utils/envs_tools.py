@@ -154,8 +154,13 @@ def make_train_env(env_name, seed, n_threads, env_args):
                         return obs_per_env, share_obs_per_env, available_actions
 
                     def step(self, actions):
+                        def _to_numpy(arr):
+                            if hasattr(arr, "detach"):
+                                return arr.detach().cpu().numpy()
+                            return _np.asarray(arr)
+
                         if self._is_manager_env:
-                            acts_np = _np.asarray(actions)
+                            acts_np = _to_numpy(actions)
                             if acts_np.ndim == 3:
                                 flat = _np.concatenate([acts_np[:, idx, :] for idx in range(self.n_agents)], axis=1)
                             else:
@@ -427,10 +432,15 @@ def make_render_env(env_name, seed, env_args):
             _env_class = _DirectMARLEnv
 
         wrapped = _env_class(cfg)
+        try:
+            from isaaclab.envs import ManagerBasedRLEnv as _ManagerBasedRLEnv
+        except Exception:
+            _ManagerBasedRLEnv = None
 
         class _IsaacLabHARLEnvRender:
             def __init__(self, wrapped_env, cfg_obj):
                 self._env = wrapped_env
+                self._is_manager_env = _ManagerBasedRLEnv is not None and isinstance(wrapped_env, _ManagerBasedRLEnv)
                 if hasattr(cfg_obj, "possible_agents"):
                     self._agent_ids = list(cfg_obj.possible_agents)
                 elif hasattr(cfg_obj, "action_spaces"):
@@ -471,39 +481,79 @@ def make_render_env(env_name, seed, env_args):
 
             def step(self, actions):
                 # actions: (N, A, D) or (A, D)
-                act_dict = {}
-                for idx, a in enumerate(self._agent_ids):
-                    if getattr(actions, "ndim", len(_np.shape(actions))) == 3:
-                        a_np = actions[:, idx, :]  # (N, D)
+                if self._is_manager_env:
+                    if hasattr(actions, "detach"):
+                        acts_np = actions.detach().cpu().numpy()
                     else:
-                        a_np = actions[idx][None, :]  # (1, D)
-                    act_dict[a] = _torch.as_tensor(a_np, device=self._env.device, dtype=_torch.float32)
-                obs, rew, terminated, truncated, info = self._env.step(act_dict)
+                        acts_np = _np.asarray(actions)
+                    if acts_np.ndim == 3:
+                        flat = _np.concatenate([acts_np[:, idx, :] for idx in range(self.n_agents)], axis=1)
+                    else:
+                        flat = _np.concatenate([acts_np[idx] for idx in range(self.n_agents)], axis=0)[None, :]
+                    act_tensor = _torch.as_tensor(flat, device=self._env.device, dtype=_torch.float32)
+                    obs, rew, terminated, truncated, info = self._env.step(act_tensor)
+                else:
+                    act_dict = {}
+                    for idx, a in enumerate(self._agent_ids):
+                        if getattr(actions, "ndim", len(_np.shape(actions))) == 3:
+                            a_np = actions[:, idx, :]  # (N, D)
+                        else:
+                            a_np = actions[idx][None, :]  # (1, D)
+                        act_dict[a] = _torch.as_tensor(a_np, device=self._env.device, dtype=_torch.float32)
+                    obs, rew, terminated, truncated, info = self._env.step(act_dict)
                 obs_primary = obs[0] if isinstance(obs, tuple) else obs
                 per_agent = [_np.asarray(obs_primary[a].detach().cpu().numpy()) for a in self._agent_ids]  # (A lists of (N,D))
                 obs_per_env = _np.ascontiguousarray(_np.stack(per_agent, axis=1), dtype=_np.float32)  # (N, A, D)
                 share_obs_per_env = obs_per_env.copy()
-                rews = _np.stack(
-                    [_np.asarray(rew[a].detach().cpu().numpy()) for a in self._agent_ids],
-                    axis=1,
-                ).astype(_np.float32)  # (N, A) or (N, A, 1)
-                if rews.ndim == 2:
-                    rews = rews[..., None]  # ensure shape (N, A, 1)
-                # convert terminated/truncated values to CPU numpy (N,) per agent
                 n_envs = obs_per_env.shape[0]
 
-                def _to_bool_np(x):
-                    if hasattr(x, "detach"):
-                        return x.detach().cpu().numpy().astype(_np.bool_)
-                    arr = _np.asarray(x)
-                    if arr.dtype != _np.bool_:
-                        arr = arr.astype(_np.bool_)
-                    if arr.shape == ():
-                        arr = _np.full((n_envs,), bool(arr), dtype=_np.bool_)
-                    return arr
-                term = _np.stack([_to_bool_np(terminated.get(a, _np.zeros((n_envs,), dtype=_np.bool_))) for a in self._agent_ids], axis=1)  # (N, A)
-                trunc = _np.stack([_to_bool_np(truncated.get(a, _np.zeros((n_envs,), dtype=_np.bool_))) for a in self._agent_ids], axis=1)  # (N, A)
-                dones_per_agent = (term | trunc).astype(bool)  # (N, A)
+                if self._is_manager_env:
+                    rew_np = (
+                        rew.detach().cpu().numpy() if hasattr(rew, "detach") else _np.asarray(rew, dtype=_np.float32)
+                    )
+                    rew_np = rew_np.reshape(n_envs, -1) if rew_np.ndim > 1 else rew_np.reshape(n_envs, 1)
+                    rews = _np.repeat(rew_np[:, None, 0:1], self.n_agents, axis=1).astype(_np.float32)
+
+                    term_np = (
+                        terminated.detach().cpu().numpy()
+                        if hasattr(terminated, "detach")
+                        else _np.asarray(terminated, dtype=_np.bool_)
+                    ).reshape(n_envs)
+                    trunc_np = (
+                        truncated.detach().cpu().numpy()
+                        if hasattr(truncated, "detach")
+                        else _np.asarray(truncated, dtype=_np.bool_)
+                    ).reshape(n_envs)
+                    dones_env = _np.logical_or(term_np, trunc_np).astype(bool)
+                    dones_per_agent = _np.repeat(dones_env[:, None], self.n_agents, axis=1)
+                else:
+                    rews = _np.stack(
+                        [_np.asarray(rew[a].detach().cpu().numpy()) for a in self._agent_ids],
+                        axis=1,
+                    ).astype(_np.float32)  # (N, A) or (N, A, 1)
+                    if rews.ndim == 2:
+                        rews = rews[..., None]  # ensure shape (N, A, 1)
+                    # convert terminated/truncated values to CPU numpy (N,) per agent
+
+                    def _to_bool_np(x):
+                        if hasattr(x, "detach"):
+                            return x.detach().cpu().numpy().astype(_np.bool_)
+                        arr = _np.asarray(x)
+                        if arr.dtype != _np.bool_:
+                            arr = arr.astype(_np.bool_)
+                        if arr.shape == ():
+                            arr = _np.full((n_envs,), bool(arr), dtype=_np.bool_)
+                        return arr
+
+                    term = _np.stack(
+                        [_to_bool_np(terminated.get(a, _np.zeros((n_envs,), dtype=_np.bool_))) for a in self._agent_ids],
+                        axis=1,
+                    )  # (N, A)
+                    trunc = _np.stack(
+                        [_to_bool_np(truncated.get(a, _np.zeros((n_envs,), dtype=_np.bool_))) for a in self._agent_ids],
+                        axis=1,
+                    )  # (N, A)
+                    dones_per_agent = (term | trunc).astype(bool)  # (N, A)
                 infos = [{agent_idx: {} for agent_idx in range(self.n_agents)}]
                 available_actions = None
                 return obs_per_env, share_obs_per_env, rews, dones_per_agent, infos, available_actions
