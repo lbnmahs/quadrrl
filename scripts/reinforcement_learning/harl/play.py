@@ -89,7 +89,8 @@ def main(env_cfg: ManagerBasedRLEnvCfg | DirectRLEnvCfg | DirectMARLEnvCfg, agen
     algo_args["train"]["model_dir"] = args["dir"]
 
     env_args = {}
-    env_cfg.scene.num_envs = args["num_envs"]
+    num_envs = args["num_envs"] if args["num_envs"] is not None else getattr(env_cfg.scene, "num_envs", 1) or 1
+    env_cfg.scene.num_envs = num_envs
     env_args["task"] = args["task"]
     env_args["config"] = env_cfg
     env_args["video_settings"] = {}

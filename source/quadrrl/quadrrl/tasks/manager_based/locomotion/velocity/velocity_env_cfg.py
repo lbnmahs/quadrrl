@@ -233,24 +233,49 @@ class RewardsCfg:
 
     # -- task
     track_lin_vel_xy_exp = RewTerm(
-        func=mdp.track_lin_vel_xy_exp, weight=1.0, params={"command_name": "base_velocity", "std": math.sqrt(0.25)}
+        # Stronger positive shaping for good forward velocity tracking
+        func=mdp.track_lin_vel_xy_exp, weight=2.0, params={"command_name": "base_velocity", "std": math.sqrt(0.25)}
     )
     track_ang_vel_z_exp = RewTerm(
         func=mdp.track_ang_vel_z_exp, weight=0.5, params={"command_name": "base_velocity", "std": math.sqrt(0.25)}
     )
     # -- penalties
-    lin_vel_z_l2 = RewTerm(func=mdp.lin_vel_z_l2, weight=-2.0)
-    ang_vel_xy_l2 = RewTerm(func=mdp.ang_vel_xy_l2, weight=-0.05)
-    dof_torques_l2 = RewTerm(func=mdp.joint_torques_l2, weight=-1.0e-5)
-    dof_acc_l2 = RewTerm(func=mdp.joint_acc_l2, weight=-2.5e-7)
-    action_rate_l2 = RewTerm(func=mdp.action_rate_l2, weight=-0.01)
+    # Slightly soften penalties so they don't completely dominate reward
+    lin_vel_z_l2 = RewTerm(func=mdp.lin_vel_z_l2, weight=-1.5)
+    ang_vel_xy_l2 = RewTerm(func=mdp.ang_vel_xy_l2, weight=-0.04)
+    dof_torques_l2 = RewTerm(func=mdp.joint_torques_l2, weight=-5.0e-6)
+    dof_acc_l2 = RewTerm(func=mdp.joint_acc_l2, weight=-1.0e-7)
+    action_rate_l2 = RewTerm(func=mdp.action_rate_l2, weight=-0.005)
     feet_air_time = RewTerm(
+        # Encourage more active, confident gait on both flat and rough terrain
         func=mdp.feet_air_time,
-        weight=0.125,
+        weight=0.3,
         params={
-            "sensor_cfg": SceneEntityCfg("contact_forces", body_names=".*FOOT"),
+            # Match feet on both lower-case (e.g. FL_foot) and upper-case (e.g. LF_FOOT)
+            # using a single case-insensitive-style regex.
+            "sensor_cfg": SceneEntityCfg(
+                "contact_forces",
+                body_names=".*[Ff][Oo][Oo][Tt]",
+            ),
             "command_name": "base_velocity",
             "threshold": 0.5,
+        },
+    )
+    feet_slide = RewTerm(
+        # Generic foot slip penalty similar in spirit to Spot's foot_slip term
+        func=mdp.feet_slide,
+        weight=-0.3,
+        params={
+            # Match the same set of feet as used in feet_air_time
+            "sensor_cfg": SceneEntityCfg(
+                "contact_forces",
+                body_names=".*[Ff][Oo][Oo][Tt]",
+            ),
+            # Ensure we query velocities for the same set of bodies as the contact sensor
+            "asset_cfg": SceneEntityCfg(
+                "robot",
+                body_names=".*[Ff][Oo][Oo][Tt]",
+            ),
         },
     )
     undesired_contacts = RewTerm(
