@@ -37,17 +37,21 @@ COMPARISONS = {
     'flat_vs_rough': [
         ('anymal_c_flat', 'LATEST', 'Anymal-C Flat', 'flat'),
         ('anymal_c_rough', 'LATEST', 'Anymal-C Rough', 'rough'),
-        ('spot_rsl', 'LATEST', 'Spot', 'flat'),
+        # ('spot_rsl', 'LATEST', 'Spot', 'flat'),
         ('unitree_go2_flat', 'LATEST', 'Unitree Go2 Flat', 'flat'),
         ('unitree_go2_rough', 'LATEST', 'Unitree Go2 Rough', 'rough'),
+        ('anymal_d_flat', 'LATEST', 'Anymal-D Flat', 'flat'),
+        ('anymal_d_rough', 'LATEST', 'Anymal-D Rough', 'rough'),
     ],
     'robot_comparison_flat': [
         ('anymal_c_flat', 'LATEST', 'Anymal-C', 'anymal_c'),
+        ('anymal_d_flat', 'LATEST', 'Anymal-D', 'anymal_d'),
         ('unitree_go2_flat', 'LATEST', 'Unitree Go2', 'go2'),
-        ('spot_rsl', 'LATEST', 'Spot', 'spot'),
+        # ('spot_rsl', 'LATEST', 'Spot', 'spot'),
     ],
     'robot_comparison_rough': [
         ('anymal_c_rough', 'LATEST', 'Anymal-C', 'anymal_c'),
+        ('anymal_d_rough', 'LATEST', 'Anymal-D', 'anymal_d'),
         ('unitree_go2_rough', 'LATEST', 'Unitree Go2', 'go2'),
     ],
 }
