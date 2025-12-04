@@ -47,7 +47,6 @@ class AnymalCFlatPPORunnerCfg(AnymalCRoughPPORunnerCfg):
 
         # Give the flat task more training iterations to better exploit the
         # richer reward shaping and reach higher performance.
-        self.max_iterations = 1000
         self.experiment_name = "anymal_c_flat"
         self.policy.actor_hidden_dims = [128, 128, 128]
         self.policy.critic_hidden_dims = [128, 128, 128]
