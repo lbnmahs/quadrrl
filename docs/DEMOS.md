@@ -25,8 +25,6 @@ ANYmal-C demonstrates robust locomotion capabilities across both flat and rough 
 - **Rough Terrain**: Shows robust locomotion on challenging terrain
   - [View Video](../assets/anymal_c_rough.mp4)
 
-
-
 ### ANYmal-D Robot
 
 ANYmal-D showcases improved robustness and performance compared to ANYmal-C, particularly on rough terrain.
@@ -59,4 +57,3 @@ Unitree Go2 demonstrates locomotion with a different robot morphology and actuat
 - [Training Guide](TRAINING.md) - Learn how to train your own policies
 - [Getting Started](GETTING_STARTED.md) - Quick start guide
 - [Project Structure](STRUCTURE.md) - Understanding the codebase
-
