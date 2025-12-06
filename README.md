@@ -19,6 +19,7 @@ goal-directed navigation, and multi-agent coordination.
 
 - **[Installation Guide](docs/INSTALLATION.md)** - Setup instructions for Linux and Windows
 - **[Getting Started](docs/GETTING_STARTED.md)** - Quick start guide and running scripts
+- **[Demo Videos](docs/DEMOS.md)** - Video demonstrations of trained policies
 - **[Project Structure](docs/STRUCTURE.md)** - Code organization and directory layout
 - **[Training Guide](docs/TRAINING.md)** - Single-agent and multi-agent RL training
 - **[Scripts Documentation](scripts/README.md)** - Available scripts and utilities
