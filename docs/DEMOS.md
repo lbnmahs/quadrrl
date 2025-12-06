@@ -6,12 +6,21 @@ This page showcases trained policies evaluated across different robots and terra
 
 The videos below demonstrate the performance of policies trained using Quadrrl's benchmark suite. Each video shows a trained policy executing velocity tracking tasks in simulation. All videos show policies evaluated at the latest training checkpoint.
 
+> **Note**: Videos are embedded for local viewing. On GitHub, click the "View on GitHub" links below each video to watch them.
+
 ## Video Gallery
 
 ### ANYmal-C Robot
 
 ANYmal-C demonstrates robust locomotion capabilities across both flat and rough terrains using both manager-based and direct control approaches.
 
+#### Direct Control
+
+**Flat Terrain**: Direct joint control on flat terrain
+
+<video src="../assets/anymal_c_flat_direct.mp4" controls width="100%"></video>
+
+[View on GitHub](https://raw.githubusercontent.com/lbnmahs/quadrrl/devel/assets/anymal_c_flat_direct.mp4)
 
 #### Manager-Based Control
 
@@ -19,9 +28,13 @@ ANYmal-C demonstrates robust locomotion capabilities across both flat and rough 
 
 <video src="../assets/anymal_c_flat.mp4" controls width="100%"></video>
 
+[View on GitHub](https://raw.githubusercontent.com/lbnmahs/quadrrl/devel/assets/anymal_c_flat.mp4)
+
 **Rough Terrain**: Shows robust locomotion on challenging terrain
 
 <video src="../assets/anymal_c_rough.mp4" controls width="100%"></video>
+
+[View on GitHub](https://raw.githubusercontent.com/lbnmahs/quadrrl/devel/assets/anymal_c_rough.mp4)
 
 ### ANYmal-D Robot
 
@@ -31,9 +44,13 @@ ANYmal-D showcases improved robustness and performance compared to ANYmal-C, par
 
 <video src="../assets/anymal_d_flat.mp4" controls width="100%"></video>
 
+[View on GitHub](https://raw.githubusercontent.com/lbnmahs/quadrrl/devel/assets/anymal_d_flat.mp4)
+
 **Rough Terrain**: Enhanced terrain adaptation capabilities
 
 <video src="../assets/anymal_d_rough.mp4" controls width="100%"></video>
+
+[View on GitHub](https://raw.githubusercontent.com/lbnmahs/quadrrl/devel/assets/anymal_d_rough.mp4)
 
 ### Unitree Go2 Robot
 
@@ -43,9 +60,13 @@ Unitree Go2 demonstrates locomotion with a different robot morphology and actuat
 
 <video src="../assets/go2_flat.mp4" controls width="100%"></video>
 
+[View on GitHub](https://raw.githubusercontent.com/lbnmahs/quadrrl/devel/assets/go2_flat.mp4)
+
 **Rough Terrain**: Locomotion performance on rough terrain
 
 <video src="../assets/go2_rough.mp4" controls width="100%"></video>
+
+[View on GitHub](https://raw.githubusercontent.com/lbnmahs/quadrrl/devel/assets/go2_rough.mp4)
 
 ## Performance Notes
 
