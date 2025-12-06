@@ -28,6 +28,11 @@ from .flat_env_cfg import (
     SpotTerminationsCfg,
 )
 
+##
+# Pre-defined configs
+##
+from quadrrl.robots.spot import SPOT_CFG  # isort: skip
+
 
 SPOT_ROUGH_TERRAIN_CFG = terrain_gen.TerrainGeneratorCfg(
     size=(10.0, 10.0),
@@ -72,6 +77,9 @@ class SpotRoughEnvCfg(LocomotionVelocityRoughEnvCfg):
         # Post init of parent (sets base scene / curriculum behaviour)
         super().__post_init__()
 
+        # Switch robot to Spot
+        self.scene.robot = SPOT_CFG.replace(prim_path="{ENV_REGEX_NS}/Robot")
+
         # Increase episode length slightly to allow traversing larger terrains
         self.episode_length_s = 25.0
 
@@ -100,8 +108,8 @@ class SpotRoughEnvCfg(LocomotionVelocityRoughEnvCfg):
         if self.scene.contact_forces is not None:
             self.scene.contact_forces.update_period = self.sim.dt
 
-        # Keep height scanner disabled (as in flat env) for simplicity
-        self.scene.height_scanner = None
+        # Height scanner
+        self.scene.height_scanner.prim_path = "{ENV_REGEX_NS}/Robot/body"
 
 
 @configclass
