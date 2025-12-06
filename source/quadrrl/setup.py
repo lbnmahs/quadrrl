@@ -1,4 +1,5 @@
 # Copyright (c) 2022-2025, The Isaac Lab Project Developers (https://github.com/isaac-sim/IsaacLab/blob/main/CONTRIBUTORS.md).
+# Copyright (c) 2024-2025, Laban Njoroge Mahihu (modifications)
 # All rights reserved.
 #
 # SPDX-License-Identifier: BSD-3-Clause
@@ -32,7 +33,7 @@ setup(
     description=EXTENSION_TOML_DATA["package"]["description"],
     keywords=EXTENSION_TOML_DATA["package"]["keywords"],
     install_requires=INSTALL_REQUIRES,
-    license="Apache-2.0",
+    license="BSD-3-Clause",
     include_package_data=True,
     python_requires=">=3.10",
     classifiers=[

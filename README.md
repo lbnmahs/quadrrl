@@ -19,6 +19,7 @@ goal-directed navigation, and multi-agent coordination.
 
 - **[Installation Guide](docs/INSTALLATION.md)** - Setup instructions for Linux and Windows
 - **[Getting Started](docs/GETTING_STARTED.md)** - Quick start guide and running scripts
+- **[Demo Videos](docs/DEMOS.md)** - Video demonstrations of trained policies
 - **[Project Structure](docs/STRUCTURE.md)** - Code organization and directory layout
 - **[Training Guide](docs/TRAINING.md)** - Single-agent and multi-agent RL training
 - **[Scripts Documentation](scripts/README.md)** - Available scripts and utilities
@@ -90,10 +91,33 @@ See [Installation Guide](docs/INSTALLATION.md) for detailed requirements.
 
 ## 🤝 Contributing
 
+We welcome contributions! Please see [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines on how to contribute to Quadrrl.
+
 - Fork the repository, create feature branches, and open pull requests with clear descriptions.
 - Run `pre-commit run --all-files` before submitting changes.
 - Add tests or evaluation scripts when introducing new environments or reward structures.
 - Update documentation when you add new tasks or major capabilities.
+
+## 📖 Citation
+
+If you use Quadrrl in your research, please cite:
+
+```bibtex
+@software{quadrrl2024,
+  title={Quadrrl: A Benchmark Suite for Quadruped Robot Reinforcement Learning},
+  author={Mahihu, Laban Njoroge and Contributors},
+  year={2024},
+  url={https://github.com/lbnmahs/quadrrl}
+}
+```
+
+## 📄 License
+
+This project is licensed under the BSD-3-Clause License - see the [LICENSE](LICENSE) file for details.
+
+## 🙏 Acknowledgments
+
+Special thanks to Dr. Manal Helal for her guidance and advice. See [ACKNOWLEDGMENTS.md](ACKNOWLEDGMENTS.md) for a complete list of acknowledgments.
 
 ## 📚 Resources & Inspiration
 
