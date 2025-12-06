@@ -7,12 +7,12 @@ version = "0.1.0"
 category = "isaaclab"
 readme  = "README.md"
 
-title = "Extension Template"
-author = "Isaac Lab Project Developers"
-maintainer = "Isaac Lab Project Developers"
-description="Extension Template for Isaac Lab"
-repository = "https://github.com/isaac-sim/IsaacLab.git"
-keywords = ["extension", "template", "isaaclab"]
+title = "Quadrrl"
+author = "Laban Njoroge Mahihu"
+maintainer = "Laban Njoroge Mahihu"
+description = "A benchmark suite for quadruped robot reinforcement learning built on NVIDIA Isaac Lab"
+repository = "https://github.com/lbnmahs/quadrrl.git"
+keywords = ["reinforcement-learning", "quadruped-robots", "isaac-lab", "robotics", "benchmark", "locomotion", "navigation", "marl"]
 
 [dependencies]
 "isaaclab" = {}

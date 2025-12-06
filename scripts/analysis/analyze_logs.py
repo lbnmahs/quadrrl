@@ -1,4 +1,9 @@
 #!/usr/bin/env python3
+# Copyright (c) 2024-2025, Laban Njoroge Mahihu
+# All rights reserved.
+#
+# SPDX-License-Identifier: BSD-3-Clause
+
 """
 Script to analyze training logs and extract key metrics.
 This script scans the logs directory and provides insights into:

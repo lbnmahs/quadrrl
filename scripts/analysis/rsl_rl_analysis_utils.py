@@ -1,3 +1,8 @@
+# Copyright (c) 2024-2025, Laban Njoroge Mahihu
+# All rights reserved.
+#
+# SPDX-License-Identifier: BSD-3-Clause
+
 """
 RSL-RL Analysis Utilities
 
@@ -38,6 +43,8 @@ COMPARISONS = {
         ('anymal_c_flat', 'LATEST', 'Anymal-C Flat', 'flat'),
         ('anymal_c_rough', 'LATEST', 'Anymal-C Rough', 'rough'),
         # ('spot_rsl', 'LATEST', 'Spot', 'flat'),
+        ('anymal_c_flat_direct', 'LATEST', 'Anymal-C Flat Direct', 'flat_direct'),
+        ('anymal_c_rough_direct', 'LATEST', 'Anymal-C Rough Direct', 'rough_direct'),
         ('unitree_go2_flat', 'LATEST', 'Unitree Go2 Flat', 'flat'),
         ('unitree_go2_rough', 'LATEST', 'Unitree Go2 Rough', 'rough'),
         ('anymal_d_flat', 'LATEST', 'Anymal-D Flat', 'flat'),
@@ -45,12 +52,14 @@ COMPARISONS = {
     ],
     'robot_comparison_flat': [
         ('anymal_c_flat', 'LATEST', 'Anymal-C', 'anymal_c'),
+        ('anymal_c_flat_direct', 'LATEST', 'Anymal-C Flat Direct', 'flat_direct'),
         ('anymal_d_flat', 'LATEST', 'Anymal-D', 'anymal_d'),
         ('unitree_go2_flat', 'LATEST', 'Unitree Go2', 'go2'),
         # ('spot_rsl', 'LATEST', 'Spot', 'spot'),
     ],
     'robot_comparison_rough': [
         ('anymal_c_rough', 'LATEST', 'Anymal-C', 'anymal_c'),
+        ('anymal_c_rough_direct', 'LATEST', 'Anymal-C Rough Direct', 'rough_direct'),
         ('anymal_d_rough', 'LATEST', 'Anymal-D', 'anymal_d'),
         ('unitree_go2_rough', 'LATEST', 'Unitree Go2', 'go2'),
     ],
