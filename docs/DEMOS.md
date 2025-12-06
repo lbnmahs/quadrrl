@@ -12,6 +12,11 @@ The videos below demonstrate the performance of policies trained using Quadrrl's
 
 ANYmal-C demonstrates robust locomotion capabilities across both flat and rough terrains using both manager-based and direct control approaches.
 
+#### Direct Control
+
+- **Flat Terrain**: Direct joint control on flat terrain
+  - [View Video](../assets/anymal_c_flat_direct.mp4)
+  
 #### Manager-Based Control
 
 - **Flat Terrain**: Demonstrates smooth velocity tracking on flat ground
@@ -19,14 +24,6 @@ ANYmal-C demonstrates robust locomotion capabilities across both flat and rough 
   
 - **Rough Terrain**: Shows robust locomotion on challenging terrain
   - [View Video](../assets/anymal_c_rough.mp4)
-
-#### Direct Control
-
-- **Flat Terrain**: Direct joint control on flat terrain
-  - [View Video](../assets/anymal_c_flat_direct.mp4)
-  
-- **Rough Terrain**: Direct control handling rough terrain
-  - [View Video](../assets/anymal_c_rough_direct.mp4)
 
 ### ANYmal-D Robot
 
@@ -60,4 +57,3 @@ Unitree Go2 demonstrates locomotion with a different robot morphology and actuat
 - [Training Guide](TRAINING.md) - Learn how to train your own policies
 - [Getting Started](GETTING_STARTED.md) - Quick start guide
 - [Project Structure](STRUCTURE.md) - Understanding the codebase
-
