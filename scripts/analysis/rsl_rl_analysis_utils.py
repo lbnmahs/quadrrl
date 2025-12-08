@@ -16,6 +16,7 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 from typing import Dict, List, Optional
 import warnings
+from scipy import stats
 
 warnings.filterwarnings('ignore')
 
@@ -42,7 +43,8 @@ COMPARISONS = {
     'flat_vs_rough': [
         ('anymal_c_flat', 'LATEST', 'Anymal-C Flat', 'flat'),
         ('anymal_c_rough', 'LATEST', 'Anymal-C Rough', 'rough'),
-        # ('spot_rsl', 'LATEST', 'Spot', 'flat'),
+        # ('spot_flat', 'LATEST', 'Spot Flat', 'flat'),
+        # ('spot_rough', 'LATEST', 'Spot Rough', 'rough'),
         ('anymal_c_flat_direct', 'LATEST', 'Anymal-C Flat Direct', 'flat_direct'),
         ('anymal_c_rough_direct', 'LATEST', 'Anymal-C Rough Direct', 'rough_direct'),
         ('unitree_go2_flat', 'LATEST', 'Unitree Go2 Flat', 'flat'),
@@ -53,13 +55,14 @@ COMPARISONS = {
     'robot_comparison_flat': [
         ('anymal_c_flat', 'LATEST', 'Anymal-C', 'anymal_c'),
         ('anymal_c_flat_direct', 'LATEST', 'Anymal-C Flat Direct', 'flat_direct'),
+        # ('spot_flat', 'LATEST', 'Spot Flat', 'flat'),
         ('anymal_d_flat', 'LATEST', 'Anymal-D', 'anymal_d'),
         ('unitree_go2_flat', 'LATEST', 'Unitree Go2', 'go2'),
-        # ('spot_rsl', 'LATEST', 'Spot', 'spot'),
     ],
     'robot_comparison_rough': [
         ('anymal_c_rough', 'LATEST', 'Anymal-C', 'anymal_c'),
         ('anymal_c_rough_direct', 'LATEST', 'Anymal-C Rough Direct', 'rough_direct'),
+        # ('spot_rough', 'LATEST', 'Spot Rough', 'rough'),
         ('anymal_d_rough', 'LATEST', 'Anymal-D', 'anymal_d'),
         ('unitree_go2_rough', 'LATEST', 'Unitree Go2', 'go2'),
     ],
@@ -508,3 +511,174 @@ def plot_multi_metric_bars(
 
     plt.tight_layout()
     plt.show()
+
+
+def compute_confidence_intervals(
+    all_metrics: Dict,
+    metric_name: str = 'mean_reward',
+    window_size: int = 100
+) -> pd.DataFrame:
+    """Compute confidence intervals from the last N steps of training.
+    
+    Args:
+        all_metrics: Dictionary of all loaded metrics
+        metric_name: Name of the metric to compute CIs for
+        window_size: Number of last steps to use for CI computation
+        
+    Returns:
+        DataFrame with confidence interval data for each run
+    """
+    ci_data = []
+    
+    for run_key, run_data in all_metrics.items():
+        metrics = run_data['metrics']
+        metric_tag = find_metric_name(metrics, METRIC_PATTERNS.get(metric_name, [metric_name]))
+        
+        if metric_tag is None or metric_tag not in metrics:
+            continue
+            
+        df = metrics[metric_tag].copy()
+        if df.empty:
+            continue
+            
+        # Get last window_size steps
+        df = df.sort_values('step')
+        last_window = df.tail(window_size)
+        
+        if len(last_window) > 0:
+            mean_val = last_window['value'].mean()
+            std_val = last_window['value'].std()
+            n = len(last_window)
+            # 95% confidence interval
+            ci_95 = stats.t.interval(0.95, n - 1, loc=mean_val, scale=stats.sem(last_window['value']))
+            
+            ci_data.append({
+                'run_key': run_key,
+                'display_name': run_data['display_name'],
+                'mean': mean_val,
+                'std': std_val,
+                'ci_lower': ci_95[0],
+                'ci_upper': ci_95[1],
+                'n_samples': n
+            })
+    
+    return pd.DataFrame(ci_data)
+
+
+def get_trajectory_data(
+    all_metrics: Dict,
+    run_key: str,
+    metric_name: str = 'mean_reward',
+    window_size: int = 100
+) -> Optional[np.ndarray]:
+    """Get trajectory data for statistical testing.
+    
+    Args:
+        all_metrics: Dictionary of all loaded metrics
+        run_key: Key identifying the run
+        metric_name: Name of the metric to extract
+        window_size: Number of last steps to return
+        
+    Returns:
+        Array of metric values from the last window_size steps, or None if not available
+    """
+    run_data = all_metrics.get(run_key)
+    if run_data is None:
+        return None
+    
+    metrics = run_data['metrics']
+    metric_tag = find_metric_name(metrics, METRIC_PATTERNS.get(metric_name, [metric_name]))
+    
+    if metric_tag is None or metric_tag not in metrics:
+        return None
+    
+    df = metrics[metric_tag].copy()
+    if df.empty:
+        return None
+    
+    df = df.sort_values('step')
+    return df.tail(window_size)['value'].values
+
+
+def compute_convergence_metrics(
+    all_metrics: Dict,
+    metric_name: str = 'mean_reward'
+) -> pd.DataFrame:
+    """Compute convergence rate metrics for each run.
+    
+    Args:
+        all_metrics: Dictionary of all loaded metrics
+        metric_name: Name of the metric to analyze
+        
+    Returns:
+        DataFrame with convergence metrics for each run
+    """
+    convergence_data = []
+    
+    for run_key, run_data in all_metrics.items():
+        metrics = run_data['metrics']
+        metric_tag = find_metric_name(metrics, METRIC_PATTERNS.get(metric_name, [metric_name]))
+        
+        if metric_tag is None or metric_tag not in metrics:
+            continue
+        
+        df = metrics[metric_tag].copy()
+        if df.empty or len(df) < 10:
+            continue
+        
+        df = df.sort_values('step')
+        
+        # Split into early, middle, late phases
+        n = len(df)
+        early = df.iloc[:n // 3]
+        middle = df.iloc[n // 3:2 * n // 3]
+        late = df.iloc[2 * n // 3:]
+        
+        # Compute slopes (rate of improvement) using linear regression
+        def compute_slope(phase_df):
+            if len(phase_df) < 2:
+                return 0.0
+            x = phase_df['step'].values
+            y = phase_df['value'].values
+            slope, intercept, r_value, p_value, std_err = stats.linregress(x, y)
+            return slope
+        
+        early_slope = compute_slope(early)
+        middle_slope = compute_slope(middle)
+        late_slope = compute_slope(late)
+        
+        # Overall convergence rate
+        overall_slope = compute_slope(df)
+        
+        # Steps to reach 50%, 75%, 90% of final performance
+        final_value = df['value'].iloc[-1]
+        initial_value = df['value'].iloc[0]
+        if final_value > initial_value:
+            target_50 = initial_value + 0.5 * (final_value - initial_value)
+            target_75 = initial_value + 0.75 * (final_value - initial_value)
+            target_90 = initial_value + 0.9 * (final_value - initial_value)
+            
+            steps_50 = df[df['value'] >= target_50]['step'].iloc[0] if len(df[df['value'] >= target_50]) > 0 else np.nan
+            steps_75 = df[df['value'] >= target_75]['step'].iloc[0] if len(df[df['value'] >= target_75]) > 0 else np.nan
+            steps_90 = df[df['value'] >= target_90]['step'].iloc[0] if len(df[df['value'] >= target_90]) > 0 else np.nan
+        else:
+            steps_50 = steps_75 = steps_90 = np.nan
+        
+        convergence_data.append({
+            'run_key': run_key,
+            'display_name': run_data['display_name'],
+            'experiment': run_data['experiment'],
+            'category': run_data['category'],
+            'early_slope': early_slope,
+            'middle_slope': middle_slope,
+            'late_slope': late_slope,
+            'overall_slope': overall_slope,
+            'steps_to_50pct': steps_50,
+            'steps_to_75pct': steps_75,
+            'steps_to_90pct': steps_90,
+            'final_value': final_value,
+            'initial_value': initial_value,
+            'total_improvement': final_value - initial_value
+        })
+    
+    return pd.DataFrame(convergence_data)

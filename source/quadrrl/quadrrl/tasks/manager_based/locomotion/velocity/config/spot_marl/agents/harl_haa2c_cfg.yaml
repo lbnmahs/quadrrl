@@ -17,7 +17,7 @@ train:
   # number of total steps
   num_env_steps: 1000000
   # number of steps per environment per training data collection
-  episode_length: 8
+  episode_length: 200
   # logging interval
   log_interval: 5
   # evaluation interval
@@ -45,7 +45,7 @@ render:
 model:
   # network parameters
   # hidden sizes for mlp module in the network
-  hidden_sizes: [256, 128, 64]
+  hidden_sizes: [512, 256, 128]
   hidden_sizes_critic: [512, 256, 128]
   # activation function, choose from sigmoid, tanh, relu, leaky_relu, selu
   activation_func: relu

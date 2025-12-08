@@ -13,7 +13,7 @@ class SpotFlatPPORunnerCfg(RslRlOnPolicyRunnerCfg):
     num_steps_per_env = 24
     max_iterations = 20000
     save_interval = 50
-    experiment_name = "spot_rsl"
+    experiment_name = "spot_flat"
     empirical_normalization = False
     store_code_state = False
     policy = RslRlPpoActorCriticCfg(
@@ -36,3 +36,11 @@ class SpotFlatPPORunnerCfg(RslRlOnPolicyRunnerCfg):
         desired_kl=0.01,
         max_grad_norm=1.0,
     )
+
+
+@configclass
+class SpotRoughPPORunnerCfg(SpotFlatPPORunnerCfg):
+    def __post_init__(self):
+        super().__post_init__()
+
+        self.experiment_name = "spot_rough"

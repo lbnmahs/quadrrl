@@ -3,46 +3,28 @@
 #
 # SPDX-License-Identifier: BSD-3-Clause
 
-import isaaclab.sim as sim_utils
-import isaaclab.terrains as terrain_gen
-from isaaclab.envs import ViewerCfg, ManagerBasedRLEnv
+"""Base configuration for Spot MARL environments.
+
+This module contains shared configuration components (actions, observations,
+rewards, etc.) used by both flat and rough terrain Spot MARL environments.
+Each leg of the Spot robot is controlled by a separate agent, enabling
+coordinated locomotion through multi-agent reinforcement learning.
+"""
+
 from isaaclab.managers import EventTermCfg as EventTerm
 from isaaclab.managers import ObservationGroupCfg as ObsGroup
 from isaaclab.managers import ObservationTermCfg as ObsTerm
 from isaaclab.managers import RewardTermCfg, SceneEntityCfg
 from isaaclab.managers import TerminationTermCfg as DoneTerm
-from isaaclab.terrains import TerrainImporterCfg
 from isaaclab.utils import configclass
-from isaaclab.utils.assets import ISAACLAB_NUCLEUS_DIR
 from isaaclab.utils.noise import AdditiveUniformNoiseCfg as Unoise
 
 import quadrrl.tasks.manager_based.locomotion.velocity.config.spot.mdp as spot_mdp
 import quadrrl.tasks.manager_based.locomotion.velocity.mdp as mdp
-from quadrrl.tasks.manager_based.locomotion.velocity.velocity_env_cfg import LocomotionVelocityRoughEnvCfg
 
 ##
 # Pre-defined configs
 ##
-from quadrrl.robots.spot import SPOT_CFG  # isort: skip
-
-
-COBBLESTONE_ROAD_CFG = terrain_gen.TerrainGeneratorCfg(
-    size=(8.0, 8.0),
-    border_width=20.0,
-    num_rows=9,
-    num_cols=21,
-    horizontal_scale=0.1,
-    vertical_scale=0.005,
-    slope_threshold=0.75,
-    difficulty_range=(0.0, 1.0),
-    use_cache=False,
-    sub_terrains={
-        "flat": terrain_gen.MeshPlaneTerrainCfg(proportion=0.2),
-        "random_rough": terrain_gen.HfRandomUniformTerrainCfg(
-            proportion=0.2, noise_range=(0.02, 0.05), noise_step=0.02, border_width=0.25
-        ),
-    },
-)
 
 
 @configclass
@@ -448,104 +430,3 @@ class SpotTerminationsCfg:
         params={"asset_cfg": SceneEntityCfg("robot"), "distance_buffer": 3.0},
         time_out=True,
     )
-
-
-@configclass
-class SpotMarlEnvCfg(LocomotionVelocityRoughEnvCfg):
-
-    # Basic settings'
-    class_type = ManagerBasedRLEnv
-    observations: SpotObservationsCfg = SpotObservationsCfg()
-    actions: SpotActionsCfg = SpotActionsCfg()
-    commands: SpotCommandsCfg = SpotCommandsCfg()
-
-    # MDP setting
-    rewards: SpotRewardsCfg = SpotRewardsCfg()
-    terminations: SpotTerminationsCfg = SpotTerminationsCfg()
-    events: SpotEventCfg = SpotEventCfg()
-
-    # Viewer
-    viewer = ViewerCfg(eye=(10.5, 10.5, 0.3), origin_type="world", env_index=0, asset_name="robot")
-
-    agents = ["agentFR", "agentFL", "agentHR", "agentHL"]
-    possible_agents = ["agentFR", "agentFL", "agentHR", "agentHL"]
-    num_actions = None
-    num_observations = None
-    num_states = None
-    action_noise_model = None
-    observation_noise_model = None
-    action_space = 3
-    action_spaces = {agent: 3 for agent in agents}
-    observation_space = 39
-    observation_spaces = {agent: 39 for agent in agents}
-    state_space = 0
-    state_spaces = {agent: 0 for agent in agents}
-
-    def __post_init__(self):
-        # post init of parent
-        super().__post_init__()
-
-        # general settings
-        self.decimation = 10  # 50 Hz
-        self.episode_length_s = 20.0
-        # simulation settings
-        self.sim.dt = 0.002  # 500 Hz
-        self.sim.render_interval = self.decimation
-        self.sim.disable_contact_processing = True
-        self.sim.physics_material.static_friction = 1.0
-        self.sim.physics_material.dynamic_friction = 1.0
-        self.sim.physics_material.friction_combine_mode = "multiply"
-        self.sim.physics_material.restitution_combine_mode = "multiply"
-        # update sensor update periods
-        # we tick all the sensors based on the smallest update period (physics update period)
-        self.scene.contact_forces.update_period = self.sim.dt
-
-        # switch robot to Spot-d
-        self.scene.robot = SPOT_CFG.replace(prim_path="{ENV_REGEX_NS}/Robot")
-
-        # terrain
-        self.scene.terrain = TerrainImporterCfg(
-            prim_path="/World/ground",
-            terrain_type="generator",
-            terrain_generator=COBBLESTONE_ROAD_CFG,
-            max_init_terrain_level=COBBLESTONE_ROAD_CFG.num_rows - 1,
-            collision_group=-1,
-            physics_material=sim_utils.RigidBodyMaterialCfg(
-                friction_combine_mode="multiply",
-                restitution_combine_mode="multiply",
-                static_friction=1.0,
-                dynamic_friction=1.0,
-            ),
-            visual_material=sim_utils.MdlFileCfg(
-                mdl_path=f"{ISAACLAB_NUCLEUS_DIR}/Materials/TilesMarbleSpiderWhiteBrickBondHoned/TilesMarbleSpiderWhiteBrickBondHoned.mdl",
-                project_uvw=True,
-                texture_scale=(0.25, 0.25),
-            ),
-            debug_vis=True,
-        )
-
-        # no height scan
-        self.scene.height_scanner = None
-
-
-class SpotMarlEnvCfg_PLAY(SpotMarlEnvCfg):
-    def __post_init__(self) -> None:
-        super().__post_init__()
-
-        # make a smaller scene for play
-        self.scene.num_envs = 50
-        self.scene.env_spacing = 2.5
-        # spawn the robot randomly in the grid (instead of their terrain levels)
-        self.scene.terrain.max_init_terrain_level = None
-
-        # reduce the number of terrains to save memory
-        if self.scene.terrain.terrain_generator is not None:
-            self.scene.terrain.terrain_generator.num_rows = 5
-            self.scene.terrain.terrain_generator.num_cols = 5
-            self.scene.terrain.terrain_generator.curriculum = False
-
-        # disable observation corruption for play
-        self.observations.agentFL.enable_corruption = False
-        self.observations.agentFR.enable_corruption = False
-        self.observations.agentHR.enable_corruption = False
-        self.observations.agentHL.enable_corruption = False
