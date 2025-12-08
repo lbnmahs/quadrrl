@@ -6,16 +6,11 @@
 
 """Rough-terrain locomotion configuration for Spot.
 
-This builds on the flat Spot configuration but increases terrain difficulty
-to provide more challenging locomotion tasks (higher roughness, larger
-height variations and full curriculum over terrain levels).
+This builds on the flat Spot configuration and uses the standard rough terrain
+configuration for consistent training and demoing across all robots.
 """
 
-import isaaclab.sim as sim_utils
-import isaaclab.terrains as terrain_gen
-from isaaclab.terrains import TerrainImporterCfg
 from isaaclab.utils import configclass
-from isaaclab.utils.assets import ISAACLAB_NUCLEUS_DIR
 
 from quadrrl.tasks.manager_based.locomotion.velocity.velocity_env_cfg import LocomotionVelocityRoughEnvCfg
 
@@ -32,33 +27,6 @@ from .flat_env_cfg import (
 # Pre-defined configs
 ##
 from quadrrl.robots.spot import SPOT_CFG  # isort: skip
-
-
-SPOT_ROUGH_TERRAIN_CFG = terrain_gen.TerrainGeneratorCfg(
-    size=(10.0, 10.0),
-    border_width=20.0,
-    num_rows=11,
-    num_cols=25,
-    horizontal_scale=0.1,
-    # Higher amplitude heightfield for rougher terrain
-    vertical_scale=0.015,
-    slope_threshold=0.85,
-    # Start slightly above perfectly flat, extend to significantly rough
-    difficulty_range=(0.2, 1.8),
-    use_cache=False,
-    sub_terrains={
-        # Keep a small proportion of flat patches for recovery / curriculum
-        "flat": terrain_gen.MeshPlaneTerrainCfg(proportion=0.1),
-        # Mild roughness
-        "random_rough_low": terrain_gen.HfRandomUniformTerrainCfg(
-            proportion=0.3, noise_range=(0.03, 0.07), noise_step=0.02, border_width=0.25
-        ),
-        # Stronger roughness
-        "random_rough_high": terrain_gen.HfRandomUniformTerrainCfg(
-            proportion=0.6, noise_range=(0.06, 0.12), noise_step=0.02, border_width=0.25
-        ),
-    },
-)
 
 
 @configclass
@@ -80,30 +48,6 @@ class SpotRoughEnvCfg(LocomotionVelocityRoughEnvCfg):
         # Switch robot to Spot
         self.scene.robot = SPOT_CFG.replace(prim_path="{ENV_REGEX_NS}/Robot")
 
-        # Increase episode length slightly to allow traversing larger terrains
-        self.episode_length_s = 25.0
-
-        # Use a rougher terrain generator with curriculum enabled
-        self.scene.terrain = TerrainImporterCfg(
-            prim_path="/World/ground",
-            terrain_type="generator",
-            terrain_generator=SPOT_ROUGH_TERRAIN_CFG,
-            max_init_terrain_level=SPOT_ROUGH_TERRAIN_CFG.num_rows - 1,
-            collision_group=-1,
-            physics_material=sim_utils.RigidBodyMaterialCfg(
-                friction_combine_mode="multiply",
-                restitution_combine_mode="multiply",
-                static_friction=1.0,
-                dynamic_friction=1.0,
-            ),
-            visual_material=sim_utils.MdlFileCfg(
-                mdl_path=f"{ISAACLAB_NUCLEUS_DIR}/Materials/TilesMarbleSpiderWhiteBrickBondHoned/TilesMarbleSpiderWhiteBrickBondHoned.mdl",
-                project_uvw=True,
-                texture_scale=(0.25, 0.25),
-            ),
-            debug_vis=True,
-        )
-
         # Ensure contact forces sensor (used by several Spot reward terms) ticks at physics rate
         if self.scene.contact_forces is not None:
             self.scene.contact_forces.update_period = self.sim.dt
@@ -120,14 +64,18 @@ class SpotRoughEnvCfg_PLAY(SpotRoughEnvCfg):
         super().__post_init__()
 
         # Make a smaller scene for play & visualization
-        self.scene.num_envs = 64
-        self.scene.env_spacing = 3.0
-
-        # Limit maximum initial terrain level so that robots spawn across a
-        # subset of the curriculum rather than the entire difficulty range.
+        self.scene.num_envs = 50
+        self.scene.env_spacing = 2.5
+        # spawn the robot randomly in the grid (instead of their terrain levels)
+        self.scene.terrain.max_init_terrain_level = None
+        # reduce the number of terrains to save memory
         if self.scene.terrain.terrain_generator is not None:
-            self.scene.terrain.terrain_generator.num_rows = 8
-            self.scene.terrain.terrain_generator.num_cols = 8
+            self.scene.terrain.terrain_generator.num_rows = 5
+            self.scene.terrain.terrain_generator.num_cols = 5
+            self.scene.terrain.terrain_generator.curriculum = False
 
         # Disable randomization for deterministic rollouts if desired
         self.observations.policy.enable_corruption = False
+        # remove random pushing event
+        self.events.base_external_force_torque = None
+        self.events.push_robot = None

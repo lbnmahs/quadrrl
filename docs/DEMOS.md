@@ -6,7 +6,7 @@ This page showcases trained policies evaluated across different robots and terra
 
 The videos below demonstrate the performance of policies trained using Quadrrl's benchmark suite. Each video shows a trained policy executing velocity tracking tasks in simulation. All videos show policies evaluated at the latest training checkpoint.
 
-> **Note**: Videos are embedded for local viewing. On GitHub, click the "View on GitHub" links below each video to watch them.
+> **Note**: Videos are embedded for local viewing. On GitHub, click the "Video Link" links below each video to watch them.
 
 ## Video Gallery
 
