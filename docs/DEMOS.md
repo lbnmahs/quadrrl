@@ -1,4 +1,4 @@
-# Demo Videos
+# Simulation Videos
 
 This page showcases trained policies evaluated across different robots and terrains.
 
@@ -8,7 +8,7 @@ The videos below demonstrate the performance of policies trained using Quadrrl's
 
 > **Note**: Videos are embedded for local viewing. On GitHub, click the "Video Link" links below each video to watch them.
 
-## Video Gallery
+## Environment Gallery
 
 ### ANYmal-C Robot
 

@@ -13,32 +13,60 @@ from . import agents
 
 gym.register(
     id="Template-Quadrrl-Velocity-Flat-Spot-MARL-v0",
-    entry_point="isaaclab.envs:ManagerBasedMARLEnv",
+    entry_point="isaaclab.envs:ManagerBasedRLEnv",
     disable_env_checker=True,
     kwargs={
-        "env_cfg_entry_point": f"{__name__}.spot_marl_env_cfg:SpotMarlEnvCfg",
+        "env_cfg_entry_point": f"{__name__}.flat_env_cfg:SpotMarlFlatEnvCfg",
         "rsl_rl_cfg_entry_point": f"{agents.__name__}.rsl_rl_ppo_cfg:SpotMarlPPORunnerCfg",
-        "skrl_cfg_entry_point": f"{agents.__name__}:skrl_flat_ppo_cfg.yaml",
-        "skrl_ippo_cfg_entry_point": f"{agents.__name__}:skrl_ippo_cfg.yaml",
-        "skrl_mappo_cfg_entry_point": f"{agents.__name__}:skrl_mappo_cfg.yaml",
         "harl_happo_cfg_entry_point": f"{agents.__name__}:harl_happo_cfg.yaml",
         "harl_mappo_cfg_entry_point": f"{agents.__name__}:harl_mappo_cfg.yaml",
         "harl_mappo_unshare_cfg_entry_point": f"{agents.__name__}:harl_mappo_unshare_cfg.yaml",
         "harl_hatrpo_cfg_entry_point": f"{agents.__name__}:harl_hatrpo_cfg.yaml",
+        "harl_haa2c_cfg_entry_point": f"{agents.__name__}:harl_haa2c_cfg.yaml",
     },
 )
 
 gym.register(
     id="Template-Quadrrl-Velocity-Flat-Spot-MARL-Play-v0",
-    entry_point="isaaclab.envs:ManagerBasedMARLEnv",
+    entry_point="isaaclab.envs:ManagerBasedRLEnv",
     disable_env_checker=True,
     kwargs={
-        "env_cfg_entry_point": f"{__name__}.spot_marl_env_cfg:SpotMarlEnvCfg_PLAY",
+        "env_cfg_entry_point": f"{__name__}.flat_env_cfg:SpotMarlFlatEnvCfg_PLAY",
         "rsl_rl_cfg_entry_point": f"{agents.__name__}.rsl_rl_ppo_cfg:SpotMarlPPORunnerCfg",
-        "skrl_cfg_entry_point": f"{agents.__name__}:skrl_flat_ppo_cfg.yaml",
         "harl_happo_cfg_entry_point": f"{agents.__name__}:harl_happo_cfg.yaml",
         "harl_mappo_cfg_entry_point": f"{agents.__name__}:harl_mappo_cfg.yaml",
         "harl_mappo_unshare_cfg_entry_point": f"{agents.__name__}:harl_mappo_unshare_cfg.yaml",
         "harl_hatrpo_cfg_entry_point": f"{agents.__name__}:harl_hatrpo_cfg.yaml",
+        "harl_haa2c_cfg_entry_point": f"{agents.__name__}:harl_haa2c_cfg.yaml",
+    },
+)
+
+gym.register(
+    id="Template-Quadrrl-Velocity-Rough-Spot-MARL-v0",
+    entry_point="isaaclab.envs:ManagerBasedRLEnv",
+    disable_env_checker=True,
+    kwargs={
+        "env_cfg_entry_point": f"{__name__}.rough_env_cfg:SpotMarlRoughEnvCfg",
+        "rsl_rl_cfg_entry_point": f"{agents.__name__}.rsl_rl_ppo_cfg:SpotMarlPPORunnerCfg",
+        "harl_happo_cfg_entry_point": f"{agents.__name__}:harl_happo_cfg.yaml",
+        "harl_mappo_cfg_entry_point": f"{agents.__name__}:harl_mappo_cfg.yaml",
+        "harl_mappo_unshare_cfg_entry_point": f"{agents.__name__}:harl_mappo_unshare_cfg.yaml",
+        "harl_hatrpo_cfg_entry_point": f"{agents.__name__}:harl_hatrpo_cfg.yaml",
+        "harl_haa2c_cfg_entry_point": f"{agents.__name__}:harl_haa2c_cfg.yaml",
+    },
+)
+
+gym.register(
+    id="Template-Quadrrl-Velocity-Rough-Spot-MARL-Play-v0",
+    entry_point="isaaclab.envs:ManagerBasedRLEnv",
+    disable_env_checker=True,
+    kwargs={
+        "env_cfg_entry_point": f"{__name__}.rough_env_cfg:SpotMarlRoughEnvCfg_PLAY",
+        "rsl_rl_cfg_entry_point": f"{agents.__name__}.rsl_rl_ppo_cfg:SpotMarlPPORunnerCfg",
+        "harl_happo_cfg_entry_point": f"{agents.__name__}:harl_happo_cfg.yaml",
+        "harl_mappo_cfg_entry_point": f"{agents.__name__}:harl_mappo_cfg.yaml",
+        "harl_mappo_unshare_cfg_entry_point": f"{agents.__name__}:harl_mappo_unshare_cfg.yaml",
+        "harl_hatrpo_cfg_entry_point": f"{agents.__name__}:harl_hatrpo_cfg.yaml",
+        "harl_haa2c_cfg_entry_point": f"{agents.__name__}:harl_haa2c_cfg.yaml",
     },
 )
