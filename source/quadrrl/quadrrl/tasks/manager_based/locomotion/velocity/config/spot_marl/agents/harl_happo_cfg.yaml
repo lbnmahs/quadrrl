@@ -120,4 +120,4 @@ algo:
   fixed_order: False
 logger:
   # logging directory
-  log_dir: "logs/spot_marl/harl_happo"
+  log_dir: "logs/harl/spot/harl_happo"

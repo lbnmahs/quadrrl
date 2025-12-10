@@ -68,6 +68,20 @@ Unitree Go2 demonstrates locomotion with a different robot morphology and actuat
 
 [Video Link](https://raw.githubusercontent.com/lbnmahs/quadrrl/devel/assets/go2_rough.mp4)
 
+### Spot Robot
+
+Spot demonstrates velocity tracking on both flat and rough terrains using the manager-based controller.
+
+**Flat Terrain**: Smooth and accurate velocity tracking on flat ground  
+<video src="../assets/spot_flat.mp4" controls width="100%"></video>  
+[Video Link](https://raw.githubusercontent.com/lbnmahs/quadrrl/devel/assets/spot_flat.mp4)
+
+**Rough Terrain**: High-speed locomotion over diverse terrain  
+<video src="../assets/spot_rough.mp4" controls width="100%"></video>  
+[Video Link](https://raw.githubusercontent.com/lbnmahs/quadrrl/devel/assets/spot_rough.mp4)
+
+> **Reward note:** Spot uses a more gait-centric reward structure (gait phase shaping, foot clearance, air-time balance) than the generic locomotion rewards for ANYmal/Go2. This enables richer gait coordination studies and is also leveraged in the Spot MARL leg-agent setup.
+
 ## Performance Notes
 
 - All videos show policies evaluated at the latest training checkpoint

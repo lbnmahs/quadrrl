@@ -10,6 +10,7 @@ for consistent training and demoing across all robots.
 """
 
 from isaaclab.utils import configclass
+from isaaclab.terrains.config.rough import ROUGH_TERRAINS_CFG
 
 from .flat_env_cfg import SpotMarlFlatEnvCfg
 
@@ -29,6 +30,11 @@ class SpotMarlRoughEnvCfg(SpotMarlFlatEnvCfg):
 
         # Switch robot to Spot
         self.scene.robot = SPOT_CFG.replace(prim_path="{ENV_REGEX_NS}/Robot")
+
+        # Rough terrain generator
+        self.scene.terrain.terrain_type = "generator"
+        self.scene.terrain.terrain_generator = ROUGH_TERRAINS_CFG
+        self.scene.terrain.max_init_terrain_level = 5
 
         # Ensure contact forces sensor (used by several Spot reward terms) ticks at physics rate
         if self.scene.contact_forces is not None:
