@@ -15,7 +15,7 @@ train:
   # number of parallel environments for training data collection
   n_rollout_threads: 4096
   # number of total training steps
-  num_env_steps: 1000000
+  num_env_steps: 10000000
   # number of steps per environment per training data collection
   episode_length: 200
   # logging interval

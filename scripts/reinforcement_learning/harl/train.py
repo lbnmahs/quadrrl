@@ -131,9 +131,10 @@ def main(env_cfg: ManagerBasedRLEnvCfg | DirectRLEnvCfg | DirectMARLEnvCfg, agen
 
     task_slug = _resolve_harl_task_slug(args.get("task"))
     if task_slug is not None:
-        # Place HARL checkpoints and videos under <repo_root>/logs/harl/<task_slug>/<timestamp>
+        # Place HARL checkpoints and videos under <repo_root>/logs/harl/<task_slug>/<algorithm>/<timestamp>
+        # Include algorithm name in the path to separate different algorithms
         repo_root = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-        run_root = os.path.join(repo_root, "logs", "harl", task_slug, hms_time)
+        run_root = os.path.join(repo_root, "logs", "harl", task_slug, args["algorithm"], hms_time)
         os.makedirs(run_root, exist_ok=True)
         if not isinstance(algo_args.get("logger"), dict):
             algo_args["logger"] = {}
