@@ -76,6 +76,18 @@ algorithm = args_cli.algorithm.lower()
 agent_cfg_entry_point = f"harl_{algorithm}_cfg_entry_point"
 
 
+def _resolve_harl_task_slug(task_name: str | None) -> str | None:
+    """Map known HARL task ids to a log directory slug."""
+    if not task_name:
+        return None
+    lowered = task_name.lower()
+    if "spot-marl" in lowered:
+        return "spot_marl"
+    if "anymal" in lowered and "marl" in lowered:
+        return "anymal_c_marl"
+    return None
+
+
 @hydra_task_config(args_cli.task, agent_cfg_entry_point)
 def main(env_cfg: ManagerBasedRLEnvCfg | DirectRLEnvCfg | DirectMARLEnvCfg, agent_cfg: dict):
 
@@ -117,25 +129,18 @@ def main(env_cfg: ManagerBasedRLEnvCfg | DirectRLEnvCfg | DirectMARLEnvCfg, agen
         "log_dir": None,
     }
 
-    # Override logging/checkpoint directory for anymal-c-marl:
-    # <repo_root>/logs/harl/anymal-c-marl/<timestamp>
-    # For other tasks, keep the default layout under configured logger root.
-    try:
-        is_anymal_c_marl = args["task"] == "Template-Quadrrl-Direct-Anymal-C-MARL-v0"
-    except Exception:
-        is_anymal_c_marl = False
-
-    if is_anymal_c_marl:
+    task_slug = _resolve_harl_task_slug(args.get("task"))
+    if task_slug is not None:
+        # Place HARL checkpoints and videos under <repo_root>/logs/harl/<task_slug>/<algorithm>/<timestamp>
+        # Include algorithm name in the path to separate different algorithms
         repo_root = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-        run_root = os.path.join(repo_root, "logs", "harl", "anymal-c-marl", hms_time)
+        run_root = os.path.join(repo_root, "logs", "harl", task_slug, args["algorithm"], hms_time)
         os.makedirs(run_root, exist_ok=True)
-        # ensure HARL logger writes checkpoints here
-        if "logger" in algo_args and isinstance(algo_args["logger"], dict):
-            algo_args["logger"]["log_dir"] = run_root
-        # set video logs inside run root
+        if not isinstance(algo_args.get("logger"), dict):
+            algo_args["logger"] = {}
+        algo_args["logger"]["log_dir"] = run_root
         env_args["video_settings"]["log_dir"] = os.path.join(run_root, "videos")
     else:
-        # default behavior
         env_args["video_settings"]["log_dir"] = os.path.join(
             algo_args["logger"]["log_dir"],
             "isaaclab",

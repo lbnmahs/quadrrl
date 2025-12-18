@@ -6,6 +6,7 @@
 """Train an algorithm."""
 
 import argparse
+import time
 
 # import numpy as np
 import sys
@@ -40,11 +41,18 @@ parser.add_argument("--task", type=str, default=None, help="Name of the task.")
 parser.add_argument("--seed", type=int, default=None, help="Seed used for the environment")
 parser.add_argument("--num_env_steps", type=int, default=None, help="RL Policy training iterations.")
 parser.add_argument("--dir", type=str, default=None, help="folder with trained models")
+parser.add_argument("--video", action="store_true", help="Record videos during play.")
+parser.add_argument("--video_length", type=int, default=750, help="Length of the recorded video (in steps).")
+parser.add_argument("--video_interval", type=int, default=20000, help="Interval between video recordings (in steps).")
 
 # append AppLauncher cli args
 AppLauncher.add_app_launcher_args(parser)
 # parse the arguments
 args_cli, hydra_args = parser.parse_known_args()
+
+# always enable cameras to record video
+if args_cli.video:
+    args_cli.enable_cameras = True
 
 # clear out sys.argv for Hydra
 sys.argv = [sys.argv[0]] + hydra_args
@@ -93,8 +101,19 @@ def main(env_cfg: ManagerBasedRLEnvCfg | DirectRLEnvCfg | DirectMARLEnvCfg, agen
     env_cfg.scene.num_envs = num_envs
     env_args["task"] = args["task"]
     env_args["config"] = env_cfg
-    env_args["video_settings"] = {}
-    env_args["video_settings"]["video"] = False
+    # set video settings for RecordVideo wrapper inside envs_tools
+    hms_time = time.strftime("%Y-%m-%d-%H-%M-%S", time.localtime())
+    if args["dir"] is not None:
+        video_root = os.path.join(args["dir"], "videos", "play")
+    else:
+        repo_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+        video_root = os.path.join(repo_root, "logs", "harl", "play", hms_time, "videos")
+    env_args["video_settings"] = {
+        "video": args_cli.video,
+        "video_length": args_cli.video_length,
+        "video_interval": args_cli.video_interval,
+        "log_dir": video_root,
+    }
 
     # create runner
     runner = RUNNER_REGISTRY[args["algo"]](args, algo_args, env_args)

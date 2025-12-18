@@ -4,6 +4,7 @@ import random
 import numpy as np
 import torch
 from harl.envs.env_wrappers import ShareSubprocVecEnv, ShareDummyVecEnv
+from gymnasium.wrappers import RecordVideo
 
 
 def check(value):
@@ -94,6 +95,20 @@ def make_train_env(env_name, seed, n_threads, env_args):
                     _env_class = _DirectMARLEnv
 
                 isaac_env = _env_class(cfg)
+                # Optional video recording during training
+                vs = env_args.get("video_settings", {})
+                if vs.get("video") and vs.get("log_dir"):
+                    video_dir = os.path.join(vs["log_dir"], "train")
+                    os.makedirs(video_dir, exist_ok=True)
+                    if not hasattr(isaac_env, "metadata"):
+                        isaac_env.metadata = {"render_modes": ["rgb_array"], "render_fps": 30}
+                    isaac_env = RecordVideo(
+                        isaac_env,
+                        video_folder=video_dir,
+                        step_trigger=lambda step: step % vs.get("video_interval", 20000) == 0,
+                        video_length=vs.get("video_length", 500),
+                        disable_logger=True,
+                    )
                 try:
                     from isaaclab.envs import ManagerBasedRLEnv as _ManagerBasedRLEnv
                 except Exception:
@@ -432,6 +447,20 @@ def make_render_env(env_name, seed, env_args):
             _env_class = _DirectMARLEnv
 
         wrapped = _env_class(cfg)
+        # Optional video recording during render sessions
+        vs = env_args.get("video_settings", {})
+        if vs.get("video") and vs.get("log_dir"):
+            video_dir = os.path.join(vs["log_dir"], "render")
+            os.makedirs(video_dir, exist_ok=True)
+            if not hasattr(wrapped, "metadata"):
+                wrapped.metadata = {"render_modes": ["rgb_array"], "render_fps": 30}
+            wrapped = RecordVideo(
+                wrapped,
+                video_folder=video_dir,
+                step_trigger=lambda step: step % vs.get("video_interval", 20000) == 0,
+                video_length=vs.get("video_length", 500),
+                disable_logger=True,
+            )
         try:
             from isaaclab.envs import ManagerBasedRLEnv as _ManagerBasedRLEnv
         except Exception:

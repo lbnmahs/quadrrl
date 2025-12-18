@@ -5,6 +5,7 @@ Complete guide for training single-agent and multi-agent reinforcement learning 
 ## Available Environments
 
 ### Single-Agent Locomotion Tasks
+> **Analysis scope:** RSL-RL benchmark analysis focuses on **Unitree Go2**, **ANYmal-C**, and **ANYmal-D** for single-agent velocity-tracking. Spot single-agent runs remain available but are not part of the core RSL-RL comparison; Spot is primarily used for single-vs-multi-agent comparisons with HARL.
 
 #### Direct Single-Agent Locomotion
 
@@ -34,6 +35,8 @@ Complete guide for training single-agent and multi-agent reinforcement learning 
 | 17     | Template-Quadrrl-Velocity-Rough-Spot-v0            | `ManagerBasedRLEnv`  | `spot/rough_env_cfg.py`   |
 | 18     | Template-Quadrrl-Velocity-Rough-Spot-Play-v0       | `ManagerBasedRLEnv`  | `spot/rough_env_cfg.py`   |
 
+**Spot reward structure note:** Spot uses gait- and contact-focused rewards (gait phase shaping, foot-clearance, air-time balance) that differ from the generic locomotion reward set used by ANYmal/Go2, enabling richer gait coordination studies.
+
 ### Single-Agent Navigation Tasks
 
 #### Manager-Based Single-Agent Navigation
@@ -57,8 +60,10 @@ Complete guide for training single-agent and multi-agent reinforcement learning 
 
 | S. No. | Task Name                                           | Entry Point            | Config                      | RL Framework           |
 |-------:|-----------------------------------------------------|------------------------|-----------------------------|------------------------|
-| 24     | Template-Quadrrl-Velocity-Flat-Spot-MARL-v0        | `ManagerBasedMARLEnv`  | `spot_marl_env_cfg.py`      | RSL-RL, SKRL, HARL     |
-| 25     | Template-Quadrrl-Velocity-Flat-Spot-MARL-Play-v0   | `ManagerBasedMARLEnv`  | `spot_marl_env_cfg.py`      | RSL-RL, SKRL, HARL     |
+| 24     | Template-Quadrrl-Velocity-Flat-Spot-MARL-v0        | `ManagerBasedMARLEnv`  | `spot_marl_env_cfg.py`      | HARL (primary), RSL-RL |
+| 25     | Template-Quadrrl-Velocity-Flat-Spot-MARL-Play-v0   | `ManagerBasedMARLEnv`  | `spot_marl_env_cfg.py`      | HARL (primary), RSL-RL |
+
+> **Comparison plan:** Spot is the primary benchmark for single-agent vs multi-agent reinforcement learning using HARL (leg-level agents). RSL-RL analysis remains focused on Unitree Go2, ANYmal-C, and ANYmal-D for single-agent baselines.
 
 **Note:** 
 - Update `scripts/list_envs.py` if you rename any tasks so that they continue to show up in listings.

@@ -120,4 +120,4 @@ algo:
   fixed_order: False
 logger:
   # logging directory
-  log_dir: "logs/harl/anymal_c_marl"
+  log_dir: "logs/harl/anymal-c-marl/harl_happo"

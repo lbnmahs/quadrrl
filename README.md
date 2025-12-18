@@ -14,6 +14,7 @@ goal-directed navigation, and multi-agent coordination.
 - Ready-to-run configs for `rl_games`, `rsl_rl`, `skrl`, and `harl` RL frameworks
 - Multi-agent reinforcement learning (MARL) support for cooperative tasks
 - Optional Omniverse UI extension for quick visualization and debugging
+- Spot uses a tailored reward structure (gait shaping, foot clearance, air-time balancing) that differs from the generic locomotion rewards used by ANYmal/Go2, enabling richer gait coordination experiments.
 
 ## 📚 Documentation
 
@@ -53,12 +54,12 @@ For detailed instructions, see the [Getting Started Guide](docs/GETTING_STARTED.
 
 - **ANYmal-C** - Direct and manager-based locomotion, navigation, MARL
 - **ANYmal-D** - Manager-based locomotion on flat and rough terrain
-- **Spot** - Manager-based locomotion and MARL velocity tracking
+- **Spot** - Manager-based locomotion and MARL velocity tracking; uses a distinct reward structure focused on gait phasing and foot-clearance shaping.
 - **Unitree Go2** - Manager-based locomotion on flat and rough terrain
 
 ## 🎯 Available Tasks
 
-### Single-Agent RL
+### Single-Agent RL (RSL-RL analyses focus on): **Unitree Go2**, **ANYmal-C**, **ANYmal-D**
 - Velocity tracking (flat and rough terrain)
 - Goal-directed navigation
 - Direct and manager-based control
@@ -66,6 +67,7 @@ For detailed instructions, see the [Getting Started Guide](docs/GETTING_STARTED.
 ### Multi-Agent RL
 - Cooperative bar-carrying (ANYmal-C)
 - Multi-agent velocity tracking (Spot with 4 leg agents)
+  - Spot is used primarily to compare single-agent vs multi-agent reinforcement learning with the HARL framework; Spot MARL is evaluated with HARL (and optionally RSL-RL), while single-agent Spot runs are analyzed separately.
 
 **Note:** MARL tasks are not fully fine-tuned and are still being worked on.
 
