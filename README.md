@@ -105,10 +105,10 @@ We welcome contributions! Please see [CONTRIBUTING.md](CONTRIBUTING.md) for guid
 If you use Quadrrl in your research, please cite:
 
 ```bibtex
-@software{quadrrl2024,
+@software{quadrrl2026,
   title={Quadrrl: Isaac Lab-Based Multi-Quadruped Locomotion Training and Performance Evaluation Suite},
   author={Mahihu, Laban Njoroge},
-  year={2024},
+  year={2026},
   url={https://github.com/lbnmahs/quadrrl}
 }
 ```
