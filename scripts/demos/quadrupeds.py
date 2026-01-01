@@ -45,6 +45,7 @@ from isaaclab.assets import Articulation
 ##
 from isaaclab_assets.robots.anymal import ANYMAL_C_CFG, ANYMAL_D_CFG  # isort:skip
 from isaaclab_assets.robots.unitree import UNITREE_GO2_CFG  # isort:skip
+from isaaclab_assets.robots.spot import SPOT_CFG  # isort:skip
 
 
 def define_origins(num_origins: int, spacing: float) -> list[list[float]]:
@@ -90,11 +91,17 @@ def design_scene() -> tuple[dict, list[list[float]]]:
     # -- Robot
     unitree_go2 = Articulation(UNITREE_GO2_CFG.replace(prim_path="/World/Origin3/Robot"))
 
+    # Origin 4 with Spot
+    prim_utils.create_prim("/World/Origin4", "Xform", translation=origins[3])
+    # -- Robot
+    spot = Articulation(SPOT_CFG.replace(prim_path="/World/Origin4/Robot"))
+
     # return the scene information
     scene_entities = {
         "anymal_c": anymal_c,
         "anymal_d": anymal_d,
         "unitree_go2": unitree_go2,
+        "spot": spot,
     }
     return scene_entities, origins
 
