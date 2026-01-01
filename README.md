@@ -106,8 +106,8 @@ If you use Quadrrl in your research, please cite:
 
 ```bibtex
 @software{quadrrl2024,
-  title={Quadrrl: A Benchmark Suite for Quadruped Robot Reinforcement Learning},
-  author={Mahihu, Laban Njoroge and Contributors},
+  title={Quadrrl: Isaac Lab-Based Multi-Quadruped Locomotion Training and Performance Evaluation Suite},
+  author={Mahihu, Laban Njoroge},
   year={2024},
   url={https://github.com/lbnmahs/quadrrl}
 }
