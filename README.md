@@ -125,4 +125,3 @@ Special thanks to Dr. Manal Helal for her guidance and advice. See [ACKNOWLEDGME
 
 - [NVIDIA Isaac Lab Documentation](https://isaac-sim.github.io/IsaacLab/)
 - [HARL Framework](https://github.com/PKU-MARL/HARL)
-- Training examples in `scripts/demos/quadrupeds.py`
