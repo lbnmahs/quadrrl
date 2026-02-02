@@ -4,62 +4,51 @@
 
 ## Overview
 
-Quadrrl builds on NVIDIA Isaac Lab to research and prototype deep reinforcement learning for quadruped robots.
-It includes locomotion and navigation tasks across flat and rough terrains, covering velocity tracking,
-goal-directed navigation, and multi-agent coordination.
+Quadrrl builds on NVIDIA Isaac Lab to research and prototype deep reinforcement learning for quadruped robots. It includes locomotion and navigation tasks across flat and rough terrains, covering velocity tracking, goal-directed navigation, and multi-agent coordination.
 
 **Highlights**
 - Unified training suite for ANYmal-C, ANYmal-D, Spot, and Unitree Go2 robots
 - Direct and manager-based task variants for locomotion and navigation
 - Ready-to-run configs for `rl_games`, `rsl_rl`, `skrl`, and `harl` RL frameworks
 - Multi-agent reinforcement learning (MARL) support for cooperative tasks
-- Optional Omniverse UI extension for quick visualization and debugging
-- Spot uses a tailored reward structure (gait shaping, foot clearance, air-time balancing) that differs from the generic locomotion rewards used by ANYmal/Go2, enabling richer gait coordination experiments.
+- Spot uses a tailored reward structure (gait shaping, foot clearance, air-time balancing) that differs from generic locomotion rewards, enabling richer gait coordination experiments
 
 ## 📚 Documentation
 
-- **[Installation Guide](docs/INSTALLATION.md)** - Setup instructions for Linux and Windows
-- **[Getting Started](docs/GETTING_STARTED.md)** - Quick start guide and running scripts
-- **[Simulation Videos](docs/DEMOS.md)** - Video demonstrations of trained policies within simulation
-- **[Project Structure](docs/STRUCTURE.md)** - Code organization and directory layout
+- **[Installation Guide](docs/INSTALLATION.md)** - Setup instructions
+- **[Getting Started](docs/GETTING_STARTED.md)** - Quick start guide
+- **[Simulation Videos](docs/DEMOS.md)** - Video demonstrations
+- **[Project Structure](docs/STRUCTURE.md)** - Code organization
 - **[Training Guide](docs/TRAINING.md)** - Single-agent and multi-agent RL training
 - **[Scripts Documentation](scripts/README.md)** - Available scripts and utilities
-- **[Tasks Documentation](source/quadrrl/quadrrl/tasks/README.md)** - Task architecture and implementation
+- **[Tasks Documentation](source/quadrrl/quadrrl/tasks/README.md)** - Task architecture
 
 ## 🚀 Quick Start
 
-1. **Install Quadrrl** (see [Installation Guide](docs/INSTALLATION.md))
-   ```bash
-   git clone https://github.com/lbnmahs/quadrrl.git
-   cd quadrrl
-   conda activate isaaclab
-   python -m pip install -e source/quadrrl
-   ```
+```bash
+git clone https://github.com/lbnmahs/quadrrl.git
+cd quadrrl
+conda activate isaaclab
+python -m pip install -e source/quadrrl
+python scripts/list_envs.py
+python scripts/reinforcement_learning/rsl_rl/train.py \
+    --task=Template-Quadrrl-Velocity-Flat-Anymal-C-v0 \
+    --num_envs=4096
+```
 
-2. **List Available Environments**
-   ```bash
-   python scripts/list_envs.py
-   ```
-
-3. **Train a Policy**
-   ```bash
-   python scripts/reinforcement_learning/rsl_rl/train.py \
-       --task=Template-Quadrrl-Velocity-Flat-Anymal-C-v0 \
-       --num_envs=4096
-   ```
-
-For detailed instructions, see the [Getting Started Guide](docs/GETTING_STARTED.md).
+See [Installation Guide](docs/INSTALLATION.md) and [Getting Started Guide](docs/GETTING_STARTED.md) for details.
 
 ## 🤖 Supported Robots
 
 - **ANYmal-C** - Direct and manager-based locomotion, navigation, MARL
 - **ANYmal-D** - Manager-based locomotion on flat and rough terrain
-- **Spot** - Manager-based locomotion and MARL velocity tracking; uses a distinct reward structure focused on gait phasing and foot-clearance shaping.
+- **Spot** - Manager-based locomotion and MARL velocity tracking (distinct gait-focused reward structure)
 - **Unitree Go2** - Manager-based locomotion on flat and rough terrain
 
 ## 🎯 Available Tasks
 
-### Single-Agent RL (RSL-RL analyses focus on): **Unitree Go2**, **ANYmal-C**, **ANYmal-D**
+### Single-Agent RL
+**RSL-RL analyses focus on:** Unitree Go2, ANYmal-C, ANYmal-D
 - Velocity tracking (flat and rough terrain)
 - Goal-directed navigation
 - Direct and manager-based control
@@ -67,11 +56,11 @@ For detailed instructions, see the [Getting Started Guide](docs/GETTING_STARTED.
 ### Multi-Agent RL
 - Cooperative bar-carrying (ANYmal-C)
 - Multi-agent velocity tracking (Spot with 4 leg agents)
-  - Spot is used primarily to compare single-agent vs multi-agent reinforcement learning with the HARL framework; Spot MARL is evaluated with HARL (and optionally RSL-RL), while single-agent Spot runs are analyzed separately.
+  - Spot is used primarily to compare single-agent vs multi-agent RL with HARL
 
 **Note:** MARL tasks are not fully fine-tuned and are still being worked on.
 
-See [Training Guide](docs/TRAINING.md) for complete task listings and training instructions.
+See [Training Guide](docs/TRAINING.md) for complete task listings.
 
 ## 🔧 RL Frameworks
 
@@ -88,8 +77,6 @@ See [Training Guide](docs/TRAINING.md) for complete task listings and training i
 - **OS**: Linux (Ubuntu 20.04+) or Windows 10/11 (64-bit)
 - **Isaac Lab**: Installed per [official guide](https://isaac-sim.github.io/IsaacLab/main/source/setup/installation/index.html)
 - **Python**: 3.10 or newer
-
-See [Installation Guide](docs/INSTALLATION.md) for detailed requirements.
 
 ## 🤝 Contributing
 

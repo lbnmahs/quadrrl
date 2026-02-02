@@ -23,7 +23,9 @@ import sys
 
 # Import cli_args directly from file to avoid shadowing rsl_rl package
 scripts_dir = os.path.dirname(os.path.abspath(__file__))
-cli_args_path = os.path.join(scripts_dir, "rsl_rl", "cli_args.py")
+# cli_args is in scripts/reinforcement_learning/rsl_rl/, not scripts/demos/rsl_rl/
+scripts_root = os.path.dirname(scripts_dir)  # Go up from demos/ to scripts/
+cli_args_path = os.path.join(scripts_root, "reinforcement_learning", "rsl_rl", "cli_args.py")
 spec = importlib.util.spec_from_file_location("cli_args", cli_args_path)
 cli_args = importlib.util.module_from_spec(spec)
 sys.modules["cli_args"] = cli_args
