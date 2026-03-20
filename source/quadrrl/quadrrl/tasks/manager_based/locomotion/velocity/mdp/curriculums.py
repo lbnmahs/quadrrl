@@ -53,3 +53,25 @@ def terrain_levels_vel(
     terrain.update_env_origins(env_ids, move_up, move_down)
     # return the mean terrain level
     return torch.mean(terrain.terrain_levels.float())
+
+
+def command_levels_lin_vel(
+    env: ManagerBasedRLEnv,
+    env_ids: Sequence[int],
+    reward_term_name: str,
+    range_multiplier: tuple[float, float] = (0.1, 1.0),
+) -> torch.Tensor:
+    """Compatibility placeholder for linear-velocity command curriculum."""
+    del env_ids, reward_term_name, range_multiplier
+    return torch.tensor(0.0, device=env.device)
+
+
+def command_levels_ang_vel(
+    env: ManagerBasedRLEnv,
+    env_ids: Sequence[int],
+    reward_term_name: str,
+    range_multiplier: tuple[float, float] = (0.1, 1.0),
+) -> torch.Tensor:
+    """Compatibility placeholder for angular-velocity command curriculum."""
+    del env_ids, reward_term_name, range_multiplier
+    return torch.tensor(0.0, device=env.device)

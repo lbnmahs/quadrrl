@@ -114,3 +114,182 @@ def stand_still_joint_deviation_l1(
     command = env.command_manager.get_command(command_name)
     # Penalize motion when command is nearly zero.
     return mdp.joint_deviation_l1(env, asset_cfg) * (torch.norm(command[:, :2], dim=1) < command_threshold)
+
+
+def _zeros_like_env(env: "ManagerBasedRLEnv") -> torch.Tensor:
+    """Return a zero reward tensor for every environment instance."""
+    return torch.zeros(env.num_envs, device=env.device)
+
+
+def stand_still(
+    env: "ManagerBasedRLEnv",
+    command_name: str,
+    command_threshold: float = 0.06,
+    asset_cfg: SceneEntityCfg = SceneEntityCfg("robot"),
+) -> torch.Tensor:
+    """Compatibility alias for older configs."""
+    return stand_still_joint_deviation_l1(env, command_name, command_threshold, asset_cfg)
+
+
+def joint_pos_penalty(
+    env: "ManagerBasedRLEnv",
+    command_name: str,
+    asset_cfg: SceneEntityCfg = SceneEntityCfg("robot"),
+    stand_still_scale: float = 1.0,
+    velocity_threshold: float = 0.5,
+    command_threshold: float = 0.1,
+) -> torch.Tensor:
+    """Compatibility penalty: stronger joint-deviation penalty when standing still."""
+    command = env.command_manager.get_command(command_name)
+    is_standing = torch.norm(command[:, :2], dim=1) < command_threshold
+    base_penalty = mdp.joint_deviation_l1(env, asset_cfg)
+    scale = torch.where(is_standing, torch.full_like(base_penalty, stand_still_scale), torch.ones_like(base_penalty))
+    return base_penalty * scale
+
+
+def wheel_vel_penalty(
+    env: "ManagerBasedRLEnv",
+    asset_cfg: SceneEntityCfg = SceneEntityCfg("robot"),
+    sensor_cfg: SceneEntityCfg | None = None,
+    command_name: str | None = None,
+    velocity_threshold: float = 0.5,
+    command_threshold: float = 0.1,
+) -> torch.Tensor:
+    """Compatibility fallback for wheel velocity penalty."""
+    del sensor_cfg, command_name, velocity_threshold, command_threshold
+    return mdp.joint_vel_l2(env, asset_cfg)
+
+
+def joint_mirror(
+    env: "ManagerBasedRLEnv",
+    asset_cfg: SceneEntityCfg = SceneEntityCfg("robot"),
+    mirror_joints: list[list[str]] | None = None,
+) -> torch.Tensor:
+    """Compatibility fallback for mirror-joint symmetry penalty."""
+    del mirror_joints
+    return mdp.joint_deviation_l1(env, asset_cfg)
+
+
+def action_mirror(
+    env: "ManagerBasedRLEnv",
+    asset_cfg: SceneEntityCfg = SceneEntityCfg("robot"),
+    mirror_joints: list[list[str]] | None = None,
+) -> torch.Tensor:
+    """Compatibility fallback for action mirror penalty."""
+    del asset_cfg, mirror_joints
+    return mdp.action_rate_l2(env)
+
+
+def action_sync(
+    env: "ManagerBasedRLEnv",
+    asset_cfg: SceneEntityCfg = SceneEntityCfg("robot"),
+    joint_groups: list[list[str]] | None = None,
+) -> torch.Tensor:
+    """Compatibility fallback for action synchronization penalty."""
+    del asset_cfg, joint_groups
+    return mdp.action_rate_l2(env)
+
+
+def feet_air_time_variance_penalty(
+    env: "ManagerBasedRLEnv",
+    sensor_cfg: SceneEntityCfg = SceneEntityCfg("contact_forces"),
+) -> torch.Tensor:
+    """Penalize variance in per-foot air-time (higher variance -> higher penalty)."""
+    contact_sensor: ContactSensor = env.scene.sensors[sensor_cfg.name]
+    last_air_time = contact_sensor.data.last_air_time[:, sensor_cfg.body_ids]
+    return torch.var(last_air_time, dim=1)
+
+
+def GaitReward(
+    env: "ManagerBasedRLEnv",
+    std: float,
+    command_name: str,
+    max_err: float,
+    velocity_threshold: float,
+    command_threshold: float,
+    synced_feet_pair_names: tuple[tuple[str, str], tuple[str, str]],
+    asset_cfg: SceneEntityCfg = SceneEntityCfg("robot"),
+    sensor_cfg: SceneEntityCfg = SceneEntityCfg("contact_forces"),
+) -> torch.Tensor:
+    """Compatibility placeholder for custom gait reward from other codebases."""
+    del std, command_name, max_err, velocity_threshold, command_threshold, synced_feet_pair_names, asset_cfg, sensor_cfg
+    return _zeros_like_env(env)
+
+
+def feet_contact(
+    env: "ManagerBasedRLEnv",
+    sensor_cfg: SceneEntityCfg = SceneEntityCfg("contact_forces"),
+    command_name: str = "base_velocity",
+    expect_contact_num: int = 2,
+) -> torch.Tensor:
+    """Penalize deviation from expected number of contacts."""
+    contact_sensor: ContactSensor = env.scene.sensors[sensor_cfg.name]
+    contacts = contact_sensor.data.net_forces_w_history[:, :, sensor_cfg.body_ids, :].norm(dim=-1).max(dim=1)[0] > 1.0
+    n_contacts = contacts.sum(dim=1).float()
+    reward = -torch.abs(n_contacts - float(expect_contact_num))
+    command = env.command_manager.get_command(command_name)
+    reward *= torch.norm(command[:, :2], dim=1) > 0.1
+    return reward
+
+
+def feet_contact_without_cmd(
+    env: "ManagerBasedRLEnv",
+    sensor_cfg: SceneEntityCfg = SceneEntityCfg("contact_forces"),
+    command_name: str = "base_velocity",
+) -> torch.Tensor:
+    """Encourage contact when velocity command is near zero."""
+    contact_sensor: ContactSensor = env.scene.sensors[sensor_cfg.name]
+    contacts = contact_sensor.data.net_forces_w_history[:, :, sensor_cfg.body_ids, :].norm(dim=-1).max(dim=1)[0] > 1.0
+    n_contacts = contacts.sum(dim=1).float()
+    command = env.command_manager.get_command(command_name)
+    is_standing = torch.norm(command[:, :2], dim=1) < 0.1
+    return n_contacts * is_standing
+
+
+def feet_stumble(
+    env: "ManagerBasedRLEnv",
+    sensor_cfg: SceneEntityCfg = SceneEntityCfg("contact_forces"),
+) -> torch.Tensor:
+    """Compatibility placeholder for stumble penalty."""
+    del sensor_cfg
+    return _zeros_like_env(env)
+
+
+def feet_height(
+    env: "ManagerBasedRLEnv",
+    asset_cfg: SceneEntityCfg = SceneEntityCfg("robot"),
+    tanh_mult: float = 2.0,
+    target_height: float = 0.05,
+    command_name: str = "base_velocity",
+) -> torch.Tensor:
+    """Compatibility placeholder for foot-height shaping."""
+    del asset_cfg, tanh_mult, target_height, command_name
+    return _zeros_like_env(env)
+
+
+def feet_height_body(
+    env: "ManagerBasedRLEnv",
+    asset_cfg: SceneEntityCfg = SceneEntityCfg("robot"),
+    tanh_mult: float = 2.0,
+    target_height: float = -0.3,
+    command_name: str = "base_velocity",
+) -> torch.Tensor:
+    """Compatibility placeholder for body-relative foot-height shaping."""
+    del asset_cfg, tanh_mult, target_height, command_name
+    return _zeros_like_env(env)
+
+
+def feet_distance_y_exp(
+    env: "ManagerBasedRLEnv",
+    std: float,
+    asset_cfg: SceneEntityCfg = SceneEntityCfg("robot"),
+    stance_width: float = 0.3,
+) -> torch.Tensor:
+    """Compatibility placeholder for lateral foot-distance reward."""
+    del std, asset_cfg, stance_width
+    return _zeros_like_env(env)
+
+
+def upward(env: "ManagerBasedRLEnv") -> torch.Tensor:
+    """Compatibility placeholder for upward-orientation reward."""
+    return _zeros_like_env(env)
