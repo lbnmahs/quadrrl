@@ -18,6 +18,9 @@
 
 **Note:** Spot uses gait- and contact-focused rewards (gait phase shaping, foot-clearance, air-time balance) that differ from the generic locomotion reward set used by ANYmal/Go2.
 
+**Wheeled-legged (velocity only):**  
+Environments use the `wheeled_velocity_env_cfg` base and are registered under `config/wheeled/`. Examples: `Template-Quadrrl-Velocity-Flat-Unitree-Go2W-v0`, `Template-Quadrrl-Velocity-Rough-Unitree-Go2W-v0`, and similarly for Unitree B2W, Zsibot ZSL1W, and DeepRobotics M20. Use the same training/eval commands with the corresponding task name.
+
 ### Single-Agent Navigation Tasks
 
 - `Template-Quadrrl-Navigation-Flat-Anymal-C-v0`

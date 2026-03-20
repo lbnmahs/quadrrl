@@ -7,8 +7,9 @@
 Quadrrl builds on NVIDIA Isaac Lab to research and prototype deep reinforcement learning for quadruped robots. It includes locomotion and navigation tasks across flat and rough terrains, covering velocity tracking, goal-directed navigation, and multi-agent coordination.
 
 **Highlights**
-- Unified training suite for ANYmal-C, ANYmal-D, Spot, and Unitree Go2 robots
+- Unified training suite for legged quadrupeds (ANYmal-C/D, Spot, Unitree Go2, B2, Lite3, ZSL1) and wheeled-legged robots (Go2W, B2W, ZSL1W, M20)
 - Direct and manager-based task variants for locomotion and navigation
+- Velocity configs organized by `config/quadrupeds/` (legged) and `config/wheeled/` (wheeled-legged)
 - Ready-to-run configs for `rl_games`, `rsl_rl`, `skrl`, and `harl` RL frameworks
 - Multi-agent reinforcement learning (MARL) support for cooperative tasks
 - Spot uses a tailored reward structure (gait shaping, foot clearance, air-time balancing) that differs from generic locomotion rewards, enabling richer gait coordination experiments
@@ -40,10 +41,15 @@ See [Installation Guide](docs/INSTALLATION.md) and [Getting Started Guide](docs/
 
 ## 🤖 Supported Robots
 
+**Legged quadrupeds** (velocity configs under `config/quadrupeds/`):
 - **ANYmal-C** - Direct and manager-based locomotion, navigation, MARL
 - **ANYmal-D** - Manager-based locomotion on flat and rough terrain
 - **Spot** - Manager-based locomotion and MARL velocity tracking (distinct gait-focused reward structure)
-- **Unitree Go2** - Manager-based locomotion on flat and rough terrain
+- **Unitree Go2, B2, Lite3, ZSL1** - Manager-based locomotion on flat and rough terrain
+
+**Wheeled-legged** (velocity configs under `config/wheeled/`):
+- **Unitree Go2W, B2W** - Manager-based velocity tracking (flat and rough)
+- **Zsibot ZSL1W, DeepRobotics M20** - Manager-based velocity tracking (flat and rough)
 
 ## 🎯 Available Tasks
 

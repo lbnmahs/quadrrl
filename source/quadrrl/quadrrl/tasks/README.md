@@ -37,18 +37,17 @@ Manager-based tasks use hierarchical control with a manager (high-level) and low
 manager_based/
 ├── locomotion/
 │   └── velocity/
-│       ├── velocity_env_cfg.py   # Base velocity task config
-│       ├── config/                # Robot-specific configs
-│       │   ├── anymal_c/
-│       │   ├── anymal_d/
-│       │   ├── go2/
-│       │   ├── spot/
-│       │   └── spot_marl/
-│       └── mdp/                   # MDP components
+│       ├── velocity_env_cfg.py        # Quadruped (legged) base config
+│       ├── wheeled_velocity_env_cfg.py  # Wheeled-legged base config
+│       ├── config/                    # Robot-specific configs
+│       │   ├── quadrupeds/            # Legged: anymal_c, anymal_d, go2, spot, b2, lite3, zsl1
+│       │   ├── wheeled/               # Wheeled-legged: unitree_go2w, unitree_b2w, zsibot_zsl1w, deeprobotics_m20
+│       │   └── spot_marl/             # Spot MARL (4 leg agents)
+│       └── mdp/                       # MDP components
 │           ├── rewards.py
 │           ├── terminations.py
 │           ├── curriculums.py
-│           └── symmetry/
+│           └── utils.py
 └── navigation/
     └── config/
         └── anymal_c/
@@ -100,11 +99,9 @@ Locomotion tasks focus on velocity tracking and basic movement:
 - **Direct Locomotion**: Direct control of joint positions
 - **Manager-Based Locomotion**: Hierarchical control with velocity commands
 
-**Available Robots:**
-- ANYmal-C (direct and manager-based)
-- ANYmal-D (manager-based)
-- Unitree Go2 (manager-based)
-- Spot (manager-based, single-agent and multi-agent)
+**Quadruped (legged) robots:** ANYmal-C, ANYmal-D, Unitree Go2, Spot, B2, Lite3, ZSL1 (manager-based; ANYmal-C also has direct).  
+**Wheeled-legged robots:** Unitree Go2W, Unitree B2W, Zsibot ZSL1W, DeepRobotics M20 (manager-based velocity only).  
+Spot also has a multi-agent (MARL) velocity task with 4 leg agents.
 
 ### Navigation Tasks
 
@@ -169,6 +166,8 @@ The environment is automatically registered when the package is imported if:
 - Add task to environment listing in `scripts/list_envs.py`
 - Update [Training Guide](../../../../docs/TRAINING.md)
 - Add task description to this README
+
+**Adding only a new robot to velocity:** Add a config folder under `locomotion/velocity/config/quadrupeds/` (legged) or `config/wheeled/` (wheeled-legged), with `flat_env_cfg.py`, `rough_env_cfg.py`, and `agents/`. Use `velocity_env_cfg` or `wheeled_velocity_env_cfg` as base. See [Project Structure](../../../../docs/STRUCTURE.md).
 
 ## Task Naming Convention
 
