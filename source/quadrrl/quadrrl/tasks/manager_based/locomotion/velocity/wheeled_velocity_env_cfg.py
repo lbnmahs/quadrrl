@@ -95,7 +95,7 @@ class MySceneCfg(InteractiveSceneCfg):
 class CommandsCfg:
     """Command specifications for the MDP."""
 
-    base_velocity = mdp.UniformThresholdVelocityCommandCfg(
+    base_velocity = mdp.UniformVelocityCommandCfg(
         asset_name="robot",
         resampling_time_range=(10.0, 10.0),
         rel_standing_envs=0.02,
@@ -103,7 +103,7 @@ class CommandsCfg:
         heading_command=True,
         heading_control_stiffness=0.5,
         debug_vis=True,
-        ranges=mdp.UniformThresholdVelocityCommandCfg.Ranges(
+        ranges=mdp.UniformVelocityCommandCfg.Ranges(
             lin_vel_x=(-1.0, 1.0), lin_vel_y=(-1.0, 1.0), ang_vel_z=(-1.0, 1.0), heading=(-math.pi, math.pi)
         ),
     )
@@ -402,7 +402,9 @@ class RewardsCfg:
         params={"asset_cfg": SceneEntityCfg("robot", joint_names=".*"), "soft_ratio": 1.0},
     )
     joint_power = RewTerm(
-        func=mdp.joint_power,
+        # Compatibility fallback: some Isaac Lab versions don't expose mdp.joint_power.
+        # Keep the reward slot name so robot-specific configs can still override its weight/params.
+        func=mdp.joint_torques_l2,
         weight=0.0,
         params={
             "asset_cfg": SceneEntityCfg("robot", joint_names=".*"),
