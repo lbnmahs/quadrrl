@@ -4,7 +4,6 @@
 
 ```
 quadrrl/
-├── assets/                 # Project assets
 ├── docs/                   # Documentation
 ├── logs/                   # Training logs and checkpoints
 │   ├── rsl_rl/, skrl/, harl/

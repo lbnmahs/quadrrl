@@ -18,23 +18,23 @@ ANYmal-C demonstrates robust locomotion capabilities across both flat and rough 
 
 **Flat Terrain**: Direct joint control on flat terrain
 
-<video src="../assets/anymal_c_flat_direct.mp4" controls width="100%"></video>
+<video src="./videos/anymal_c_flat_direct.mp4" controls width="100%"></video>
 
-[Video Link](https://raw.githubusercontent.com/lbnmahs/quadrrl/devel/assets/anymal_c_flat_direct.mp4)
+[Video Link](https://raw.githubusercontent.com/lbnmahs/quadrrl/devel/docs/videos/anymal_c_flat_direct.mp4)
 
 #### Manager-Based Control
 
 **Flat Terrain**: Demonstrates smooth velocity tracking on flat ground
 
-<video src="../assets/anymal_c_flat.mp4" controls width="100%"></video>
+<video src="./videos/anymal_c_flat.mp4" controls width="100%"></video>
 
-[Video Link](https://raw.githubusercontent.com/lbnmahs/quadrrl/devel/assets/anymal_c_flat.mp4)
+[Video Link](https://raw.githubusercontent.com/lbnmahs/quadrrl/devel/docs/videos/anymal_c_flat.mp4)
 
 **Rough Terrain**: Shows robust locomotion on challenging terrain
 
-<video src="../assets/anymal_c_rough.mp4" controls width="100%"></video>
+<video src="./videos/anymal_c_rough.mp4" controls width="100%"></video>
 
-[Video Link](https://raw.githubusercontent.com/lbnmahs/quadrrl/devel/assets/anymal_c_rough.mp4)
+[Video Link](https://raw.githubusercontent.com/lbnmahs/quadrrl/devel/docs/videos/anymal_c_rough.mp4)
 
 ### ANYmal-D Robot
 
@@ -42,15 +42,15 @@ ANYmal-D showcases improved robustness and performance compared to ANYmal-C, par
 
 **Flat Terrain**: High-performance velocity tracking on flat ground
 
-<video src="../assets/anymal_d_flat.mp4" controls width="100%"></video>
+<video src="./videos/anymal_d_flat.mp4" controls width="100%"></video>
 
-[Video Link](https://raw.githubusercontent.com/lbnmahs/quadrrl/devel/assets/anymal_d_flat.mp4)
+[Video Link](https://raw.githubusercontent.com/lbnmahs/quadrrl/devel/docs/videos/anymal_d_flat.mp4)
 
 **Rough Terrain**: Enhanced terrain adaptation capabilities
 
-<video src="../assets/anymal_d_rough.mp4" controls width="100%"></video>
+<video src="./videos/anymal_d_rough.mp4" controls width="100%"></video>
 
-[Video Link](https://raw.githubusercontent.com/lbnmahs/quadrrl/devel/assets/anymal_d_rough.mp4)
+[Video Link](https://raw.githubusercontent.com/lbnmahs/quadrrl/devel/docs/videos/anymal_d_rough.mp4)
 
 ### Unitree Go2 Robot
 
@@ -58,27 +58,27 @@ Unitree Go2 demonstrates locomotion with a different robot morphology and actuat
 
 **Flat Terrain**: Velocity tracking on flat terrain
 
-<video src="../assets/go2_flat.mp4" controls width="100%"></video>
+<video src="./videos/go2_flat.mp4" controls width="100%"></video>
 
-[Video Link](https://raw.githubusercontent.com/lbnmahs/quadrrl/devel/assets/go2_flat.mp4)
+[Video Link](https://raw.githubusercontent.com/lbnmahs/quadrrl/devel/docs/videos/go2_flat.mp4)
 
 **Rough Terrain**: Locomotion performance on rough terrain
 
-<video src="../assets/go2_rough.mp4" controls width="100%"></video>
+<video src="./videos/go2_rough.mp4" controls width="100%"></video>
 
-[Video Link](https://raw.githubusercontent.com/lbnmahs/quadrrl/devel/assets/go2_rough.mp4)
+[Video Link](https://raw.githubusercontent.com/lbnmahs/quadrrl/devel/docs/videos/go2_rough.mp4)
 
 ### Spot Robot
 
 Spot demonstrates velocity tracking on both flat and rough terrains using the manager-based controller.
 
 **Flat Terrain**: Smooth and accurate velocity tracking on flat ground  
-<video src="../assets/spot_flat.mp4" controls width="100%"></video>  
-[Video Link](https://raw.githubusercontent.com/lbnmahs/quadrrl/devel/assets/spot_flat.mp4)
+<video src="./videos/spot_flat.mp4" controls width="100%"></video>  
+[Video Link](https://raw.githubusercontent.com/lbnmahs/quadrrl/devel/docs/videos/spot_flat.mp4)
 
 **Rough Terrain**: High-speed locomotion over diverse terrain  
-<video src="../assets/spot_rough.mp4" controls width="100%"></video>  
-[Video Link](https://raw.githubusercontent.com/lbnmahs/quadrrl/devel/assets/spot_rough.mp4)
+<video src="./videos/spot_rough.mp4" controls width="100%"></video>  
+[Video Link](https://raw.githubusercontent.com/lbnmahs/quadrrl/devel/docs/videos/spot_rough.mp4)
 
 > **Reward note:** Spot uses a more gait-centric reward structure (gait phase shaping, foot clearance, air-time balance) than the generic locomotion rewards for ANYmal/Go2. This enables richer gait coordination studies and is also leveraged in the Spot MARL leg-agent setup.
 

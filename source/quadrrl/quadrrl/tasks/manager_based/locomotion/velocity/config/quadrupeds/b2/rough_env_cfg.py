@@ -17,8 +17,8 @@ class UnitreeB2RoughEnvCfg(LocomotionVelocityRoughEnvCfg):
 
         # Action scaling: slightly smaller than default, similar to Go2 but with stronger legs.
         self.actions.joint_pos.scale = {
-            ".*_hip_joint": 0.2,
-            "^(?!.*_hip_joint).*": 0.3,
+            ".*_hip_joint": 0.125,
+            "^(?!.*_hip_joint).*": 0.25,
         }
 
         # Events: follow Go2 template but allow a bit more randomization for the heavier robot.

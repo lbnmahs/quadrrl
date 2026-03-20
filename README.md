@@ -1,6 +1,6 @@
 # QUADRRL
 
-![Quadrrl Header](assets/QUADRRL.png)
+![Quadrrl Header](docs/images/QUADRRL.png)
 
 ## Overview
 
@@ -24,6 +24,15 @@ Quadrrl builds on NVIDIA Isaac Lab to research and prototype deep reinforcement 
 - **[Scripts Documentation](scripts/README.md)** - Available scripts and utilities
 - **[Tasks Documentation](source/quadrrl/quadrrl/tasks/README.md)** - Task architecture
 
+## 📋 Prerequisites
+
+- **GPU**: NVIDIA GPU with CUDA support (RTX 3060 or better recommended)
+- **CPU**: Multi-core processor (8+ cores recommended)
+- **RAM**: 16 GB minimum, 32 GB recommended
+- **OS**: Linux (Ubuntu 20.04+) or Windows 10/11 (64-bit)
+- **Isaac Lab**: Installed per [official guide](https://isaac-sim.github.io/IsaacLab/main/source/setup/installation/index.html)
+- **Python**: 3.10 or newer
+
 ## 🚀 Quick Start
 
 ```bash
@@ -41,32 +50,19 @@ See [Installation Guide](docs/INSTALLATION.md) and [Getting Started Guide](docs/
 
 ## 🤖 Supported Robots
 
-**Legged quadrupeds** (velocity configs under `config/quadrupeds/`):
-- **ANYmal-C** - Direct and manager-based locomotion, navigation, MARL
-- **ANYmal-D** - Manager-based locomotion on flat and rough terrain
-- **Spot** - Manager-based locomotion and MARL velocity tracking (distinct gait-focused reward structure)
-- **Unitree Go2, B2, Lite3, ZSL1** - Manager-based locomotion on flat and rough terrain
-
-**Wheeled-legged** (velocity configs under `config/wheeled/`):
-- **Unitree Go2W, B2W** - Manager-based velocity tracking (flat and rough)
-- **Zsibot ZSL1W, DeepRobotics M20** - Manager-based velocity tracking (flat and rough)
-
-## 🎯 Available Tasks
-
-### Single-Agent RL
-**RSL-RL analyses focus on:** Unitree Go2, ANYmal-C, ANYmal-D
-- Velocity tracking (flat and rough terrain)
-- Goal-directed navigation
-- Direct and manager-based control
-
-### Multi-Agent RL
-- Cooperative bar-carrying (ANYmal-C)
-- Multi-agent velocity tracking (Spot with 4 leg agents)
-  - Spot is used primarily to compare single-agent vs multi-agent RL with HARL
-
-**Note:** MARL tasks are not fully fine-tuned and are still being worked on.
-
-See [Training Guide](docs/TRAINING.md) for complete task listings.
+| Category   | Robot Model         | Environment Name | Image |
+|------------|---------------------|------------------------|-------|
+| **Quadruped** | [Anymal C](https://www.anybotics.com/robotics/anymal) | `Template-Quadrrl-Velocity-Rough-Anymal-C-v0` | <img src="./docs/images/anymal_c.png" alt="anymal_c" width="75"> |
+|            | [Anymal D](https://www.anybotics.com/robotics/anymal) | `Template-Quadrrl-Velocity-Rough-Anymal-D-v0` | <img src="./docs/images/anymal_d.png" alt="anymal_d" width="75"> |
+|            | [Boston Dynamics Spot](https://bostondynamics.com/products/spot/) | `Template-Quadrrl-Velocity-Rough-Spot-v0` | <img src="./docs/images/spot.png" alt="spot" width="75"> |
+|            | [Unitree Go2](https://www.unitree.com/go2) | `Template-Quadrrl-Velocity-Rough-Unitree-Go2-v0` | <img src="./docs/images/unitree_go2.png" alt="unitree_go2" width="75"> |
+|            | [Unitree B2](https://www.unitree.com/b2) | `Template-Quadrrl-Velocity-Rough-Unitree-B2-v0` | <img src="./docs/images/unitree_b2.png" alt="unitree_b2" width="75"> |
+|            | [Deeprobotics Lite3](https://www.deeprobotics.cn/robot/index/product1.html) | `Template-Quadrrl-Velocity-Rough-Deeprobotics-Lite3-v0` | <img src="./docs/images/deeprobotics_lite3.png" alt="deeprobotics_lite3" width="75"> |
+|            | [Zsibot ZSL1](https://www.zsibot.com/zsl1) | `Template-Quadrrl-Velocity-Rough-Zsibot-ZSL1-v0` | <img src="./docs/images/zsibot_zsl1.png" alt="zsibot_zsl1" width="75"> |
+| **Wheeled** | [Unitree Go2W](https://www.unitree.com/go2-w) | `Template-Quadrrl-Velocity-Rough-Unitree-Go2W-v0` | <img src="./docs/images/unitree_go2w.png" alt="unitree_go2w" width="75"> |
+|            | [Unitree B2W](https://www.unitree.com/b2-w) | `Template-Quadrrl-Velocity-Rough-Unitree-B2W-v0` | <img src="./docs/images/unitree_b2w.png" alt="unitree_b2w" width="75"> |
+|            | [Deeprobotics M20](https://www.deeprobotics.cn/robot/index/lynx.html) | `Template-Quadrrl-Velocity-Rough-Deeprobotics-M20-v0` | <img src="./docs/images/deeprobotics_m20.png" alt="deeprobotics_m20" width="75"> |
+|            | [Zsibot ZSL1W](https://www.zsibot.com/zsl1) | `Template-Quadrrl-Velocity-Rough-ZSIBot-ZSL1W-v0` | <img src="./docs/images/zsibot_zsl1w.png" alt="zsibot_zsl1w" width="75"> |
 
 ## 🔧 RL Frameworks
 
@@ -74,15 +70,6 @@ See [Training Guide](docs/TRAINING.md) for complete task listings.
 - **RL Games** - NVIDIA's RL framework
 - **SKRL** - Scikit-learn compatible RL library
 - **HARL** - Multi-agent RL framework (customized for Isaac Lab)
-
-## 📋 Prerequisites
-
-- **GPU**: NVIDIA GPU with CUDA support (RTX 3060 or better recommended)
-- **CPU**: Multi-core processor (8+ cores recommended)
-- **RAM**: 16 GB minimum, 32 GB recommended
-- **OS**: Linux (Ubuntu 20.04+) or Windows 10/11 (64-bit)
-- **Isaac Lab**: Installed per [official guide](https://isaac-sim.github.io/IsaacLab/main/source/setup/installation/index.html)
-- **Python**: 3.10 or newer
 
 ## 🤝 Contributing
 
