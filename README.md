@@ -56,18 +56,18 @@ python scripts/reinforcement_learning/rsl_rl/train.py \
 
 See [Installation Guide](docs/INSTALLATION.md) and [Getting Started Guide](docs/GETTING_STARTED.md) for details.
 
-## 🤖 Supported Robots
+## 🤖 Supported Quadruped Robots
 
 | Category   | Robot Model         | Environment Name | Image |
 |------------|---------------------|------------------------|-------|
-| **Quadruped** | [Anymal C](https://www.anybotics.com/robotics/anymal) | `Template-Quadrrl-Velocity-Rough-Anymal-C-v0` | <img src="./docs/images/anymal_c.png" alt="anymal_c" width="75"> |
+| **Legged** | [Anymal C](https://www.anybotics.com/robotics/anymal) | `Template-Quadrrl-Velocity-Rough-Anymal-C-v0` | <img src="./docs/images/anymal_c.png" alt="anymal_c" width="75"> |
 |            | [Anymal D](https://www.anybotics.com/robotics/anymal) | `Template-Quadrrl-Velocity-Rough-Anymal-D-v0` | <img src="./docs/images/anymal_d.png" alt="anymal_d" width="75"> |
 |            | [Boston Dynamics Spot](https://bostondynamics.com/products/spot/) | `Template-Quadrrl-Velocity-Rough-Spot-v0` | <img src="./docs/images/spot.png" alt="spot" width="75"> |
 |            | [Unitree Go2](https://www.unitree.com/go2) | `Template-Quadrrl-Velocity-Rough-Unitree-Go2-v0` | <img src="./docs/images/unitree_go2.png" alt="unitree_go2" width="75"> |
 |            | [Unitree B2](https://www.unitree.com/b2) | `Template-Quadrrl-Velocity-Rough-Unitree-B2-v0` | <img src="./docs/images/unitree_b2.png" alt="unitree_b2" width="75"> |
 |            | [Deeprobotics Lite3](https://www.deeprobotics.cn/robot/index/product1.html) | `Template-Quadrrl-Velocity-Rough-Deeprobotics-Lite3-v0` | <img src="./docs/images/deeprobotics_lite3.png" alt="deeprobotics_lite3" width="75"> |
 |            | [Zsibot ZSL1](https://www.zsibot.com/zsl1) | `Template-Quadrrl-Velocity-Rough-Zsibot-ZSL1-v0` | <img src="./docs/images/zsibot_zsl1.png" alt="zsibot_zsl1" width="75"> |
-| **Wheeled** | [Unitree Go2W](https://www.unitree.com/go2-w) | `Template-Quadrrl-Velocity-Rough-Unitree-Go2W-v0` | <img src="./docs/images/unitree_go2w.png" alt="unitree_go2w" width="75"> |
+| **Legged-Wheeled** | [Unitree Go2W](https://www.unitree.com/go2-w) | `Template-Quadrrl-Velocity-Rough-Unitree-Go2W-v0` | <img src="./docs/images/unitree_go2w.png" alt="unitree_go2w" width="75"> |
 |            | [Unitree B2W](https://www.unitree.com/b2-w) | `Template-Quadrrl-Velocity-Rough-Unitree-B2W-v0` | <img src="./docs/images/unitree_b2w.png" alt="unitree_b2w" width="75"> |
 |            | [Deeprobotics M20](https://www.deeprobotics.cn/robot/index/lynx.html) | `Template-Quadrrl-Velocity-Rough-Deeprobotics-M20-v0` | <img src="./docs/images/deeprobotics_m20.png" alt="deeprobotics_m20" width="75"> |
 |            | [Zsibot ZSL1W](https://www.zsibot.com/zsl1) | `Template-Quadrrl-Velocity-Rough-ZSIBot-ZSL1W-v0` | <img src="./docs/images/zsibot_zsl1w.png" alt="zsibot_zsl1w" width="75"> |
