@@ -11,16 +11,32 @@
 ![Quadrrl Header](docs/images/QUADRRL.png)
 
 ## Overview
+**Quadrrl** is a training and benchmarking library for both legged and wheeled-legged quadruped robots, based on IsaacLab. It includes locomotion tasks across flat and rough terrains built in an isolated environment, outside of the core Isaac Lab repository.
 
-Quadrrl builds on NVIDIA Isaac Lab to research and prototype deep reinforcement learning for quadruped robots. It includes locomotion and navigation tasks across flat and rough terrains, covering velocity tracking, goal-directed navigation, and multi-agent coordination.
+The table below shows a list of all the supported quadruped robots:
 
-**Highlights**
-- Unified training suite for legged quadrupeds (ANYmal-C/D, Spot, Unitree Go2, B2, Lite3, ZSL1) and wheeled-legged robots (Go2W, B2W, ZSL1W, M20)
-- Direct and manager-based task variants for locomotion and navigation
-- Velocity configs organized by `config/quadrupeds/` (legged) and `config/wheeled/` (wheeled-legged)
-- Ready-to-run configs for `rl_games`, `rsl_rl`, `skrl`, and `harl` RL frameworks
-- Multi-agent reinforcement learning (MARL) support for cooperative tasks
-- Spot uses a tailored reward structure (gait shaping, foot clearance, air-time balancing) that differs from generic locomotion rewards, enabling richer gait coordination experiments
+| Category   | Robot Model         | Environment Name | Image |
+|------------|---------------------|------------------------|-------|
+| **Legged** | [Anymal C](https://www.anybotics.com/robotics/anymal) | `Template-Quadrrl-Velocity-Rough-Anymal-C-v0` | <img src="./docs/images/anymal_c.png" alt="anymal_c" width="75"> |
+|            | [Anymal D](https://www.anybotics.com/robotics/anymal) | `Template-Quadrrl-Velocity-Rough-Anymal-D-v0` | <img src="./docs/images/anymal_d.png" alt="anymal_d" width="75"> |
+|            | [Boston Dynamics Spot](https://bostondynamics.com/products/spot/) | `Template-Quadrrl-Velocity-Rough-Spot-v0` | <img src="./docs/images/spot.png" alt="spot" width="75"> |
+|            | [Unitree Go2](https://www.unitree.com/go2) | `Template-Quadrrl-Velocity-Rough-Unitree-Go2-v0` | <img src="./docs/images/unitree_go2.png" alt="unitree_go2" width="75"> |
+|            | [Unitree B2](https://www.unitree.com/b2) | `Template-Quadrrl-Velocity-Rough-Unitree-B2-v0` | <img src="./docs/images/unitree_b2.png" alt="unitree_b2" width="75"> |
+|            | [Deeprobotics Lite3](https://www.deeprobotics.cn/robot/index/product1.html) | `Template-Quadrrl-Velocity-Rough-Deeprobotics-Lite3-v0` | <img src="./docs/images/deeprobotics_lite3.png" alt="deeprobotics_lite3" width="75"> |
+|            | [Zsibot ZSL1](https://www.zsibot.com/zsl1) | `Template-Quadrrl-Velocity-Rough-Zsibot-ZSL1-v0` | <img src="./docs/images/zsibot_zsl1.png" alt="zsibot_zsl1" width="75"> |
+| **Legged-Wheeled** | [Unitree Go2W](https://www.unitree.com/go2-w) | `Template-Quadrrl-Velocity-Rough-Unitree-Go2W-v0` | <img src="./docs/images/unitree_go2w.png" alt="unitree_go2w" width="75"> |
+|            | [Unitree B2W](https://www.unitree.com/b2-w) | `Template-Quadrrl-Velocity-Rough-Unitree-B2W-v0` | <img src="./docs/images/unitree_b2w.png" alt="unitree_b2w" width="75"> |
+|            | [Deeprobotics M20](https://www.deeprobotics.cn/robot/index/lynx.html) | `Template-Quadrrl-Velocity-Rough-Deeprobotics-M20-v0` | <img src="./docs/images/deeprobotics_m20.png" alt="deeprobotics_m20" width="75"> |
+|            | [Zsibot ZSL1W](https://www.zsibot.com/zsl1) | `Template-Quadrrl-Velocity-Rough-ZSIBot-ZSL1W-v0` | <img src="./docs/images/zsibot_zsl1w.png" alt="zsibot_zsl1w" width="75"> |
+
+## 📋 Prerequisites
+
+- **GPU**: NVIDIA GPU with CUDA support (RTX 3060 or better recommended)
+- **CPU**: Multi-core processor (8+ cores recommended)
+- **RAM**: 16 GB minimum, 32 GB recommended
+- **OS**: Linux (Ubuntu 20.04+) or Windows 10/11 (64-bit)
+- **Isaac Lab**: Installed per [official guide](https://isaac-sim.github.io/IsaacLab/main/source/setup/installation/index.html)
+- **Python**: 3.10 or newer
 
 ## 📚 Documentation
 
@@ -32,14 +48,7 @@ Quadrrl builds on NVIDIA Isaac Lab to research and prototype deep reinforcement 
 - **[Scripts Documentation](scripts/README.md)** - Available scripts and utilities
 - **[Tasks Documentation](source/quadrrl/quadrrl/tasks/README.md)** - Task architecture
 
-## 📋 Prerequisites
 
-- **GPU**: NVIDIA GPU with CUDA support (RTX 3060 or better recommended)
-- **CPU**: Multi-core processor (8+ cores recommended)
-- **RAM**: 16 GB minimum, 32 GB recommended
-- **OS**: Linux (Ubuntu 20.04+) or Windows 10/11 (64-bit)
-- **Isaac Lab**: Installed per [official guide](https://isaac-sim.github.io/IsaacLab/main/source/setup/installation/index.html)
-- **Python**: 3.10 or newer
 
 ## 🚀 Quick Start
 
@@ -55,22 +64,6 @@ python scripts/reinforcement_learning/rsl_rl/train.py \
 ```
 
 See [Installation Guide](docs/INSTALLATION.md) and [Getting Started Guide](docs/GETTING_STARTED.md) for details.
-
-## 🤖 Supported Quadruped Robots
-
-| Category   | Robot Model         | Environment Name | Image |
-|------------|---------------------|------------------------|-------|
-| **Legged** | [Anymal C](https://www.anybotics.com/robotics/anymal) | `Template-Quadrrl-Velocity-Rough-Anymal-C-v0` | <img src="./docs/images/anymal_c.png" alt="anymal_c" width="75"> |
-|            | [Anymal D](https://www.anybotics.com/robotics/anymal) | `Template-Quadrrl-Velocity-Rough-Anymal-D-v0` | <img src="./docs/images/anymal_d.png" alt="anymal_d" width="75"> |
-|            | [Boston Dynamics Spot](https://bostondynamics.com/products/spot/) | `Template-Quadrrl-Velocity-Rough-Spot-v0` | <img src="./docs/images/spot.png" alt="spot" width="75"> |
-|            | [Unitree Go2](https://www.unitree.com/go2) | `Template-Quadrrl-Velocity-Rough-Unitree-Go2-v0` | <img src="./docs/images/unitree_go2.png" alt="unitree_go2" width="75"> |
-|            | [Unitree B2](https://www.unitree.com/b2) | `Template-Quadrrl-Velocity-Rough-Unitree-B2-v0` | <img src="./docs/images/unitree_b2.png" alt="unitree_b2" width="75"> |
-|            | [Deeprobotics Lite3](https://www.deeprobotics.cn/robot/index/product1.html) | `Template-Quadrrl-Velocity-Rough-Deeprobotics-Lite3-v0` | <img src="./docs/images/deeprobotics_lite3.png" alt="deeprobotics_lite3" width="75"> |
-|            | [Zsibot ZSL1](https://www.zsibot.com/zsl1) | `Template-Quadrrl-Velocity-Rough-Zsibot-ZSL1-v0` | <img src="./docs/images/zsibot_zsl1.png" alt="zsibot_zsl1" width="75"> |
-| **Legged-Wheeled** | [Unitree Go2W](https://www.unitree.com/go2-w) | `Template-Quadrrl-Velocity-Rough-Unitree-Go2W-v0` | <img src="./docs/images/unitree_go2w.png" alt="unitree_go2w" width="75"> |
-|            | [Unitree B2W](https://www.unitree.com/b2-w) | `Template-Quadrrl-Velocity-Rough-Unitree-B2W-v0` | <img src="./docs/images/unitree_b2w.png" alt="unitree_b2w" width="75"> |
-|            | [Deeprobotics M20](https://www.deeprobotics.cn/robot/index/lynx.html) | `Template-Quadrrl-Velocity-Rough-Deeprobotics-M20-v0` | <img src="./docs/images/deeprobotics_m20.png" alt="deeprobotics_m20" width="75"> |
-|            | [Zsibot ZSL1W](https://www.zsibot.com/zsl1) | `Template-Quadrrl-Velocity-Rough-ZSIBot-ZSL1W-v0` | <img src="./docs/images/zsibot_zsl1w.png" alt="zsibot_zsl1w" width="75"> |
 
 ## 🔧 RL Frameworks
 
