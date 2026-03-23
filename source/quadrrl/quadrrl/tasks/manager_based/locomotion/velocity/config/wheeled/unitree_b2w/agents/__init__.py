@@ -1,2 +1,2 @@
-# RSL-RL agent configs for Unitree B2W locomotion.
-
+# Copyright (c) 2024-2026 Ziqi Fan
+# SPDX-License-Identifier: Apache-2.0

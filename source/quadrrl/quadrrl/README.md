@@ -62,8 +62,8 @@ Tasks are automatically registered when the package is imported:
 import quadrrl.tasks  # Registers all tasks
 import gymnasium as gym
 
-env = gym.make("Template-Quadrrl-Velocity-Flat-Anymal-C-v0")  # quadruped
-# env = gym.make("Template-Quadrrl-Velocity-Flat-Unitree-Go2W-v0")  # wheeled-legged
+env = gym.make("Quadrrl-Velocity-Flat-Anymal-C-v0")  # quadruped
+# env = gym.make("Quadrrl-Velocity-Flat-Unitree-Go2W-v0")  # wheeled-legged
 ```
 
 ## Related Documentation

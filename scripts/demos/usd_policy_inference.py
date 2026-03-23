@@ -7,12 +7,12 @@
 This script demonstrates policy inference in a prebuilt USD environment.
 
 In this example, we use a locomotion policy to control the robot. The robot was trained
-using Template-Quadrrl-Velocity-Flat-Anymal-C-v0. The robot is commanded to move forward at a constant velocity.
+using Quadrrl-Velocity-Flat-Anymal-C-Direct-v0. The robot is commanded to move forward at a constant velocity.
 
 .. code-block:: bash
 
         # Run the script
-        ./isaaclab.sh -p scripts/demos/usd_policy_inference.py --checkpoint logs/rsl_rl/anymal_c_flat/EXPERIMENT_NAME/exported/policy.pt
+        ./isaaclab.sh -p scripts/demos/usd_policy_inference.py --checkpoint logs/rsl_rl/anymal_c_flat_direct/EXPERIMENT_NAME/exported/policy.pt
 
 """
 

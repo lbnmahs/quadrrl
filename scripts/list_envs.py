@@ -10,7 +10,7 @@ The script iterates over all registered environments and stores the details in a
 It prints the serial number and name of each environment.
 
 All the environments are registered in the `quadrrl` extension. They start
-with `Template-` in their name.
+with `Quadrrl-` in their name.
 """
 
 """Launch Isaac Sim Simulator first."""
@@ -42,7 +42,7 @@ def main():
     index = 0
     # acquire all Isaac environments names
     for task_spec in gym.registry.values():
-        if "Template-" in task_spec.id:
+        if "Quadrrl-" in task_spec.id:
             # add details to table
             table.add_row([index + 1, task_spec.id])
             # increment count

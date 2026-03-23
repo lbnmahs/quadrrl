@@ -173,14 +173,14 @@ The environment is automatically registered when the package is imported if:
 
 Tasks follow the pattern:
 ```
-Template-Quadrrl-<TaskType>-<Terrain>-<Robot>-<Variant>-v0
+Quadrrl-<TaskType>-<Terrain>-<Robot>-<Variant>-v0
 ```
 
 Examples:
-- `Template-Quadrrl-Velocity-Flat-Anymal-C-v0`
-- `Template-Quadrrl-Velocity-Rough-Unitree-Go2-v0`
-- `Template-Quadrrl-MARL-Direct-Anymal-C-v0`
-- `Template-Quadrrl-Navigation-Flat-Anymal-C-v0`
+- `Quadrrl-Velocity-Flat-Anymal-C-v0`
+- `Quadrrl-Velocity-Rough-Unitree-Go2-v0`
+- `Quadrrl-MARL-Direct-Anymal-C-v0`
+- `Quadrrl-Navigation-Flat-Anymal-C-v0`
 
 ## Related Documentation
 

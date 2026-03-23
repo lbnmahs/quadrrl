@@ -1,3 +1,6 @@
+# Copyright (c) 2024-2026 Ziqi Fan
+# SPDX-License-Identifier: Apache-2.0
+
 import gymnasium as gym
 
 from . import agents
@@ -7,7 +10,7 @@ from . import agents
 ##
 
 gym.register(
-    id="Template-Quadrrl-Velocity-Flat-ZSIBot-ZSL1W-v0",
+    id="Quadrrl-Velocity-Flat-Zsibot-ZSL1W-v0",
     entry_point="isaaclab.envs:ManagerBasedRLEnv",
     disable_env_checker=True,
     kwargs={
@@ -17,7 +20,7 @@ gym.register(
 )
 
 gym.register(
-    id="Template-Quadrrl-Velocity-Rough-ZSIBot-ZSL1W-v0",
+    id="Quadrrl-Velocity-Rough-Zsibot-ZSL1W-v0",
     entry_point="isaaclab.envs:ManagerBasedRLEnv",
     disable_env_checker=True,
     kwargs={

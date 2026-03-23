@@ -13,7 +13,7 @@ from . import agents
 ##
 
 gym.register(
-    id="Template-Quadrrl-Velocity-Flat-Anymal-C-Direct-v0",
+    id="Quadrrl-Velocity-Flat-Anymal-C-Direct-v0",
     entry_point=f"{__name__}.anymal_c_env:AnymalCEnv",
     disable_env_checker=True,
     kwargs={
@@ -25,7 +25,7 @@ gym.register(
 )
 
 gym.register(
-    id="Template-Quadrrl-Velocity-Rough-Anymal-C-Direct-v0",
+    id="Quadrrl-Velocity-Rough-Anymal-C-Direct-v0",
     entry_point=f"{__name__}.anymal_c_env:AnymalCEnv",
     disable_env_checker=True,
     kwargs={
