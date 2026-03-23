@@ -75,13 +75,13 @@ from isaaclab_rl.rsl_rl import RslRlOnPolicyRunnerCfg, RslRlVecEnvWrapper
 
 from quadrrl.tasks.manager_based.locomotion.velocity.config.go2.rough_env_cfg import UnitreeGo2RoughEnvCfg_PLAY
 
-TASK = "Template-Quadrrl-Velocity-Rough-Unitree-Go2-v0"
+TASK = "Quadrrl-Velocity-Rough-Unitree-Go2-v0"
 RL_LIBRARY = "rsl_rl"
 
 
 class UnitreeGo2RoughDemo:
     """This class provides an interactive demo for the Unitree Go2 rough terrain environment.
-    It loads a pre-trained checkpoint for the Template-Quadrrl-Velocity-Rough-Unitree-Go2-v0 task, trained with RSL RL
+    It loads a pre-trained checkpoint for the Quadrrl-Velocity-Rough-Unitree-Go2-v0 task, trained with RSL RL
     and defines a set of keyboard commands for directing motion of selected robots.
 
     The following keyboard commands are available:

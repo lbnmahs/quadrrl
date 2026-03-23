@@ -22,7 +22,7 @@ isaaclab.bat -p scripts/list_envs.py  # Windows
 **Train a Policy**
 ```bash
 python scripts/reinforcement_learning/rsl_rl/train.py \
-    --task=Template-Quadrrl-Velocity-Flat-Anymal-C-v0 \
+    --task=Quadrrl-Velocity-Flat-Anymal-C-v0 \
     --num_envs=4096 \
     --seed=42
 ```
@@ -30,7 +30,7 @@ python scripts/reinforcement_learning/rsl_rl/train.py \
 **Evaluate a Policy**
 ```bash
 python scripts/reinforcement_learning/rsl_rl/play.py \
-    --task=Template-Quadrrl-Velocity-Flat-Anymal-C-Play-v0 \
+    --task=Quadrrl-Velocity-Flat-Anymal-C-Play-v0 \
     --checkpoint=/path/to/checkpoint.pth
 ```
 
@@ -52,7 +52,7 @@ python scripts/reinforcement_learning/<RL_LIBRARY>/train.py \
 
 # Multi-agent (HARL)
 python scripts/reinforcement_learning/harl/train.py \
-    --task=Template-Quadrrl-MARL-Direct-Anymal-C-v0 \
+    --task=Quadrrl-MARL-Direct-Anymal-C-v0 \
     --num_envs=4096 --algorithm=happo --headless
 ```
 

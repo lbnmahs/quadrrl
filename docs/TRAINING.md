@@ -7,33 +7,31 @@
 ### Single-Agent Locomotion Tasks
 
 **Direct Control:**
-- `Template-Quadrrl-Velocity-Flat-Anymal-C-Direct-v0`
-- `Template-Quadrrl-Velocity-Rough-Anymal-C-Direct-v0`
+- `Quadrrl-Velocity-Flat-Anymal-C-Direct-v0`
+- `Quadrrl-Velocity-Rough-Anymal-C-Direct-v0`
 
 **Manager-Based Control:**
-- ANYmal-C: `Template-Quadrrl-Velocity-Flat-Anymal-C-v0`, `Template-Quadrrl-Velocity-Rough-Anymal-C-v0` (+ `-Play` variants)
-- ANYmal-D: `Template-Quadrrl-Velocity-Flat-Anymal-D-v0`, `Template-Quadrrl-Velocity-Rough-Anymal-D-v0` (+ `-Play` variants)
-- Unitree Go2: `Template-Quadrrl-Velocity-Flat-Unitree-Go2-v0`, `Template-Quadrrl-Velocity-Rough-Unitree-Go2-v0` (+ `-Play` variants)
-- Spot: `Template-Quadrrl-Velocity-Flat-Spot-v0`, `Template-Quadrrl-Velocity-Rough-Spot-v0` (+ `-Play` variants)
+- ANYmal-C: `Quadrrl-Velocity-Flat-Anymal-C-v0`, `Quadrrl-Velocity-Rough-Anymal-C-v0` (+ `-Play` variants)
+- ANYmal-D: `Quadrrl-Velocity-Flat-Anymal-D-v0`, `Quadrrl-Velocity-Rough-Anymal-D-v0` (+ `-Play` variants)
+- Unitree Go2: `Quadrrl-Velocity-Flat-Unitree-Go2-v0`, `Quadrrl-Velocity-Rough-Unitree-Go2-v0` (+ `-Play` variants)
+- Spot: `Quadrrl-Velocity-Flat-Spot-v0`, `Quadrrl-Velocity-Rough-Spot-v0` (+ `-Play` variants)
 
 **Note:** Spot uses gait- and contact-focused rewards (gait phase shaping, foot-clearance, air-time balance) that differ from the generic locomotion reward set used by ANYmal/Go2.
 
 **Wheeled-legged (velocity only):**  
-Environments use the `wheeled_velocity_env_cfg` base and are registered under `config/wheeled/`. Examples: `Template-Quadrrl-Velocity-Flat-Unitree-Go2W-v0`, `Template-Quadrrl-Velocity-Rough-Unitree-Go2W-v0`, and similarly for Unitree B2W, Zsibot ZSL1W, and DeepRobotics M20. Use the same training/eval commands with the corresponding task name.
+Environments use the `wheeled_velocity_env_cfg` base and are registered under `config/wheeled/`. Examples: `Quadrrl-Velocity-Flat-Unitree-Go2W-v0`, `Quadrrl-Velocity-Rough-Unitree-Go2W-v0`, and similarly for Unitree B2W, Zsibot ZSL1W, and DeepRobotics M20. Use the same training/eval commands with the corresponding task name.
 
 ### Single-Agent Navigation Tasks
 
-- `Template-Quadrrl-Navigation-Flat-Anymal-C-v0`
-- `Template-Quadrrl-Navigation-Rough-Anymal-C-v0` (+ `-Play` variants)
+- `Quadrrl-Navigation-Flat-Anymal-C-v0`
+- `Quadrrl-Navigation-Rough-Anymal-C-v0` (+ `-Play` variants)
 
 ### Multi-Agent Tasks
 
-- `Template-Quadrrl-MARL-Direct-Anymal-C-v0` - Cooperative bar-carrying (HARL)
-- `Template-Quadrrl-Velocity-Flat-Spot-MARL-v0` - Velocity tracking with 4 leg agents (HARL primary, RSL-RL optional) (+ `-Play` variant)
+- `Quadrrl-MARL-Direct-Anymal-C-v0` - Cooperative bar-carrying (HARL)
+- `Quadrrl-Velocity-Flat-Spot-MARL-v0` - Velocity tracking with 4 leg agents (HARL primary, RSL-RL optional) (+ `-Play` variant)
 
-> **Comparison plan:** Spot is the primary benchmark for single-agent vs multi-agent RL using HARL (leg-level agents). RSL-RL analysis remains focused on Unitree Go2, ANYmal-C, and ANYmal-D for single-agent baselines.
-
-**Note:** MARL tasks are not fully fine-tuned and are still being worked on. Use `scripts/list_envs.py` to see all available environments.
+> **Comparison plan:** Spot is the primary benchmark for single-agent vs multi-agent RL using HARL (leg-level agents). RSL-RL analysis remains focused on Unitree Go2, ANYmal-C, and ANYmal-D for single-agent baselines.**Note:** MARL tasks are not fully fine-tuned and are still being worked on. Use `scripts/list_envs.py` to see all available environments.
 
 ## Single-Agent Reinforcement Learning
 
@@ -54,7 +52,7 @@ isaaclab.bat -p scripts/reinforcement_learning/<RL_LIBRARY>/train.py ^
 **Example:**
 ```bash
 python scripts/reinforcement_learning/rsl_rl/train.py \
-    --task=Template-Quadrrl-Velocity-Flat-Anymal-C-v0 \
+    --task=Quadrrl-Velocity-Flat-Anymal-C-v0 \
     --num_envs=4096 --seed=42
 ```
 
@@ -91,16 +89,14 @@ Quadrrl includes two MARL task types:
 
 HARL is included as a submodule in `scripts/reinforcement_learning/harl/HARL/` and has been customized for Isaac Lab integration.
 
-**HARL Supported Algorithms:** `happo` (default), `hatrpo`, `haa2c`, `mappo`, `maddpg`, `matd3`, `hasac`, `hatd3`, `had3qn`, `haddpg`
+**HARL Supported Algorithms:** `happo` (default), `hatrpo`, `haa2c`, `mappo`, `maddpg`, `matd3`, `hasac`, `hatd3`, `had3qn`, `haddpg`### Multi-Agent Task Details
 
-### Multi-Agent Task Details
-
-**Template-Quadrrl-MARL-Direct-Anymal-C-v0** (Direct MARL):
+**Quadrrl-MARL-Direct-Anymal-C-v0** (Direct MARL):
 - **Agents**: Two ANYmal-C robots
 - **Objective**: Cooperatively carry a bar to randomly sampled target locations
 - **Framework**: HARL only
 
-**Template-Quadrrl-Velocity-Flat-Spot-MARL-v0** (Manager-Based MARL):
+**Quadrrl-Velocity-Flat-Spot-MARL-v0** (Manager-Based MARL):
 - **Agents**: Four agents (agentFR, agentFL, agentHR, agentHL) - one per leg
 - **Objective**: Velocity tracking on flat terrain
 - **Frameworks**: HARL (primary), RSL-RL, SKRL
@@ -110,7 +106,7 @@ HARL is included as a submodule in `scripts/reinforcement_learning/harl/HARL/` a
 **ANYmal-C Bar Carrying Task:**
 ```bash
 python scripts/reinforcement_learning/harl/train.py \
-    --task=Template-Quadrrl-MARL-Direct-Anymal-C-v0 \
+    --task=Quadrrl-MARL-Direct-Anymal-C-v0 \
     --num_envs=4096 --algorithm=happo --headless
 ```
 
@@ -118,17 +114,17 @@ python scripts/reinforcement_learning/harl/train.py \
 ```bash
 # Using HARL
 python scripts/reinforcement_learning/harl/train.py \
-    --task=Template-Quadrrl-Velocity-Flat-Spot-MARL-v0 \
+    --task=Quadrrl-Velocity-Flat-Spot-MARL-v0 \
     --num_envs=4096 --algorithm=happo --headless
 
 # Using RSL-RL
 python scripts/reinforcement_learning/rsl_rl/train.py \
-    --task=Template-Quadrrl-Velocity-Flat-Spot-MARL-v0 \
+    --task=Quadrrl-Velocity-Flat-Spot-MARL-v0 \
     --num_envs=4096
 
 # Using SKRL
 python scripts/reinforcement_learning/skrl/train.py \
-    --task=Template-Quadrrl-Velocity-Flat-Spot-MARL-v0 \
+    --task=Quadrrl-Velocity-Flat-Spot-MARL-v0 \
     --num_envs=4096
 ```
 
@@ -137,7 +133,7 @@ python scripts/reinforcement_learning/skrl/train.py \
 **ANYmal-C Bar Carrying:**
 ```bash
 python scripts/reinforcement_learning/harl/play.py \
-    --task=Template-Quadrrl-MARL-Direct-Anymal-C-v0 \
+    --task=Quadrrl-MARL-Direct-Anymal-C-v0 \
     --num_envs=5 --dir=/path/to/logs/harl/anymal_c_marl/EXPERIMENT_NAME
 ```
 
@@ -145,12 +141,12 @@ python scripts/reinforcement_learning/harl/play.py \
 ```bash
 # Using HARL
 python scripts/reinforcement_learning/harl/play.py \
-    --task=Template-Quadrrl-Velocity-Flat-Spot-MARL-Play-v0 \
+    --task=Quadrrl-Velocity-Flat-Spot-MARL-Play-v0 \
     --num_envs=5 --dir=/path/to/logs/harl/spot_marl/EXPERIMENT_NAME
 
 # Using RSL-RL or SKRL
 python scripts/reinforcement_learning/<RL_LIBRARY>/play.py \
-    --task=Template-Quadrrl-Velocity-Flat-Spot-MARL-Play-v0 \
+    --task=Quadrrl-Velocity-Flat-Spot-MARL-Play-v0 \
     --checkpoint=/path/to/checkpoint.pth
 ```
 

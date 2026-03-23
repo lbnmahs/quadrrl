@@ -1,1 +1,0 @@
-"""Quadruped locomotion velocity env configs (QUADRRL)"""
