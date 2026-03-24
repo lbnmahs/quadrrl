@@ -9,10 +9,11 @@ from isaaclab.managers import ObservationTermCfg as ObsTerm
 from isaaclab.managers import RewardTermCfg, SceneEntityCfg
 from isaaclab.managers import TerminationTermCfg as DoneTerm
 from isaaclab.utils import configclass
-from isaaclab.utils.noise import AdditiveUniformNoiseCfg as Unoise
+from isaaclab.utils.noise import UniformNoiseCfg as Unoise
 
 import quadrrl.tasks.manager_based.locomotion.velocity.config.quadruped.spot.mdp as spot_mdp
 import quadrrl.tasks.manager_based.locomotion.velocity.mdp as mdp
+from quadrrl.tasks.manager_based.locomotion.velocity.backend_utils import configure_newton_sim
 from quadrrl.tasks.manager_based.locomotion.velocity.velocity_env_cfg import LocomotionVelocityRoughEnvCfg
 
 ##
@@ -346,3 +347,15 @@ class SpotFlatEnvCfg_PLAY(SpotFlatEnvCfg):
         # remove random pushing event
         self.events.base_external_force_torque = None
         self.events.push_robot = None
+
+
+@configclass
+class SpotNewtonFlatEnvCfg(SpotFlatEnvCfg):
+    """Newton backend variant of Spot flat terrain task."""
+
+    def __post_init__(self):
+        super().__post_init__()
+        configure_newton_sim(self.sim)
+        # Newton articulation view currently lacks `link_paths` expected by this PhysX-oriented randomizer.
+        if hasattr(self.events, "physics_material"):
+            self.events.physics_material = None

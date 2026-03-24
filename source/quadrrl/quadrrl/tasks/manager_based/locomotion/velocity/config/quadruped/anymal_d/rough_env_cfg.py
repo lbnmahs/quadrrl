@@ -3,6 +3,7 @@
 
 from isaaclab.utils import configclass
 
+from quadrrl.tasks.manager_based.locomotion.velocity.backend_utils import configure_newton_sim
 from quadrrl.tasks.manager_based.locomotion.velocity.velocity_env_cfg import LocomotionVelocityRoughEnvCfg
 
 ##
@@ -131,3 +132,24 @@ class AnymalDRoughEnvCfg(LocomotionVelocityRoughEnvCfg):
         self.curriculum.command_levels_ang_vel = None
 
         # ------------------------------Commands------------------------------
+
+
+@configclass
+class AnymalDNewtonRoughEnvCfg(AnymalDRoughEnvCfg):
+    def __post_init__(self):
+        super().__post_init__()
+        configure_newton_sim(self.sim)
+        # Newton backend can place articulation bodies under backend-specific prim paths.
+        # Disable height scanner dependence in Newton variants to avoid hard path assumptions.
+        self.scene.height_scanner = None
+        self.scene.height_scanner_base = None
+        self.observations.policy.height_scan = None
+        self.observations.critic.height_scan = None
+        if self.rewards.base_height_l2 is not None:
+            self.rewards.base_height_l2.params["sensor_cfg"] = None
+        # Newton articulation view currently lacks `link_paths` expected by this PhysX-oriented randomizer.
+        self.events.randomize_rigid_body_material = None
+        # Newton API for COM randomization differs from PhysX in current runtime.
+        self.events.randomize_com_positions = None
+        if self.__class__.__name__ == "AnymalDNewtonRoughEnvCfg":
+            self.disable_zero_weight_rewards()

@@ -63,6 +63,7 @@ installed_version = metadata.version("rsl-rl-lib")
 
 import os
 import time
+import json
 
 import gymnasium as gym
 import torch
@@ -92,6 +93,15 @@ from isaaclab_tasks.utils import get_checkpoint_path
 from isaaclab_tasks.utils.hydra import hydra_task_config
 
 # PLACEHOLDER: Extension template (do not remove this comment)
+try:
+    import quadrrl  # noqa: F401
+except ModuleNotFoundError:
+    from pathlib import Path
+
+    repo_root = Path(__file__).resolve().parents[3]
+    quadrrl_src_root = repo_root / "source" / "quadrrl"
+    sys.path.insert(0, str(quadrrl_src_root))
+    import quadrrl  # noqa: F401
 
 
 @hydra_task_config(args_cli.task, args_cli.agent)
@@ -192,6 +202,27 @@ def main(env_cfg: ManagerBasedRLEnvCfg | DirectRLEnvCfg | DirectMARLEnvCfg, agen
         # export to JIT and ONNX
         export_policy_as_jit(policy_nn, normalizer=normalizer, path=export_model_dir, filename="policy.pt")
         export_policy_as_onnx(policy_nn, normalizer=normalizer, path=export_model_dir, filename="policy.onnx")
+
+    # Export deployment-facing metadata alongside model artifacts.
+    deployment_manifest = {
+        "task": args_cli.task,
+        "agent_entrypoint": args_cli.agent,
+        "checkpoint": resume_path,
+        "policy_jit_path": os.path.join(export_model_dir, "policy.pt"),
+        "policy_onnx_path": os.path.join(export_model_dir, "policy.onnx"),
+        "step_dt": float(env.unwrapped.step_dt),
+        "num_envs": int(env.unwrapped.num_envs),
+        "sim_device": str(env.unwrapped.device),
+        "observation_space": str(env.unwrapped.observation_space),
+        "action_space": str(env.unwrapped.action_space),
+        "notes": {
+            "normalization": "RSL-RL runner contains normalizer state in checkpoint and exported policy pipeline.",
+            "deployment_contract": "Preserve observation ordering and control rate when deploying.",
+        },
+    }
+    os.makedirs(export_model_dir, exist_ok=True)
+    with open(os.path.join(export_model_dir, "deployment_manifest.json"), "w", encoding="utf-8") as f:
+        json.dump(deployment_manifest, f, indent=2)
 
     dt = env.unwrapped.step_dt
 

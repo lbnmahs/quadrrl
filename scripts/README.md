@@ -14,6 +14,9 @@ scripts/
 │   ├── usd_policy_inference.py # USD-based policy inference
 │   ├── il_anymal_d_usd.py      # ANYmal-D interactive locomotion
 │   └── il_go2_rough.py         # Go2 rough terrain demo
+├── sim2sim_transfer/           # PhysX <-> Newton transfer utilities
+│   ├── rsl_rl_transfer.py      # RSL-RL transfer runner with joint remapping
+│   └── config/                 # Robot-specific joint mapping YAML files
 ├── reinforcement_learning/     # RL framework training scripts
 │   ├── rl_games/              # RL Games framework
 │   ├── rsl_rl/                # RSL-RL framework
@@ -220,5 +223,30 @@ isaaclab.bat -p scripts/reinforcement_learning/<FRAMEWORK>/play.py ^
 
 - [Getting Started Guide](../docs/GETTING_STARTED.md) - Basic usage
 - [Training Guide](../docs/TRAINING.md) - Detailed training instructions
+- [Newton Integration](../docs/NEWTON_INTEGRATION.md) - Newton task IDs, sim2sim workflow, deployment artifacts
 - [Project Structure](../docs/STRUCTURE.md) - Code organization
+
+## Sim2Sim Transfer Script
+
+Use `scripts/sim2sim_transfer/rsl_rl_transfer.py` to run a policy trained in one
+backend ordering (source) in another backend/task ordering (target).
+
+**Usage:**
+
+```bash
+python scripts/sim2sim_transfer/rsl_rl_transfer.py \
+  --task Quadrrl-Velocity-Rough-Unitree-Go2-Newton-v0 \
+  --checkpoint /path/to/source_checkpoint.pt \
+  --policy_transfer_file scripts/sim2sim_transfer/config/physx_to_newton_go2.yaml \
+  --num_envs 32
+```
+
+**Notes:**
+
+- Mapping YAML must define:
+  - `source_joint_names`
+  - `target_joint_names`
+- Joint sets must match one-to-one.
+- Default observation remapping assumes locomotion layout:
+  - base terms, joint_pos, joint_vel, last_actions
 

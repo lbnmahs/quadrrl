@@ -1,0 +1,27 @@
+source_joint_names:
+  - fl_hx
+  - fl_hy
+  - fl_kn
+  - fr_hx
+  - fr_hy
+  - fr_kn
+  - hl_hx
+  - hl_hy
+  - hl_kn
+  - hr_hx
+  - hr_hy
+  - hr_kn
+
+target_joint_names:
+  - fl_hx
+  - fl_hy
+  - fl_kn
+  - fr_hx
+  - fr_hy
+  - fr_kn
+  - hl_hx
+  - hl_hy
+  - hl_kn
+  - hr_hx
+  - hr_hy
+  - hr_kn

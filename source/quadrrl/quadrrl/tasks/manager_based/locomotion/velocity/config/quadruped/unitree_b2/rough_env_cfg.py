@@ -3,6 +3,7 @@
 
 from isaaclab.utils import configclass
 
+from quadrrl.tasks.manager_based.locomotion.velocity.backend_utils import configure_newton_sim
 from quadrrl.tasks.manager_based.locomotion.velocity.velocity_env_cfg import LocomotionVelocityRoughEnvCfg
 
 ##
@@ -161,3 +162,28 @@ class UnitreeB2RoughEnvCfg(LocomotionVelocityRoughEnvCfg):
         # self.commands.base_velocity.ranges.lin_vel_x = (-2.0, 2.0)
         # self.commands.base_velocity.ranges.lin_vel_y = (-2.0, 2.0)
         # self.commands.base_velocity.ranges.ang_vel_z = (-1.5, 1.5)
+
+
+@configclass
+class UnitreeB2NewtonRoughEnvCfg(UnitreeB2RoughEnvCfg):
+    # Newton parser currently exposes terminal leg links as `*_calf` for this asset.
+    foot_link_name = ".*_calf"
+
+    def __post_init__(self):
+        super().__post_init__()
+        configure_newton_sim(self.sim)
+        # Newton backend can place articulation bodies under backend-specific prim paths.
+        # Disable height scanner dependence in Newton variants to avoid hard path assumptions.
+        self.scene.height_scanner = None
+        self.scene.height_scanner_base = None
+        self.observations.policy.height_scan = None
+        self.observations.critic.height_scan = None
+        if self.rewards.base_height_l2 is not None:
+            self.rewards.base_height_l2.params["sensor_cfg"] = None
+        # Newton articulation view currently lacks `link_paths` expected by this PhysX-oriented randomizer.
+        self.events.randomize_rigid_body_material = None
+        # Newton API for COM randomization differs from PhysX in current runtime.
+        self.events.randomize_com_positions = None
+        self.rewards.feet_gait.params["synced_feet_pair_names"] = (("FL_calf", "RR_calf"), ("FR_calf", "RL_calf"))
+        if self.__class__.__name__ == "UnitreeB2NewtonRoughEnvCfg":
+            self.disable_zero_weight_rewards()

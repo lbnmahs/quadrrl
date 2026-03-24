@@ -45,6 +45,7 @@ The table below shows a list of all the supported quadruped robots:
 - **[Simulation Videos](docs/DEMOS.md)** - Video demonstrations
 - **[Project Structure](docs/STRUCTURE.md)** - Code organization
 - **[Training Guide](docs/TRAINING.md)** - Single-agent and multi-agent RL training
+- **[Newton Integration](docs/NEWTON_INTEGRATION.md)** - Newton backend tasks, sim2sim transfer, deployment contract
 - **[Scripts Documentation](scripts/README.md)** - Available scripts and utilities
 - **[Tasks Documentation](source/quadrrl/quadrrl/tasks/README.md)** - Task architecture
 

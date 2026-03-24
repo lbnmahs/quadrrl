@@ -12,6 +12,7 @@ configuration for consistent training and demoing across all robots.
 
 from isaaclab.utils import configclass
 
+from quadrrl.tasks.manager_based.locomotion.velocity.backend_utils import configure_newton_sim
 from quadrrl.tasks.manager_based.locomotion.velocity.velocity_env_cfg import LocomotionVelocityRoughEnvCfg
 
 from .flat_env_cfg import (
@@ -87,3 +88,21 @@ class SpotRoughEnvCfg_PLAY(SpotRoughEnvCfg):
         # remove random pushing event
         self.events.base_external_force_torque = None
         self.events.push_robot = None
+
+
+@configclass
+class SpotNewtonRoughEnvCfg(SpotRoughEnvCfg):
+    """Newton backend variant of Spot rough terrain task."""
+
+    def __post_init__(self):
+        super().__post_init__()
+        configure_newton_sim(self.sim)
+        # Newton backend can place articulation bodies under backend-specific prim paths.
+        # Disable height scanner dependence in Newton variants to avoid hard path assumptions.
+        self.scene.height_scanner = None
+        self.scene.height_scanner_base = None
+        if hasattr(self.observations, "policy"):
+            self.observations.policy.height_scan = None
+        # Newton articulation view currently lacks `link_paths` expected by this PhysX-oriented randomizer.
+        if hasattr(self.events, "physics_material"):
+            self.events.physics_material = None
