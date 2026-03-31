@@ -91,6 +91,20 @@ import isaaclab_tasks  # noqa: F401
 from isaaclab_tasks.utils import get_checkpoint_path
 from isaaclab_tasks.utils.hydra import hydra_task_config
 
+# Ensure Quadrrl task configs are registered with Gym before Hydra resolves `--task`.
+#
+# When running from a source checkout (not installed as a package), we add `source/quadrrl`
+# to `sys.path` so `import quadrrl` works.
+try:
+    import quadrrl  # noqa: F401
+except ModuleNotFoundError:
+    from pathlib import Path
+
+    repo_root = Path(__file__).resolve().parents[3]
+    quadrrl_src_root = repo_root / "source" / "quadrrl"
+    sys.path.insert(0, str(quadrrl_src_root))
+    import quadrrl  # noqa: F401
+
 # PLACEHOLDER: Extension template (do not remove this comment)
 
 

@@ -29,20 +29,20 @@ gym.register(
 )
 
 gym.register(
-    id="Quadrrl-Velocity-Flat-Anymal-D-Play-v0",
+    id="Quadrrl-Velocity-Rough-Anymal-D-v0",
     entry_point="isaaclab.envs:ManagerBasedRLEnv",
     disable_env_checker=True,
     kwargs={
-        "env_cfg_entry_point": f"{__name__}.flat_env_cfg:AnymalDFlatEnvCfg_PLAY",
-        "rsl_rl_cfg_entry_point": f"{agents.__name__}.rsl_rl_ppo_cfg:AnymalDFlatPPORunnerCfg",
-        "rsl_rl_recurrent_cfg_entry_point": f"{agents.__name__}.rsl_rl_ppo_cfg:AnymalDFlatPPORunnerRecurrentCfg",
+        "env_cfg_entry_point": f"{__name__}.rough_env_cfg:AnymalDRoughEnvCfg",
+        "rsl_rl_cfg_entry_point": f"{agents.__name__}.rsl_rl_ppo_cfg:AnymalDRoughPPORunnerCfg",
+        "rsl_rl_recurrent_cfg_entry_point": f"{agents.__name__}.rsl_rl_ppo_cfg:AnymalDRoughPPORunnerRecurrentCfg",
         "rsl_rl_distillation_cfg_entry_point": (
-            f"{agents.__name__}.rsl_rl_distillation_cfg:AnymalDFlatDistillationRunnerCfg"
+            f"{agents.__name__}.rsl_rl_distillation_cfg:AnymalDRoughDistillationRunnerCfg"
         ),
         "rsl_rl_distillation_recurrent_cfg_entry_point": (
-            f"{agents.__name__}.rsl_rl_distillation_cfg:AnymalDFlatDistillationRunnerRecurrentCfg"
+            f"{agents.__name__}.rsl_rl_distillation_cfg:AnymalDRoughDistillationRunnerRecurrentCfg"
         ),
-        "rsl_rl_with_symmetry_cfg_entry_point": f"{agents.__name__}.rsl_rl_ppo_cfg:AnymalDFlatPPORunnerWithSymmetryCfg",
-        "skrl_cfg_entry_point": f"{agents.__name__}:skrl_flat_ppo_cfg.yaml",
+        "rsl_rl_with_symmetry_cfg_entry_point": f"{agents.__name__}.rsl_rl_ppo_cfg:AnymalDRoughPPORunnerWithSymmetryCfg",
+        "skrl_cfg_entry_point": f"{agents.__name__}:skrl_rough_ppo_cfg.yaml",
     },
 )
