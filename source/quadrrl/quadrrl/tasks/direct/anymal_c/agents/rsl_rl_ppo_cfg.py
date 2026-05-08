@@ -11,7 +11,7 @@ from isaaclab_rl.rsl_rl import RslRlOnPolicyRunnerCfg, RslRlPpoActorCriticCfg, R
 @configclass
 class AnymalCFlatPPORunnerCfg(RslRlOnPolicyRunnerCfg):
     num_steps_per_env = 24
-    max_iterations = 1500
+    max_iterations = 5000
     save_interval = 50
     experiment_name = "anymal_c_flat_direct"
     policy = RslRlPpoActorCriticCfg(
@@ -41,7 +41,7 @@ class AnymalCFlatPPORunnerCfg(RslRlOnPolicyRunnerCfg):
 @configclass
 class AnymalCRoughPPORunnerCfg(RslRlOnPolicyRunnerCfg):
     num_steps_per_env = 24
-    max_iterations = 1500
+    max_iterations = 5000
     save_interval = 50
     experiment_name = "anymal_c_rough_direct"
     policy = RslRlPpoActorCriticCfg(

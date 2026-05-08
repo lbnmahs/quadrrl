@@ -11,29 +11,25 @@ from isaaclab.utils import configclass
 from isaaclab_rl.rsl_rl import (
     RslRlDistillationAlgorithmCfg,
     RslRlDistillationRunnerCfg,
-    RslRlMLPModelCfg,
-    RslRlRNNModelCfg,
+    RslRlDistillationStudentTeacherCfg,
+    RslRlDistillationStudentTeacherRecurrentCfg,
 )
 
 
 @configclass
 class AnymalDFlatDistillationRunnerCfg(RslRlDistillationRunnerCfg):
     num_steps_per_env = 120
-    max_iterations = 300
+    max_iterations = 5000
     save_interval = 50
     experiment_name = "anymal_d_flat"
     obs_groups = {"student": ["policy"], "teacher": ["policy"]}
-    student = RslRlMLPModelCfg(
-        hidden_dims=[128, 128, 128],
+    policy = RslRlDistillationStudentTeacherCfg(
+        init_noise_std=0.1,
+        student_obs_normalization=False,
+        teacher_obs_normalization=False,
+        student_hidden_dims=[128, 128, 128],
+        teacher_hidden_dims=[128, 128, 128],
         activation="elu",
-        obs_normalization=False,
-        distribution_cfg=RslRlMLPModelCfg.GaussianDistributionCfg(init_std=0.1),
-    )
-    teacher = RslRlMLPModelCfg(
-        hidden_dims=[128, 128, 128],
-        activation="elu",
-        obs_normalization=False,
-        distribution_cfg=RslRlMLPModelCfg.GaussianDistributionCfg(init_std=0.0),
     )
     algorithm = RslRlDistillationAlgorithmCfg(
         num_learning_epochs=2,
@@ -44,21 +40,15 @@ class AnymalDFlatDistillationRunnerCfg(RslRlDistillationRunnerCfg):
 
 @configclass
 class AnymalDFlatDistillationRunnerRecurrentCfg(AnymalDFlatDistillationRunnerCfg):
-    student = RslRlRNNModelCfg(
-        hidden_dims=[128, 128, 128],
+    policy = RslRlDistillationStudentTeacherRecurrentCfg(
+        init_noise_std=0.1,
+        student_obs_normalization=False,
+        teacher_obs_normalization=False,
+        student_hidden_dims=[128, 128, 128],
+        teacher_hidden_dims=[128, 128, 128],
         activation="elu",
-        obs_normalization=False,
-        distribution_cfg=RslRlMLPModelCfg.GaussianDistributionCfg(init_std=0.1),
         rnn_type="lstm",
         rnn_hidden_dim=256,
         rnn_num_layers=1,
-    )
-    teacher = RslRlRNNModelCfg(
-        hidden_dims=[128, 128, 128],
-        activation="elu",
-        obs_normalization=False,
-        distribution_cfg=RslRlMLPModelCfg.GaussianDistributionCfg(init_std=0.0),
-        rnn_type="lstm",
-        rnn_hidden_dim=256,
-        rnn_num_layers=1,
+        teacher_recurrent=True,
     )
