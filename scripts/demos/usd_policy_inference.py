@@ -44,7 +44,7 @@ from isaaclab.envs import ManagerBasedRLEnv
 from isaaclab.terrains import TerrainImporterCfg
 from isaaclab.utils.assets import ISAAC_NUCLEUS_DIR
 
-from quadrrl.tasks.manager_based.locomotion.velocity.config.anymal_c.flat_env_cfg import AnymalCFlatEnvCfg_PLAY
+from quadrrl.tasks.manager_based.locomotion.legged.config.anymal_d.flat_env_cfg import AnymalDFlatEnvCfg_PLAY
 
 
 def main():
@@ -57,7 +57,7 @@ def main():
     policy.eval()
 
     # setup environment
-    env_cfg = AnymalCFlatEnvCfg_PLAY()
+    env_cfg = AnymalDFlatEnvCfg_PLAY()
     env_cfg.scene.num_envs = 1
     env_cfg.curriculum = None
     env_cfg.scene.terrain = TerrainImporterCfg(

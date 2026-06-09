@@ -76,7 +76,7 @@ from isaaclab.utils.pretrained_checkpoint import get_published_pretrained_checkp
 
 from isaaclab_rl.rsl_rl import RslRlOnPolicyRunnerCfg, RslRlVecEnvWrapper
 
-from quadrrl.tasks.manager_based.locomotion.velocity.config.anymal_d.rough_env_cfg import AnymalDRoughEnvCfg_PLAY
+from quadrrl.tasks.manager_based.locomotion.legged.config.anymal_d.rough_env_cfg import AnymalDRoughEnvCfg_PLAY
 
 TASK = "Quadrrl-Velocity-Rough-Anymal-D-v0"
 RL_LIBRARY = "rsl_rl"

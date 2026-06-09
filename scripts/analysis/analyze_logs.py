@@ -25,7 +25,6 @@ except ImportError:
     TENSORBOARD_AVAILABLE = False
     print("Warning: TensorBoard not available. Install with: pip install tensorboard")
 
-
 def scan_log_structure(logs_dir: Path) -> Dict[str, Any]:
     """Scan the logs directory and return its structure."""
     structure = {
@@ -228,13 +227,11 @@ def generate_report(logs_dir: Path, sample_runs: int = 5) -> Dict[str, Any]:
     # Identify key metrics
     key_metrics = identify_key_metrics(all_metrics)
 
-    report = {
+    return {
         "structure": structure,
         "sample_metrics": all_metrics,
         "key_metrics": key_metrics,
     }
-
-    return report
 
 
 def print_summary(report: Dict[str, Any]):
@@ -281,6 +278,15 @@ def print_summary(report: Dict[str, Any]):
                     print(f"      - Mean: {stats['mean']:.4f}")
                     print(f"      - Last: {stats['last_value']:.4f}")
                     print(f"      - Samples: {stats['count']}")
+
+    if report.get("run_manifest_summary"):
+        summary = report["run_manifest_summary"]
+        print("\n🧾 RUN MANIFEST AUDIT:")
+        print(f"  Indexed runs: {summary['total_runs_indexed']}")
+        print(f"  Runs with TensorBoard logs: {summary['runs_with_tensorboard']}")
+        print(f"  Runs with params: {summary['runs_with_params']}")
+        print(f"  Runs with checkpoints: {summary['runs_with_checkpoints']}")
+        print(f"  Robots in manifest: {', '.join(summary['robot_ids'])}")
 
 
 def main():

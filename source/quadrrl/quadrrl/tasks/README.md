@@ -29,25 +29,24 @@ direct/
 Manager-based tasks use hierarchical control with a manager (high-level) and low-level controllers.
 
 **Available Manager-Based Tasks:**
-- `locomotion/velocity/` - Velocity tracking tasks
+- `locomotion/legged/` - Legged velocity tracking tasks
+- `locomotion/wheeled/` - Wheeled-legged velocity tracking tasks
 - `navigation/` - Goal-directed navigation tasks
 
 **Structure:**
 ```
 manager_based/
 ├── locomotion/
-│   └── velocity/
-│       ├── velocity_env_cfg.py        # Quadruped (legged) base config
-│       ├── wheeled_velocity_env_cfg.py  # Wheeled-legged base config
-│       ├── config/                    # Robot-specific configs
-│       │   ├── quadrupeds/            # Legged: anymal_c, anymal_d, go2, spot, b2, lite3, zsl1
-│       │   ├── wheeled/               # Wheeled-legged: unitree_go2w, unitree_b2w, zsibot_zsl1w, deeprobotics_m20
-│       │   └── spot_marl/             # Spot MARL (4 leg agents)
-│       └── mdp/                       # MDP components
-│           ├── rewards.py
-│           ├── terminations.py
-│           ├── curriculums.py
-│           └── utils.py
+│   ├── legged/
+│   │   ├── velocity_env_cfg.py        # Legged base config (Isaac Lab style)
+│   │   ├── config/                    # Legged robot configs
+│   │   │   ├── anymal_d/, unitree_go2/, spot/, unitree_b2/, deeprobotics_lite3/, zsibot_zsl1/
+│   │   └── mdp/                       # Legged MDP components
+│   └── wheeled/
+│       ├── velocity_env_cfg.py        # Wheeled-legged base config (robot_lab style)
+│       ├── config/                    # Wheeled robot configs
+│       │   ├── unitree_go2w/, unitree_b2w/, zsibot_zsl1w/, deeprobotics_m20/
+│       └── mdp/                       # Wheeled MDP extensions
 └── navigation/
     └── config/
         └── anymal_c/
@@ -167,7 +166,7 @@ The environment is automatically registered when the package is imported if:
 - Update [Training Guide](../../../../docs/TRAINING.md)
 - Add task description to this README
 
-**Adding only a new robot to velocity:** Add a config folder under `locomotion/velocity/config/quadrupeds/` (legged) or `config/wheeled/` (wheeled-legged), with `flat_env_cfg.py`, `rough_env_cfg.py`, and `agents/`. Use `velocity_env_cfg` or `wheeled_velocity_env_cfg` as base. See [Project Structure](../../../../docs/STRUCTURE.md).
+**Adding only a new robot to velocity:** Add a config folder under `locomotion/legged/config/` (legged) or `locomotion/wheeled/config/` (wheeled-legged), with `flat_env_cfg.py`, `rough_env_cfg.py`, and `agents/`. Use `legged/velocity_env_cfg` or `wheeled/velocity_env_cfg` as base. See [Project Structure](../../../../docs/STRUCTURE.md).
 
 ## Task Naming Convention
 

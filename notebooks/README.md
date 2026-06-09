@@ -80,4 +80,3 @@ logs/
 
 - [Scripts Documentation](../scripts/README.md) - Analysis script details
 - [Training Guide](../docs/TRAINING.md) - Understanding training outputs
-

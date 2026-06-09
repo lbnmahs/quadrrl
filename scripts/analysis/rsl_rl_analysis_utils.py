@@ -17,6 +17,11 @@ import seaborn as sns
 from typing import Dict, List, Optional
 import warnings
 from scipy import stats
+try:
+    import plotly.express as px
+    PLOTLY_AVAILABLE = True
+except ImportError:
+    PLOTLY_AVAILABLE = False
 
 warnings.filterwarnings('ignore')
 
@@ -682,3 +687,106 @@ def compute_convergence_metrics(
         })
     
     return pd.DataFrame(convergence_data)
+
+
+def extract_terminal_metrics(
+    all_metrics: Dict,
+    metric_name: str = "mean_reward",
+    window_size: int = 100,
+) -> pd.DataFrame:
+    """Extract terminal-window metric statistics for each run.
+
+    This avoids relying on a single last-point value when ranking runs.
+    """
+    rows = []
+    for run_key, run_data in all_metrics.items():
+        metrics = run_data["metrics"]
+        metric_tag = find_metric_name(metrics, METRIC_PATTERNS.get(metric_name, [metric_name]))
+        if metric_tag is None or metric_tag not in metrics:
+            continue
+        df = metrics[metric_tag].sort_values("step")
+        if df.empty:
+            continue
+        tail = df.tail(window_size)
+        rows.append(
+            {
+                "run_key": run_key,
+                "display_name": run_data["display_name"],
+                "experiment": run_data["experiment"],
+                "category": run_data["category"],
+                "metric_name": metric_name,
+                "metric_tag": metric_tag,
+                "terminal_mean": float(tail["value"].mean()),
+                "terminal_std": float(tail["value"].std()) if len(tail) > 1 else 0.0,
+                "terminal_count": int(len(tail)),
+            }
+        )
+    return pd.DataFrame(rows)
+
+
+def rank_runs_by_task(
+    metrics_df: pd.DataFrame,
+    score_columns: List[str],
+    higher_is_better: Optional[Dict[str, bool]] = None,
+) -> pd.DataFrame:
+    """Create per-category rankings from selected metric columns.
+
+    The function normalizes each column within a category, applies direction,
+    and computes an average composite score.
+    """
+    if metrics_df.empty:
+        return pd.DataFrame([])
+    if higher_is_better is None:
+        higher_is_better = {col: True for col in score_columns}
+
+    rows = []
+    for category, category_df in metrics_df.groupby("category"):
+        working = category_df.copy()
+        norm_cols = []
+        for col in score_columns:
+            if col not in working.columns:
+                continue
+            vals = pd.to_numeric(working[col], errors="coerce")
+            valid = vals.dropna()
+            norm_col = f"{col}_norm"
+            if valid.empty:
+                working[norm_col] = np.nan
+            elif valid.max() == valid.min():
+                working[norm_col] = 0.5
+            else:
+                working[norm_col] = (vals - valid.min()) / (valid.max() - valid.min())
+            if not higher_is_better.get(col, True):
+                working[norm_col] = 1.0 - working[norm_col]
+            norm_cols.append(norm_col)
+        if not norm_cols:
+            continue
+        working["composite_score"] = working[norm_cols].mean(axis=1, skipna=True)
+        working["rank"] = working["composite_score"].rank(method="dense", ascending=False, na_option="bottom")
+        rows.append(working)
+    if not rows:
+        return pd.DataFrame([])
+    return pd.concat(rows, ignore_index=True)
+
+
+def plot_comparison_bar_interactive(
+    metrics_df: pd.DataFrame,
+    score_column: str,
+    color_column: str = "category",
+    title: Optional[str] = None,
+):
+    """Create an interactive Plotly bar chart for cross-run comparison."""
+    if not PLOTLY_AVAILABLE:
+        print("Plotly is not available. Install with: pip install plotly")
+        return None
+    if metrics_df.empty or score_column not in metrics_df.columns:
+        return None
+    figure = px.bar(
+        metrics_df,
+        x="display_name",
+        y=score_column,
+        color=color_column if color_column in metrics_df.columns else None,
+        hover_data=["run_key", "experiment"] if "run_key" in metrics_df.columns else None,
+        title=title or f"Interactive comparison: {score_column}",
+    )
+    figure.update_layout(xaxis_title="Run", yaxis_title=score_column)
+    return figure

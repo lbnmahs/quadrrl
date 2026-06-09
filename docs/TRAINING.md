@@ -2,7 +2,7 @@
 
 ## Available Environments
 
-> **Analysis scope:** Benchmark analysis focuses on trained **legged** and **wheel-legged** quadruped locomotion policies, including both performance and locomotion task success rate.
+> **Analysis scope:** Performance analysis covers trained **legged** and **wheel-legged** quadruped locomotion policies. Use TensorBoard logs, [`scripts/analysis/analyze_logs.py`](../scripts/analysis/analyze_logs.py), and [`notebooks/rsl_rl_performance.ipynb`](../notebooks/rsl_rl_performance.ipynb) to compare runs and report both policy performance and locomotion task success rate.
 
 ### Single-Agent Locomotion Tasks
 
@@ -18,8 +18,11 @@
 
 **Note:** Spot uses gait- and contact-focused rewards (gait phase shaping, foot-clearance, air-time balance) that differ from the generic locomotion reward set used by ANYmal/Go2.
 
+**Legged (velocity):**  
+Environments use the Isaac Lab-style `locomotion/legged/velocity_env_cfg` base and are registered under `locomotion/legged/config/`.
+
 **Wheeled-legged (velocity only):**  
-Environments use the `wheeled_velocity_env_cfg` base and are registered under `config/wheeled/`. Examples: `Quadrrl-Velocity-Flat-Unitree-Go2W-v0`, `Quadrrl-Velocity-Rough-Unitree-Go2W-v0`, and similarly for Unitree B2W, Zsibot ZSL1W, and DeepRobotics M20. Use the same training/eval commands with the corresponding task name.
+Environments use the `locomotion/wheeled/velocity_env_cfg` base and are registered under `locomotion/wheeled/config/`. Examples: `Quadrrl-Velocity-Flat-Unitree-Go2W-v0`, `Quadrrl-Velocity-Rough-Unitree-Go2W-v0`, and similarly for Unitree B2W, Zsibot ZSL1W, and DeepRobotics M20. Use the same training/eval commands with the corresponding task name.
 
 ### Single-Agent Navigation Tasks
 
@@ -63,7 +66,7 @@ python scripts/reinforcement_learning/<RL_LIBRARY>/play.py \
     --checkpoint=/absolute/path/to/checkpoint.pth
 ```
 
-For benchmarking, report both policy performance and locomotion task success rate for trained legged and wheel-legged quadruped robots.
+When reporting results, include both policy performance and locomotion task success rate for trained legged and wheel-legged quadruped robots.
 
 ### Demo Scripts
 
@@ -131,3 +134,4 @@ python scripts/reinforcement_learning/harl/play.py \
 - [Getting Started Guide](GETTING_STARTED.md) - Basic usage and commands
 - [Project Structure](STRUCTURE.md) - Code organization
 - [Tasks Documentation](../source/quadrrl/quadrrl/tasks/README.md) - Task implementation details
+- [Notebooks](../notebooks/README.md) - Performance analysis with `rsl_rl_performance.ipynb`
