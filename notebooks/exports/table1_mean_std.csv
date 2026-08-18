@@ -1,0 +1,9 @@
+experiment,display_name,robot,terrain,workflow,n_seeds,mean_reward,track_lin_vel,track_ang_vel,episode_length,steps_to_75pct
+anymal_c_flat_direct,Anymal-C Flat Direct,anymal_c,flat,direct,3,26.456 ± 0.412,0.958 ± 0.013,0.486 ± 0.007,990.033 ± 15.531,146.667 ± 30.072
+anymal_c_rough_direct,Anymal-C Rough Direct,anymal_c,rough,direct,3,17.314 ± 1.104,0.799 ± 0.064,0.415 ± 0.025,921.500 ± 31.386,554.667 ± 110.238
+anymal_d_flat,Anymal-D Flat Manager,anymal_d,flat,manager,3,22.395 ± 0.257,0.925 ± 0.002,0.464 ± 0.003,991.313 ± 4.081,245.667 ± 51.791
+anymal_d_rough,Anymal-D Rough Manager,anymal_d,rough,manager,3,17.131 ± 0.354,0.819 ± 0.009,0.413 ± 0.005,963.823 ± 4.075,277.000 ± 20.881
+unitree_go2_flat,Unitree Go2 Flat,go2,flat,manager,3,35.529 ± 0.812,1.417 ± 0.033,0.657 ± 0.015,986.587 ± 17.779,347.667 ± 14.572
+unitree_go2_rough,Unitree Go2 Rough,go2,rough,manager,3,21.335 ± 1.184,1.152 ± 0.052,0.564 ± 0.017,954.037 ± 17.589,420.333 ± 73.009
+unitree_b2_flat,Unitree B2 Flat,b2,flat,manager,3,1.172 ± 1.926,0.218 ± 0.071,0.424 ± 0.150,659.517 ± 235.608,1186.333 ± 88.319
+unitree_b2_rough,Unitree B2 Rough,b2,rough,manager,3,2.499 ± 0.448,0.196 ± 0.030,0.170 ± 0.023,413.663 ± 33.387,132.000 ± 5.568

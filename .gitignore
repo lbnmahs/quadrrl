@@ -47,6 +47,9 @@ docker/artifacts/
 **/docs/_build/*
 **/generated/*
 
+# Local ICCTA paper drafts (IEEE template, figures, bibliography)
+docs/iccta/
+
 # Isaac-Sim packman
 _isaac_sim*
 _repo
