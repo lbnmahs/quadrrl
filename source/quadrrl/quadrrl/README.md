@@ -13,14 +13,15 @@ quadrrl/
 └── tasks/          # Task implementations
     ├── direct/     # Direct RL tasks
     └── manager_based/  # Manager-based RL tasks
-        └── locomotion/velocity/
-            ├── velocity_env_cfg.py      # Quadruped (legged) velocity env
-            ├── wheeled_velocity_env_cfg.py  # Wheeled-legged velocity env
-            ├── config/
-            │   ├── quadrupeds/          # Legged robot configs (Anymal-C/D, Go2, Spot, B2, Lite3, ZSL1)
-            │   ├── wheeled/             # Wheeled-legged configs (Go2W, B2W, ZSL1W, M20)
-            │   └── spot_marl/           # Spot MARL task config
-            └── mdp/                     # MDP components (rewards, terminations, etc.)
+        └── locomotion/
+            ├── legged/                # Legged velocity (Isaac Lab-style)
+            │   ├── velocity_env_cfg.py
+            │   ├── mdp/
+            │   └── config/            # anymal_d, unitree_go2, spot, unitree_b2, lite3, zsl1
+            └── wheeled/               # Wheeled-legged velocity (robot_lab-style)
+                ├── velocity_env_cfg.py
+                ├── mdp/
+                └── config/            # unitree_go2w, unitree_b2w, zsibot_zsl1w, deeprobotics_m20
 ```
 
 ## Core Components
@@ -47,8 +48,8 @@ Tasks define the reinforcement learning environments. See [Tasks Documentation](
 **Task Types:**
 - **Direct Tasks** - Direct RL control without hierarchical structure
 - **Manager-Based Tasks** - Hierarchical control with manager and low-level controllers
-  - **Quadruped velocity** - Legged locomotion (flat/rough) via `velocity_env_cfg`
-  - **Wheeled velocity** - Wheeled-legged locomotion via `wheeled_velocity_env_cfg`
+  - **Legged velocity** - Legged locomotion (flat/rough) via `locomotion/legged/velocity_env_cfg`
+  - **Wheeled velocity** - Wheeled-legged locomotion via `locomotion/wheeled/velocity_env_cfg`
 
 ## Extension Registration
 
@@ -62,7 +63,7 @@ Tasks are automatically registered when the package is imported:
 import quadrrl.tasks  # Registers all tasks
 import gymnasium as gym
 
-env = gym.make("Quadrrl-Velocity-Flat-Anymal-C-v0")  # quadruped
+env = gym.make("Quadrrl-Velocity-Flat-Anymal-D-v0")  # legged
 # env = gym.make("Quadrrl-Velocity-Flat-Unitree-Go2W-v0")  # wheeled-legged
 ```
 
@@ -71,4 +72,3 @@ env = gym.make("Quadrrl-Velocity-Flat-Anymal-C-v0")  # quadruped
 - [Tasks Documentation](tasks/README.md) - Task architecture and implementation
 - [Project Structure](../../../docs/STRUCTURE.md) - Overall project organization
 - [Training Guide](../../../docs/TRAINING.md) - Training workflows
-

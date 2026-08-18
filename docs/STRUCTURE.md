@@ -31,12 +31,14 @@ quadrrl/
 **Tasks** (`tasks/`):
 - **Direct** (`tasks/direct/`): `anymal_c/`, `anymal_c_marl/`
 - **Manager-Based** (`tasks/manager_based/`):
-  - `locomotion/velocity/` - Velocity tracking with robot-specific configs
+  - `locomotion/legged/` - Legged velocity tracking (Isaac Lab-style base)
     - `velocity_env_cfg.py` - Base config for **quadruped (legged)** robots
-    - `wheeled_velocity_env_cfg.py` - Base config for **wheeled-legged** robots
-    - `config/quadrupeds/` - Legged robot configs (anymal_c, anymal_d, go2, spot, b2, lite3, zsl1)
-    - `config/wheeled/` - Wheeled-legged configs (unitree_go2w, unitree_b2w, zsibot_zsl1w, deeprobotics_m20)
-    - `config/spot_marl/` - Spot MARL (4 leg agents)
+    - `mdp/` - Curriculums, rewards, terminations, symmetry
+    - `config/` - Legged robot configs (anymal_d, unitree_go2, spot, unitree_b2, deeprobotics_lite3, zsibot_zsl1)
+  - `locomotion/wheeled/` - Wheeled-legged velocity tracking (robot_lab-style base)
+    - `velocity_env_cfg.py` - Base config for **wheeled-legged** robots
+    - `mdp/` - Commands, events, observations, rewards extensions
+    - `config/` - Wheeled configs (unitree_go2w, unitree_b2w, zsibot_zsl1w, deeprobotics_m20)
   - `navigation/` - Navigation tasks
 
 Each task contains: environment (`*_env.py`), config (`*_env_cfg.py`), and agent configs (`agents/`)
@@ -71,7 +73,7 @@ Contains: checkpoints, TensorBoard logs, configs, metrics
 
 **New Robot**: Create file in `robots/`, define config class, register in task configs  
 **New Task**: Create directory in `tasks/direct/` or `tasks/manager_based/`, implement environment and config, add agent configs, register in `tasks/__init__.py`  
-**New velocity config**: Add a robot folder under `tasks/manager_based/locomotion/velocity/config/quadrupeds/` (legged) or `config/wheeled/` (wheeled-legged), with `flat_env_cfg.py`, `rough_env_cfg.py`, and `agents/`; use `velocity_env_cfg` or `wheeled_velocity_env_cfg` as base accordingly.  
+**New velocity config**: Add a robot folder under `tasks/manager_based/locomotion/legged/config/` (legged) or `locomotion/wheeled/config/` (wheeled-legged), with `flat_env_cfg.py`, `rough_env_cfg.py`, and `agents/`; use `legged/velocity_env_cfg` or `wheeled/velocity_env_cfg` as base accordingly.  
 **New RL Framework**: Create directory in `scripts/reinforcement_learning/`, implement `train.py` and `play.py`, create agent config templates
 
 ## Related Documentation

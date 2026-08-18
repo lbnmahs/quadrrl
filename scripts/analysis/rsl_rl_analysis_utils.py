@@ -10,13 +10,19 @@ Utility functions for loading, processing, and visualizing RSL-RL training metri
 """
 
 from pathlib import Path
+import re
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns
-from typing import Dict, List, Optional
+from typing import Dict, List, Optional, Sequence, Tuple, Union
 import warnings
 from scipy import stats
+try:
+    import plotly.express as px
+    PLOTLY_AVAILABLE = True
+except ImportError:
+    PLOTLY_AVAILABLE = False
 
 warnings.filterwarnings('ignore')
 
@@ -32,45 +38,111 @@ sns.set_style("whitegrid")
 plt.rcParams['figure.figsize'] = (12, 6)
 plt.rcParams['font.size'] = 11
 
+# Seed tag in run folder names: ``..._seed42`` or containing ``seed0`` / ``seed1`` / ``seed42``.
+_SEED_TAG_RE = re.compile(r"(?:^|[_-])seed(\d+)(?:$|[_-])", re.IGNORECASE)
+_SEED_FALLBACK_RE = re.compile(r"seed(\d+)", re.IGNORECASE)
 
-# Comparison groups definition - LOCOMOTION TASKS ONLY.
-# NOTE:
-# - The timestamp field here is treated as a placeholder.
-# - At runtime we automatically replace it with the **latest** run
-#   found under the logs directory for each experiment using
-#   ``refresh_comparisons_with_latest`` below.
+# Six-condition Table I grid (Anymal-C Direct, Anymal-D Manager, Go2 Manager).
+TABLE1_CONDITIONS: Dict[str, Dict[str, str]] = {
+    "anymal_c_flat_direct": {
+        "display_name": "Anymal-C Flat Direct",
+        "robot": "anymal_c",
+        "terrain": "flat",
+        "workflow": "direct",
+        "category": "flat_direct",
+    },
+    "anymal_c_rough_direct": {
+        "display_name": "Anymal-C Rough Direct",
+        "robot": "anymal_c",
+        "terrain": "rough",
+        "workflow": "direct",
+        "category": "rough_direct",
+    },
+    "anymal_d_flat": {
+        "display_name": "Anymal-D Flat Manager",
+        "robot": "anymal_d",
+        "terrain": "flat",
+        "workflow": "manager",
+        "category": "flat",
+    },
+    "anymal_d_rough": {
+        "display_name": "Anymal-D Rough Manager",
+        "robot": "anymal_d",
+        "terrain": "rough",
+        "workflow": "manager",
+        "category": "rough",
+    },
+    "unitree_go2_flat": {
+        "display_name": "Unitree Go2 Flat",
+        "robot": "go2",
+        "terrain": "flat",
+        "workflow": "manager",
+        "category": "flat",
+    },
+    "unitree_go2_rough": {
+        "display_name": "Unitree Go2 Rough",
+        "robot": "go2",
+        "terrain": "rough",
+        "workflow": "manager",
+        "category": "rough",
+    },
+    "unitree_b2_flat": {
+        "display_name": "Unitree B2 Flat",
+        "robot": "b2",
+        "terrain": "flat",
+        "workflow": "manager",
+        "category": "flat",
+    },
+    "unitree_b2_rough": {
+        "display_name": "Unitree B2 Rough",
+        "robot": "b2",
+        "terrain": "rough",
+        "workflow": "manager",
+        "category": "rough",
+    },
+}
+
+# Terminal metrics used for Table I / seed aggregation.
+TABLE1_METRIC_COLUMNS = [
+    "mean_reward",
+    "track_lin_vel",
+    "track_ang_vel",
+    "episode_length",
+    "steps_to_75pct",
+]
+
+# Comparison groups — 8-condition grid (no Anymal-C Manager).
+# Timestamp field is a placeholder; use seed-tagged loading for Table I.
+# ``refresh_comparisons_with_latest`` still resolves LATEST for single-run plots.
 COMPARISONS = {
-    'flat_vs_rough': [
-        ('anymal_c_flat', 'LATEST', 'Anymal-C Flat', 'flat'),
-        ('anymal_c_rough', 'LATEST', 'Anymal-C Rough', 'rough'),
-        # ('spot_flat', 'LATEST', 'Spot Flat', 'flat'),
-        # ('spot_rough', 'LATEST', 'Spot Rough', 'rough'),
-        ('anymal_c_flat_direct', 'LATEST', 'Anymal-C Flat Direct', 'flat_direct'),
-        ('anymal_c_rough_direct', 'LATEST', 'Anymal-C Rough Direct', 'rough_direct'),
-        ('unitree_go2_flat', 'LATEST', 'Unitree Go2 Flat', 'flat'),
-        ('unitree_go2_rough', 'LATEST', 'Unitree Go2 Rough', 'rough'),
-        ('anymal_d_flat', 'LATEST', 'Anymal-D Flat', 'flat'),
-        ('anymal_d_rough', 'LATEST', 'Anymal-D Rough', 'rough'),
+    "flat_vs_rough": [
+        ("anymal_c_flat_direct", "LATEST", "Anymal-C Flat Direct", "flat_direct"),
+        ("anymal_c_rough_direct", "LATEST", "Anymal-C Rough Direct", "rough_direct"),
+        ("anymal_d_flat", "LATEST", "Anymal-D Flat Manager", "flat"),
+        ("anymal_d_rough", "LATEST", "Anymal-D Rough Manager", "rough"),
+        ("unitree_go2_flat", "LATEST", "Unitree Go2 Flat", "flat"),
+        ("unitree_go2_rough", "LATEST", "Unitree Go2 Rough", "rough"),
+        ("unitree_b2_flat", "LATEST", "Unitree B2 Flat", "flat"),
+        ("unitree_b2_rough", "LATEST", "Unitree B2 Rough", "rough"),
     ],
-    'robot_comparison_flat': [
-        ('anymal_c_flat', 'LATEST', 'Anymal-C', 'anymal_c'),
-        ('anymal_c_flat_direct', 'LATEST', 'Anymal-C Flat Direct', 'flat_direct'),
-        # ('spot_flat', 'LATEST', 'Spot Flat', 'flat'),
-        ('anymal_d_flat', 'LATEST', 'Anymal-D', 'anymal_d'),
-        ('unitree_go2_flat', 'LATEST', 'Unitree Go2', 'go2'),
+    "robot_comparison_flat": [
+        ("anymal_c_flat_direct", "LATEST", "Anymal-C Direct", "anymal_c_direct"),
+        ("anymal_d_flat", "LATEST", "Anymal-D Manager", "anymal_d"),
+        ("unitree_go2_flat", "LATEST", "Unitree Go2", "go2"),
+        ("unitree_b2_flat", "LATEST", "Unitree B2", "b2"),
     ],
-    'robot_comparison_rough': [
-        ('anymal_c_rough', 'LATEST', 'Anymal-C', 'anymal_c'),
-        ('anymal_c_rough_direct', 'LATEST', 'Anymal-C Rough Direct', 'rough_direct'),
-        # ('spot_rough', 'LATEST', 'Spot Rough', 'rough'),
-        ('anymal_d_rough', 'LATEST', 'Anymal-D', 'anymal_d'),
-        ('unitree_go2_rough', 'LATEST', 'Unitree Go2', 'go2'),
+    "robot_comparison_rough": [
+        ("anymal_c_rough_direct", "LATEST", "Anymal-C Direct", "anymal_c_direct"),
+        ("anymal_d_rough", "LATEST", "Anymal-D Manager", "anymal_d"),
+        ("unitree_go2_rough", "LATEST", "Unitree Go2", "go2"),
+        ("unitree_b2_rough", "LATEST", "Unitree B2", "b2"),
     ],
-    'direct_vs_manager': [
-        ('anymal_c_flat_direct', 'LATEST', 'Anymal-C Flat Direct', 'flat_direct'),
-        ('anymal_c_flat', 'LATEST', 'Anymal-C Flat Manager', 'flat_manager'),
-        ('anymal_c_rough_direct', 'LATEST', 'Anymal-C Rough Direct', 'rough_direct'),
-        ('anymal_c_rough', 'LATEST', 'Anymal-C Rough Manager', 'rough_manager'),
+    # Morphologically similar: Anymal-C Direct vs Anymal-D Manager (not same-robot ablation).
+    "direct_vs_manager": [
+        ("anymal_c_flat_direct", "LATEST", "Anymal-C Flat Direct", "flat_direct"),
+        ("anymal_d_flat", "LATEST", "Anymal-D Flat Manager", "flat_manager"),
+        ("anymal_c_rough_direct", "LATEST", "Anymal-C Rough Direct", "rough_direct"),
+        ("anymal_d_rough", "LATEST", "Anymal-D Rough Manager", "rough_manager"),
     ],
 }
 
@@ -682,3 +754,565 @@ def compute_convergence_metrics(
         })
     
     return pd.DataFrame(convergence_data)
+
+
+def extract_terminal_metrics(
+    all_metrics: Dict,
+    metric_name: str = "mean_reward",
+    window_size: int = 100,
+) -> pd.DataFrame:
+    """Extract terminal-window metric statistics for each run.
+
+    This avoids relying on a single last-point value when ranking runs.
+    """
+    rows = []
+    for run_key, run_data in all_metrics.items():
+        metrics = run_data["metrics"]
+        metric_tag = find_metric_name(metrics, METRIC_PATTERNS.get(metric_name, [metric_name]))
+        if metric_tag is None or metric_tag not in metrics:
+            continue
+        df = metrics[metric_tag].sort_values("step")
+        if df.empty:
+            continue
+        tail = df.tail(window_size)
+        rows.append(
+            {
+                "run_key": run_key,
+                "display_name": run_data["display_name"],
+                "experiment": run_data["experiment"],
+                "category": run_data["category"],
+                "metric_name": metric_name,
+                "metric_tag": metric_tag,
+                "terminal_mean": float(tail["value"].mean()),
+                "terminal_std": float(tail["value"].std()) if len(tail) > 1 else 0.0,
+                "terminal_count": int(len(tail)),
+            }
+        )
+    return pd.DataFrame(rows)
+
+
+def rank_runs_by_task(
+    metrics_df: pd.DataFrame,
+    score_columns: List[str],
+    higher_is_better: Optional[Dict[str, bool]] = None,
+) -> pd.DataFrame:
+    """Create per-category rankings from selected metric columns.
+
+    The function normalizes each column within a category, applies direction,
+    and computes an average composite score.
+    """
+    if metrics_df.empty:
+        return pd.DataFrame([])
+    if higher_is_better is None:
+        higher_is_better = {col: True for col in score_columns}
+
+    rows = []
+    for category, category_df in metrics_df.groupby("category"):
+        working = category_df.copy()
+        norm_cols = []
+        for col in score_columns:
+            if col not in working.columns:
+                continue
+            vals = pd.to_numeric(working[col], errors="coerce")
+            valid = vals.dropna()
+            norm_col = f"{col}_norm"
+            if valid.empty:
+                working[norm_col] = np.nan
+            elif valid.max() == valid.min():
+                working[norm_col] = 0.5
+            else:
+                working[norm_col] = (vals - valid.min()) / (valid.max() - valid.min())
+            if not higher_is_better.get(col, True):
+                working[norm_col] = 1.0 - working[norm_col]
+            norm_cols.append(norm_col)
+        if not norm_cols:
+            continue
+        working["composite_score"] = working[norm_cols].mean(axis=1, skipna=True)
+        working["rank"] = working["composite_score"].rank(method="dense", ascending=False, na_option="bottom")
+        rows.append(working)
+    if not rows:
+        return pd.DataFrame([])
+    return pd.concat(rows, ignore_index=True)
+
+
+def plot_comparison_bar_interactive(
+    metrics_df: pd.DataFrame,
+    score_column: str,
+    color_column: str = "category",
+    title: Optional[str] = None,
+):
+    """Create an interactive Plotly bar chart for cross-run comparison."""
+    if not PLOTLY_AVAILABLE:
+        print("Plotly is not available. Install with: pip install plotly")
+        return None
+    if metrics_df.empty or score_column not in metrics_df.columns:
+        return None
+    figure = px.bar(
+        metrics_df,
+        x="display_name",
+        y=score_column,
+        color=color_column if color_column in metrics_df.columns else None,
+        hover_data=["run_key", "experiment"] if "run_key" in metrics_df.columns else None,
+        title=title or f"Interactive comparison: {score_column}",
+    )
+    figure.update_layout(xaxis_title="Run", yaxis_title=score_column)
+    return figure
+
+
+# ---------------------------------------------------------------------------
+# Across-seed aggregation (Table I: mean ± std over seeds, not within-run CI)
+# ---------------------------------------------------------------------------
+
+
+def parse_seed_from_run_name(run_dir_name: str) -> Optional[int]:
+    """Extract seed integer from a run folder name if it is seed-tagged.
+
+    Accepts names like ``2026-08-10_12-00-00_seed42`` or any path segment
+    containing ``seed0`` / ``seed1`` / ``seed42``.
+    """
+    match = _SEED_TAG_RE.search(run_dir_name)
+    if match is None:
+        match = _SEED_FALLBACK_RE.search(run_dir_name)
+    if match is None:
+        return None
+    return int(match.group(1))
+
+
+def is_seed_tagged_run(run_dir_name: str) -> bool:
+    """Return True if the run directory name includes a seed tag."""
+    return parse_seed_from_run_name(run_dir_name) is not None
+
+
+def list_seed_runs(
+    logs_dir: Path,
+    exp_name: str,
+    seeds: Optional[Sequence[int]] = None,
+) -> List[Tuple[str, int]]:
+    """List seed-tagged run folders for an experiment.
+
+    Returns ``(run_dir_name, seed)`` pairs sorted by seed then name.
+    If ``seeds`` is given, only those seed values are kept. When multiple
+    folders share a seed, the lexicographically latest name is kept.
+    """
+    exp_dir = logs_dir / exp_name
+    if not exp_dir.exists():
+        return []
+
+    by_seed: Dict[int, str] = {}
+    for run_dir in exp_dir.iterdir():
+        if not run_dir.is_dir():
+            continue
+        seed = parse_seed_from_run_name(run_dir.name)
+        if seed is None:
+            continue
+        if seeds is not None and seed not in seeds:
+            continue
+        prev = by_seed.get(seed)
+        if prev is None or run_dir.name > prev:
+            by_seed[seed] = run_dir.name
+
+    return sorted(((name, seed) for seed, name in by_seed.items()), key=lambda x: (x[1], x[0]))
+
+
+def load_seed_tagged_metrics(
+    logs_dir: Path,
+    experiments: Optional[Sequence[str]] = None,
+    seeds: Optional[Sequence[int]] = None,
+) -> Dict:
+    """Load TensorBoard metrics for seed-tagged runs of Table I conditions.
+
+    Only runs whose folder names contain a seed tag are loaded. Untagged
+    legacy logs are ignored so pre-campaign runs are not mixed into mean±std.
+    """
+    if experiments is None:
+        experiments = list(TABLE1_CONDITIONS.keys())
+
+    all_metrics: Dict = {}
+    for exp_name in experiments:
+        meta = TABLE1_CONDITIONS.get(exp_name, {})
+        display_name = meta.get("display_name", exp_name)
+        category = meta.get("category", "")
+        robot = meta.get("robot", "")
+        terrain = meta.get("terrain", "")
+        workflow = meta.get("workflow", "")
+
+        for run_name, seed in list_seed_runs(logs_dir, exp_name, seeds=seeds):
+            log_dir = logs_dir / exp_name / run_name
+            metrics = load_tensorboard_metrics(log_dir)
+            if not metrics:
+                continue
+            run_key = f"{exp_name}/{run_name}"
+            all_metrics[run_key] = {
+                "metrics": metrics,
+                "display_name": display_name,
+                "experiment": exp_name,
+                "timestamp": run_name,
+                "category": category,
+                "seed": seed,
+                "robot": robot,
+                "terrain": terrain,
+                "workflow": workflow,
+            }
+    return all_metrics
+
+
+def extract_per_seed_terminal_metrics(
+    all_metrics: Dict,
+    metric_keys: Optional[Sequence[str]] = None,
+    include_convergence: bool = True,
+) -> pd.DataFrame:
+    """One row per seed run with terminal (final) metric values.
+
+    Optionally merges ``steps_to_75pct`` from ``compute_convergence_metrics``.
+    """
+    if metric_keys is None:
+        metric_keys = [m for m in TABLE1_METRIC_COLUMNS if m != "steps_to_75pct"]
+
+    rows = []
+    for run_key, run_data in all_metrics.items():
+        metrics = run_data["metrics"]
+        row = {
+            "run_key": run_key,
+            "display_name": run_data["display_name"],
+            "experiment": run_data["experiment"],
+            "category": run_data.get("category", ""),
+            "seed": run_data.get("seed"),
+            "robot": run_data.get("robot", ""),
+            "terrain": run_data.get("terrain", ""),
+            "workflow": run_data.get("workflow", ""),
+            "timestamp": run_data.get("timestamp", ""),
+        }
+        for metric_key in metric_keys:
+            patterns = METRIC_PATTERNS.get(metric_key, [metric_key])
+            metric_name = find_metric_name(metrics, patterns)
+            row[metric_key] = get_latest_checkpoint_value(metrics, metric_name)
+        rows.append(row)
+
+    df = pd.DataFrame(rows)
+    if df.empty:
+        return df
+
+    if include_convergence:
+        conv = compute_convergence_metrics(all_metrics, metric_name="mean_reward")
+        if not conv.empty and "steps_to_75pct" in conv.columns:
+            df = df.merge(
+                conv[["run_key", "steps_to_75pct"]],
+                on="run_key",
+                how="left",
+            )
+    return df
+
+
+def aggregate_across_seeds(
+    per_seed_df: pd.DataFrame,
+    metric_columns: Optional[Sequence[str]] = None,
+    group_cols: Optional[Sequence[str]] = None,
+) -> pd.DataFrame:
+    """Aggregate terminal metrics across seeds: mean ± std (sample std).
+
+    Table I must use this seed-level std, not within-run last-window CI.
+    """
+    if per_seed_df.empty:
+        return pd.DataFrame()
+
+    if metric_columns is None:
+        metric_columns = [c for c in TABLE1_METRIC_COLUMNS if c in per_seed_df.columns]
+    if group_cols is None:
+        group_cols = [
+            c
+            for c in ("experiment", "display_name", "category", "robot", "terrain", "workflow")
+            if c in per_seed_df.columns
+        ]
+
+    rows = []
+    for keys, group in per_seed_df.groupby(list(group_cols), dropna=False):
+        if not isinstance(keys, tuple):
+            keys = (keys,)
+        row = dict(zip(group_cols, keys))
+        row["n_seeds"] = int(group["seed"].nunique()) if "seed" in group.columns else len(group)
+        row["seeds"] = (
+            sorted(group["seed"].dropna().unique().tolist()) if "seed" in group.columns else []
+        )
+        for col in metric_columns:
+            if col not in group.columns:
+                continue
+            vals = pd.to_numeric(group[col], errors="coerce").dropna()
+            if vals.empty:
+                row[f"{col}_mean"] = np.nan
+                row[f"{col}_std"] = np.nan
+                row[f"{col}_mean_std"] = "—"
+            else:
+                mean_val = float(vals.mean())
+                std_val = float(vals.std(ddof=1)) if len(vals) > 1 else 0.0
+                row[f"{col}_mean"] = mean_val
+                row[f"{col}_std"] = std_val
+                row[f"{col}_mean_std"] = format_mean_std(mean_val, std_val)
+        rows.append(row)
+    return pd.DataFrame(rows)
+
+
+def format_mean_std(mean: float, std: float, precision: int = 3) -> str:
+    """Format a value as ``mean ± std`` for tables / LaTeX."""
+    if mean is None or (isinstance(mean, float) and np.isnan(mean)):
+        return "—"
+    if std is None or (isinstance(std, float) and np.isnan(std)):
+        return f"{mean:.{precision}f}"
+    return f"{mean:.{precision}f} ± {std:.{precision}f}"
+
+
+def build_table1_dataframe(
+    aggregated_df: pd.DataFrame,
+    metric_columns: Optional[Sequence[str]] = None,
+) -> pd.DataFrame:
+    """Build a Table I–ready DataFrame with ``mean ± std`` display columns."""
+    if aggregated_df.empty:
+        return pd.DataFrame()
+
+    if metric_columns is None:
+        metric_columns = [
+            c.replace("_mean_std", "")
+            for c in aggregated_df.columns
+            if c.endswith("_mean_std")
+        ]
+        if not metric_columns:
+            metric_columns = list(TABLE1_METRIC_COLUMNS)
+
+    meta_cols = [
+        c
+        for c in ("experiment", "display_name", "robot", "terrain", "workflow", "n_seeds")
+        if c in aggregated_df.columns
+    ]
+    out = aggregated_df[meta_cols].copy() if meta_cols else pd.DataFrame(index=aggregated_df.index)
+
+    for col in metric_columns:
+        mean_std_col = f"{col}_mean_std"
+        if mean_std_col in aggregated_df.columns:
+            out[col] = aggregated_df[mean_std_col]
+        elif f"{col}_mean" in aggregated_df.columns:
+            out[col] = aggregated_df.apply(
+                lambda r, c=col: format_mean_std(r.get(f"{c}_mean"), r.get(f"{c}_std")),
+                axis=1,
+            )
+    # Stable row order matching TABLE1_CONDITIONS
+    if "experiment" in out.columns:
+        order = {name: i for i, name in enumerate(TABLE1_CONDITIONS.keys())}
+        out = out.sort_values("experiment", key=lambda s: s.map(lambda x: order.get(x, 999)))
+        out = out.reset_index(drop=True)
+    return out
+
+
+def export_table1_csv(table1_df: pd.DataFrame, path: Union[str, Path]) -> Path:
+    """Write Table I DataFrame to CSV."""
+    path = Path(path)
+    path.parent.mkdir(parents=True, exist_ok=True)
+    table1_df.to_csv(path, index=False)
+    return path
+
+
+def export_table1_latex(
+    table1_df: pd.DataFrame,
+    path: Optional[Union[str, Path]] = None,
+    caption: str = "Multi-seed locomotion results (mean $\\pm$ std over seeds).",
+    label: str = "tab:table1",
+) -> str:
+    """Export Table I as a LaTeX tabular snippet for Overleaf.
+
+    Returns the LaTeX string; optionally writes it to ``path``.
+    """
+    if table1_df.empty:
+        latex = "% No seed-tagged runs available yet.\n"
+    else:
+        display = table1_df.copy()
+        # Prefer human-readable name column
+        if "display_name" in display.columns:
+            display = display.rename(columns={"display_name": "Condition"})
+            drop_cols = [c for c in ("experiment", "robot", "terrain", "workflow") if c in display.columns]
+            display = display.drop(columns=drop_cols, errors="ignore")
+        col_fmt = "l" + "c" * (len(display.columns) - 1)
+        latex = display.to_latex(index=False, escape=False, column_format=col_fmt)
+        latex = (
+            f"% Auto-generated by rsl_rl_performance.ipynb\n"
+            f"\\begin{{table}}[t]\n"
+            f"\\centering\n"
+            f"{latex}"
+            f"\\caption{{{caption}}}\n"
+            f"\\label{{{label}}}\n"
+            f"\\end{{table}}\n"
+        )
+
+    if path is not None:
+        path = Path(path)
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_text(latex)
+    return latex
+
+
+def aggregate_curves_across_seeds(
+    all_metrics: Dict,
+    experiment: str,
+    metric_name: str = "mean_reward",
+    num_points: int = 200,
+) -> Optional[pd.DataFrame]:
+    """Interpolate per-seed curves and return mean ± std over seeds vs step.
+
+    Useful for convergence plots with error bands. Within-run CI
+    (``compute_confidence_intervals``) remains available for single-run curves.
+    """
+    runs = [
+        (run_key, run_data)
+        for run_key, run_data in all_metrics.items()
+        if run_data.get("experiment") == experiment
+    ]
+    if not runs:
+        return None
+
+    series_list = []
+    max_step = 0
+    for _run_key, run_data in runs:
+        metrics = run_data["metrics"]
+        patterns = METRIC_PATTERNS.get(metric_name, [metric_name])
+        tag = find_metric_name(metrics, patterns)
+        if tag is None or tag not in metrics:
+            continue
+        df = metrics[tag].sort_values("step")
+        if df.empty:
+            continue
+        max_step = max(max_step, int(df["step"].iloc[-1]))
+        series_list.append(df[["step", "value"]].copy())
+
+    if not series_list or max_step <= 0:
+        return None
+
+    grid = np.linspace(0, max_step, num_points)
+    interpolated = []
+    for df in series_list:
+        steps = df["step"].values.astype(float)
+        values = df["value"].values.astype(float)
+        if len(steps) < 2:
+            continue
+        # Only interpolate within each seed's observed range
+        mask = (grid >= steps.min()) & (grid <= steps.max())
+        y = np.full_like(grid, np.nan, dtype=float)
+        y[mask] = np.interp(grid[mask], steps, values)
+        interpolated.append(y)
+
+    if not interpolated:
+        return None
+
+    stacked = np.vstack(interpolated)
+    mean = np.nanmean(stacked, axis=0)
+    std = np.nanstd(stacked, axis=0, ddof=1) if stacked.shape[0] > 1 else np.zeros_like(mean)
+    return pd.DataFrame(
+        {
+            "step": grid,
+            "mean": mean,
+            "std": std,
+            "n_seeds": stacked.shape[0],
+            "experiment": experiment,
+        }
+    )
+
+
+def plot_seed_mean_std_bars(
+    aggregated_df: pd.DataFrame,
+    metric_column: str,
+    title: Optional[str] = None,
+    ylabel: Optional[str] = None,
+    experiments: Optional[Sequence[str]] = None,
+    ax: Optional[plt.Axes] = None,
+) -> Optional[plt.Axes]:
+    """Bar chart of across-seed mean with seed-std error bars."""
+    if aggregated_df.empty:
+        print("No aggregated seed data to plot.")
+        return ax
+
+    data = aggregated_df.copy()
+    if experiments is not None:
+        data = data[data["experiment"].isin(experiments)]
+    mean_col = f"{metric_column}_mean"
+    std_col = f"{metric_column}_std"
+    if mean_col not in data.columns:
+        print(f"Missing column {mean_col}")
+        return ax
+
+    if "experiment" in data.columns:
+        order = {name: i for i, name in enumerate(TABLE1_CONDITIONS.keys())}
+        data = data.sort_values("experiment", key=lambda s: s.map(lambda x: order.get(x, 999)))
+
+    if ax is None:
+        _, ax = plt.subplots(figsize=(10, 6))
+
+    x = np.arange(len(data))
+    means = pd.to_numeric(data[mean_col], errors="coerce").fillna(0.0).values
+    stds = (
+        pd.to_numeric(data[std_col], errors="coerce").fillna(0.0).values
+        if std_col in data.columns
+        else np.zeros_like(means)
+    )
+    labels = (
+        data["display_name"].tolist()
+        if "display_name" in data.columns
+        else data["experiment"].tolist()
+    )
+
+    ax.bar(x, means, yerr=stds, capsize=4, alpha=0.85, edgecolor="black", linewidth=1)
+    ax.set_xticks(x)
+    ax.set_xticklabels(labels, rotation=45, ha="right")
+    ax.set_ylabel(ylabel or metric_column, fontweight="bold")
+    ax.set_title(title or f"{metric_column} (mean ± std over seeds)", fontweight="bold")
+    ax.grid(axis="y", alpha=0.3)
+    plt.tight_layout()
+    return ax
+
+
+def plot_seed_curves_with_error_bands(
+    all_metrics: Dict,
+    experiments: Sequence[str],
+    metric_name: str = "mean_reward",
+    title: Optional[str] = None,
+    ax: Optional[plt.Axes] = None,
+) -> Optional[plt.Axes]:
+    """Plot mean training curves with ±1 seed-std bands for each experiment."""
+    if ax is None:
+        _, ax = plt.subplots(figsize=(12, 6))
+
+    plotted = False
+    for exp_name in experiments:
+        curve = aggregate_curves_across_seeds(all_metrics, exp_name, metric_name=metric_name)
+        if curve is None or curve.empty:
+            continue
+        label = TABLE1_CONDITIONS.get(exp_name, {}).get("display_name", exp_name)
+        ax.plot(curve["step"], curve["mean"], label=label, linewidth=2)
+        ax.fill_between(
+            curve["step"],
+            curve["mean"] - curve["std"],
+            curve["mean"] + curve["std"],
+            alpha=0.2,
+        )
+        plotted = True
+
+    if not plotted:
+        print(f"No seed curves available for metric '{metric_name}'")
+        return ax
+
+    ax.set_xlabel("Training Step", fontweight="bold")
+    ax.set_ylabel(metric_name, fontweight="bold")
+    ax.set_title(title or f"Convergence: {metric_name} (mean ± std over seeds)", fontweight="bold")
+    ax.legend(loc="best")
+    ax.grid(alpha=0.3)
+    plt.tight_layout()
+    return ax
+
+
+def filter_metrics_by_comparison_group(
+    aggregated_df: pd.DataFrame,
+    comparison_group: str,
+) -> pd.DataFrame:
+    """Subset an aggregated seed DataFrame to experiments in a COMPARISONS group."""
+    if comparison_group not in COMPARISONS:
+        print(f"Unknown comparison group: {comparison_group}")
+        return pd.DataFrame()
+    exp_names = [exp for exp, _, _, _ in COMPARISONS[comparison_group]]
+    if "experiment" not in aggregated_df.columns:
+        return pd.DataFrame()
+    return aggregated_df[aggregated_df["experiment"].isin(exp_names)].copy()

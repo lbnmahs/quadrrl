@@ -17,8 +17,24 @@ import cli_args  # isort: skip
 
 # add argparse arguments
 parser = argparse.ArgumentParser(description="Train an RL agent with RSL-RL.")
-parser.add_argument("--video", action="store_true", default=False, help="Record videos during training.")
-parser.add_argument("--video_length", type=int, default=200, help="Length of the recorded video (in steps).")
+parser.add_argument(
+    "--video",
+    action=argparse.BooleanOptionalAction,
+    default=True,
+    help="Record a video during evaluation (default: enabled).",
+)
+parser.add_argument(
+    "--video_duration",
+    type=float,
+    default=15.0,
+    help="Duration of the recorded video in seconds (used when --video-length is not set).",
+)
+parser.add_argument(
+    "--video_length",
+    type=int,
+    default=None,
+    help="Length of the recorded video in environment steps (overrides --video-duration).",
+)
 parser.add_argument(
     "--disable_fabric", action="store_true", default=False, help="Disable fabric and use USD I/O operations."
 )
@@ -65,6 +81,7 @@ import os
 import time
 
 import gymnasium as gym
+import numpy as np
 import torch
 from rsl_rl.runners import DistillationRunner, OnPolicyRunner
 
@@ -76,22 +93,75 @@ from isaaclab.envs import (
     multi_agent_to_single_agent,
 )
 from isaaclab.utils.assets import retrieve_file_path
-from isaaclab.utils.dict import print_dict
 
 from isaaclab_rl.rsl_rl import (
     RslRlBaseRunnerCfg,
     RslRlVecEnvWrapper,
     export_policy_as_jit,
     export_policy_as_onnx,
-    handle_deprecated_rsl_rl_cfg,
 )
+try:
+    from isaaclab_rl.rsl_rl import handle_deprecated_rsl_rl_cfg
+except ImportError:
+    def handle_deprecated_rsl_rl_cfg(agent_cfg: RslRlBaseRunnerCfg, _installed_version: str):
+        """Fallback for Isaac Lab versions where deprecation handler was removed."""
+        return agent_cfg
+
 from isaaclab_rl.utils.pretrained_checkpoint import get_published_pretrained_checkpoint
 
 import isaaclab_tasks  # noqa: F401
 from isaaclab_tasks.utils import get_checkpoint_path
 from isaaclab_tasks.utils.hydra import hydra_task_config
 
+# Ensure Quadrrl task configs are registered with Gym before Hydra resolves `--task`.
+#
+# When running from a source checkout (not installed as a package), we add `source/quadrrl`
+# to `sys.path` so `import quadrrl` works.
+try:
+    import quadrrl  # noqa: F401
+except ModuleNotFoundError:
+    from pathlib import Path
+
+    repo_root = Path(__file__).resolve().parents[3]
+    quadrrl_src_root = repo_root / "source" / "quadrrl"
+    sys.path.insert(0, str(quadrrl_src_root))
+    import quadrrl  # noqa: F401
+
 # PLACEHOLDER: Extension template (do not remove this comment)
+
+
+def _capture_render_frame(env) -> np.ndarray | None:
+    """Capture a single rgb_array frame from an Isaac Lab environment."""
+    try:
+        frame = env.render(recompute=True)
+    except RuntimeError as exc:
+        print(f"[WARN] Failed to capture render frame: {exc}")
+        return None
+
+    if frame is None:
+        return None
+    if isinstance(frame, list):
+        if len(frame) == 0:
+            return None
+        frame = frame[-1]
+    if isinstance(frame, torch.Tensor):
+        frame = frame.detach().cpu().numpy()
+    if not isinstance(frame, np.ndarray):
+        print(f"[WARN] Unexpected render frame type: {type(frame)}")
+        return None
+    return frame
+
+
+def _save_playback_video(frames: list[np.ndarray], video_folder: str, fps: int, name_prefix: str = "rl-video") -> str:
+    """Save captured frames to an mp4 file."""
+    from moviepy.video.io.ImageSequenceClip import ImageSequenceClip
+
+    os.makedirs(video_folder, exist_ok=True)
+    video_path = os.path.join(video_folder, f"{name_prefix}-episode-0.mp4")
+    clip = ImageSequenceClip(frames, fps=fps)
+    clip.write_videofile(video_path, logger=None)
+    del clip
+    return video_path
 
 
 @hydra_task_config(args_cli.task, args_cli.agent)
@@ -139,17 +209,20 @@ def main(env_cfg: ManagerBasedRLEnvCfg | DirectRLEnvCfg | DirectMARLEnvCfg, agen
     if isinstance(env.unwrapped, DirectMARLEnv):
         env = multi_agent_to_single_agent(env)
 
-    # wrap for video recording
+    video_length = None
+    render_fps = None
+    video_folder = None
     if args_cli.video:
-        video_kwargs = {
-            "video_folder": os.path.join(log_dir, "videos", "play"),
-            "step_trigger": lambda step: step == 0,
-            "video_length": args_cli.video_length,
-            "disable_logger": True,
-        }
-        print("[INFO] Recording videos during training.")
-        print_dict(video_kwargs, nesting=4)
-        env = gym.wrappers.RecordVideo(env, **video_kwargs)
+        if args_cli.video_length is not None:
+            video_length = args_cli.video_length
+        else:
+            video_length = max(1, int(round(args_cli.video_duration / env.unwrapped.step_dt)))
+        render_fps = max(1, int(round(1.0 / env.unwrapped.step_dt)))
+        video_folder = os.path.join(log_dir, "videos", "play")
+        print(
+            f"[INFO] Recording a {args_cli.video_duration:.1f}s video "
+            f"({video_length} steps at {env.unwrapped.step_dt:.4f}s/step, {render_fps} fps)."
+        )
 
     # wrap around environment for rsl-rl
     env = RslRlVecEnvWrapper(env, clip_actions=agent_cfg.clip_actions)
@@ -197,6 +270,7 @@ def main(env_cfg: ManagerBasedRLEnvCfg | DirectRLEnvCfg | DirectMARLEnvCfg, agen
 
     # reset environment
     obs = env.get_observations()
+    video_frames: list[np.ndarray] = []
     timestep = 0
     # simulate environment
     while simulation_app.is_running():
@@ -213,15 +287,25 @@ def main(env_cfg: ManagerBasedRLEnvCfg | DirectRLEnvCfg | DirectMARLEnvCfg, agen
             else:
                 policy_nn.reset(dones)
         if args_cli.video:
+            frame = _capture_render_frame(env.unwrapped)
+            if frame is not None:
+                video_frames.append(frame)
             timestep += 1
             # Exit the play loop after recording one video
-            if timestep == args_cli.video_length:
+            if timestep >= video_length:
                 break
 
         # time delay for real-time evaluation
         sleep_time = dt - (time.time() - start_time)
         if args_cli.real_time and sleep_time > 0:
             time.sleep(sleep_time)
+
+    if args_cli.video:
+        if video_frames:
+            video_path = _save_playback_video(video_frames[:video_length], video_folder, render_fps)
+            print(f"[INFO] Saved play video ({len(video_frames[:video_length])} frames) to: {video_path}")
+        else:
+            print("[WARN] Video recording was enabled but no frames were captured. Check --enable_cameras / render mode.")
 
     # close the simulator
     env.close()

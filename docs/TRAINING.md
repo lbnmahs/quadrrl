@@ -2,7 +2,7 @@
 
 ## Available Environments
 
-> **Analysis scope:** RSL-RL benchmark analysis focuses on **Unitree Go2**, **ANYmal-C**, and **ANYmal-D** for single-agent velocity-tracking. Spot single-agent runs remain available but are not part of the core RSL-RL comparison; Spot is primarily used for single-vs-multi-agent comparisons with HARL.
+> **Analysis scope:** Performance analysis covers trained **legged** and **wheel-legged** quadruped locomotion policies. Use TensorBoard logs, [`scripts/analysis/analyze_logs.py`](../scripts/analysis/analyze_logs.py), and [`notebooks/rsl_rl_performance.ipynb`](../notebooks/rsl_rl_performance.ipynb) to compare runs and report both policy performance and locomotion task success rate.
 
 ### Single-Agent Locomotion Tasks
 
@@ -11,27 +11,29 @@
 - `Quadrrl-Velocity-Rough-Anymal-C-Direct-v0`
 
 **Manager-Based Control:**
-- ANYmal-C: `Quadrrl-Velocity-Flat-Anymal-C-v0`, `Quadrrl-Velocity-Rough-Anymal-C-v0` (+ `-Play` variants)
-- ANYmal-D: `Quadrrl-Velocity-Flat-Anymal-D-v0`, `Quadrrl-Velocity-Rough-Anymal-D-v0` (+ `-Play` variants)
-- Unitree Go2: `Quadrrl-Velocity-Flat-Unitree-Go2-v0`, `Quadrrl-Velocity-Rough-Unitree-Go2-v0` (+ `-Play` variants)
-- Spot: `Quadrrl-Velocity-Flat-Spot-v0`, `Quadrrl-Velocity-Rough-Spot-v0` (+ `-Play` variants)
+- ANYmal-C: `Quadrrl-Velocity-Flat-Anymal-C-v0`, `Quadrrl-Velocity-Rough-Anymal-C-v0`
+- ANYmal-D: `Quadrrl-Velocity-Flat-Anymal-D-v0`, `Quadrrl-Velocity-Rough-Anymal-D-v0`
+- Unitree Go2: `Quadrrl-Velocity-Flat-Unitree-Go2-v0`, `Quadrrl-Velocity-Rough-Unitree-Go2-v0`
+- Spot: `Quadrrl-Velocity-Flat-Spot-v0`, `Quadrrl-Velocity-Rough-Spot-v0`
 
 **Note:** Spot uses gait- and contact-focused rewards (gait phase shaping, foot-clearance, air-time balance) that differ from the generic locomotion reward set used by ANYmal/Go2.
 
+**Legged (velocity):**  
+Environments use the Isaac Lab-style `locomotion/legged/velocity_env_cfg` base and are registered under `locomotion/legged/config/`.
+
 **Wheeled-legged (velocity only):**  
-Environments use the `wheeled_velocity_env_cfg` base and are registered under `config/wheeled/`. Examples: `Quadrrl-Velocity-Flat-Unitree-Go2W-v0`, `Quadrrl-Velocity-Rough-Unitree-Go2W-v0`, and similarly for Unitree B2W, Zsibot ZSL1W, and DeepRobotics M20. Use the same training/eval commands with the corresponding task name.
+Environments use the `locomotion/wheeled/velocity_env_cfg` base and are registered under `locomotion/wheeled/config/`. Examples: `Quadrrl-Velocity-Flat-Unitree-Go2W-v0`, `Quadrrl-Velocity-Rough-Unitree-Go2W-v0`, and similarly for Unitree B2W, Zsibot ZSL1W, and DeepRobotics M20. Use the same training/eval commands with the corresponding task name.
 
 ### Single-Agent Navigation Tasks
 
 - `Quadrrl-Navigation-Flat-Anymal-C-v0`
-- `Quadrrl-Navigation-Rough-Anymal-C-v0` (+ `-Play` variants)
+- `Quadrrl-Navigation-Rough-Anymal-C-v0`
 
 ### Multi-Agent Tasks
 
 - `Quadrrl-MARL-Direct-Anymal-C-v0` - Cooperative bar-carrying (HARL)
-- `Quadrrl-Velocity-Flat-Spot-MARL-v0` - Velocity tracking with 4 leg agents (HARL primary, RSL-RL optional) (+ `-Play` variant)
 
-> **Comparison plan:** Spot is the primary benchmark for single-agent vs multi-agent RL using HARL (leg-level agents). RSL-RL analysis remains focused on Unitree Go2, ANYmal-C, and ANYmal-D for single-agent baselines.**Note:** MARL tasks are not fully fine-tuned and are still being worked on. Use `scripts/list_envs.py` to see all available environments.
+> **Note:** HARL remains supported for multi-agent RL algorithms. The previous Spot-MARL integration has been removed. MARL tasks are still being tuned. Use `scripts/list_envs.py` to see all available environments.
 
 ## Single-Agent Reinforcement Learning
 
@@ -58,13 +60,13 @@ python scripts/reinforcement_learning/rsl_rl/train.py \
 
 ### Evaluation
 
-Add the suffix `-Play` to load evaluation checkpoints and curriculum settings.
-
 ```bash
 python scripts/reinforcement_learning/<RL_LIBRARY>/play.py \
-    --task=<TASK_NAME>-Play \
+    --task=<TASK_NAME> \
     --checkpoint=/absolute/path/to/checkpoint.pth
 ```
+
+When reporting results, include both policy performance and locomotion task success rate for trained legged and wheel-legged quadruped robots.
 
 ### Demo Scripts
 
@@ -79,9 +81,8 @@ python scripts/demos/il_go2_rough.py
 
 ## Multi-Agent Reinforcement Learning
 
-Quadrrl includes two MARL task types:
+Quadrrl currently includes one MARL task type:
 1. **Direct MARL**: Cooperative bar-carrying task with two ANYmal-C robots
-2. **Manager-Based MARL**: Velocity tracking task with Spot robot using 4 leg agents
 
 **Note:** MARL tasks are not fully fine-tuned and are still being worked on.
 
@@ -89,17 +90,14 @@ Quadrrl includes two MARL task types:
 
 HARL is included as a submodule in `scripts/reinforcement_learning/harl/HARL/` and has been customized for Isaac Lab integration.
 
-**HARL Supported Algorithms:** `happo` (default), `hatrpo`, `haa2c`, `mappo`, `maddpg`, `matd3`, `hasac`, `hatd3`, `had3qn`, `haddpg`### Multi-Agent Task Details
+**HARL Supported Algorithms:** `happo` (default), `hatrpo`, `haa2c`, `mappo`, `maddpg`, `matd3`, `hasac`, `hatd3`, `had3qn`, `haddpg`
+
+### Multi-Agent Task Details
 
 **Quadrrl-MARL-Direct-Anymal-C-v0** (Direct MARL):
 - **Agents**: Two ANYmal-C robots
 - **Objective**: Cooperatively carry a bar to randomly sampled target locations
 - **Framework**: HARL only
-
-**Quadrrl-Velocity-Flat-Spot-MARL-v0** (Manager-Based MARL):
-- **Agents**: Four agents (agentFR, agentFL, agentHR, agentHL) - one per leg
-- **Objective**: Velocity tracking on flat terrain
-- **Frameworks**: HARL (primary), RSL-RL, SKRL
 
 ### Training Multi-Agent Policies
 
@@ -108,24 +106,6 @@ HARL is included as a submodule in `scripts/reinforcement_learning/harl/HARL/` a
 python scripts/reinforcement_learning/harl/train.py \
     --task=Quadrrl-MARL-Direct-Anymal-C-v0 \
     --num_envs=4096 --algorithm=happo --headless
-```
-
-**Spot Velocity Tracking Task:**
-```bash
-# Using HARL
-python scripts/reinforcement_learning/harl/train.py \
-    --task=Quadrrl-Velocity-Flat-Spot-MARL-v0 \
-    --num_envs=4096 --algorithm=happo --headless
-
-# Using RSL-RL
-python scripts/reinforcement_learning/rsl_rl/train.py \
-    --task=Quadrrl-Velocity-Flat-Spot-MARL-v0 \
-    --num_envs=4096
-
-# Using SKRL
-python scripts/reinforcement_learning/skrl/train.py \
-    --task=Quadrrl-Velocity-Flat-Spot-MARL-v0 \
-    --num_envs=4096
 ```
 
 ### Evaluating Multi-Agent Policies
@@ -137,18 +117,6 @@ python scripts/reinforcement_learning/harl/play.py \
     --num_envs=5 --dir=/path/to/logs/harl/anymal_c_marl/EXPERIMENT_NAME
 ```
 
-**Spot Velocity Tracking:**
-```bash
-# Using HARL
-python scripts/reinforcement_learning/harl/play.py \
-    --task=Quadrrl-Velocity-Flat-Spot-MARL-Play-v0 \
-    --num_envs=5 --dir=/path/to/logs/harl/spot_marl/EXPERIMENT_NAME
-
-# Using RSL-RL or SKRL
-python scripts/reinforcement_learning/<RL_LIBRARY>/play.py \
-    --task=Quadrrl-Velocity-Flat-Spot-MARL-Play-v0 \
-    --checkpoint=/path/to/checkpoint.pth
-```
 
 ## Training Tips
 
@@ -166,3 +134,4 @@ python scripts/reinforcement_learning/<RL_LIBRARY>/play.py \
 - [Getting Started Guide](GETTING_STARTED.md) - Basic usage and commands
 - [Project Structure](STRUCTURE.md) - Code organization
 - [Tasks Documentation](../source/quadrrl/quadrrl/tasks/README.md) - Task implementation details
+- [Notebooks](../notebooks/README.md) - Performance analysis with `rsl_rl_performance.ipynb`

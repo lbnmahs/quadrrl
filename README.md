@@ -46,6 +46,7 @@ The table below shows a list of all the supported quadruped robots:
 - **[Project Structure](docs/STRUCTURE.md)** - Code organization
 - **[Training Guide](docs/TRAINING.md)** - Single-agent and multi-agent RL training
 - **[Scripts Documentation](scripts/README.md)** - Available scripts and utilities
+- **[Notebooks](notebooks/README.md)** - Performance analysis with `rsl_rl_performance.ipynb`
 - **[Tasks Documentation](source/quadrrl/quadrrl/tasks/README.md)** - Task architecture
 
 
