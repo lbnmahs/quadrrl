@@ -1,24 +1,20 @@
 #!/usr/bin/env bash
-# Legged vs wheeled-legged multi-seed training grid.
+# Fair-Morph-v2 multi-seed training grid (comparable legged vs wheeled).
 #
-# Four morphological pairs (flat + rough), seeds 42 / 0 / 1, 20000 iterations:
-#   Unitree Go2  vs Go2W
-#   Unitree B2   vs B2W
-#   Zsibot ZSL1  vs ZSL1W
-#   Deeprobotics Lite3 vs M20
+# Go2↔Go2W, B2↔B2W, ZSL1↔ZSL1W, Lite3↔M20 (flat + rough), seeds 42 / 0 / 1 / 2 / 3, 20000 iters:
+#   Matched tracking rewards (1.5 / 0.75), upward=0 on wheeled, equal MLP capacity.
 #
-# 4 pairs × 2 morphologies × 2 terrains × 3 seeds = 48 runs.
+# 4 pairs × 2 morphologies × 2 terrains × 5 seeds = 80 runs.
 #
 # Re-running this script skips seeds that already have model_19999.pt and
 # continues after a failed seed instead of aborting the remaining grid.
 #
-# Do NOT mix older campaign logs into analysis — only use runs tagged
-# *_seed{N} from this campaign (or filter by timestamp after these configs).
+# Native *-v0 / finished 48-run campaign logs are untouched (Fair uses *_fair dirs).
 #
 # Usage (from anywhere):
-#   bash scripts/experiments/run_legged_vs_wheeled_seeds.sh
+#   bash scripts/experiments/run_fair_morph_v2_seeds.sh
 # Optional single-GPU pin:
-#   CUDA_VISIBLE_DEVICES=0 bash scripts/experiments/run_legged_vs_wheeled_seeds.sh
+#   CUDA_VISIBLE_DEVICES=0 bash scripts/experiments/run_fair_morph_v2_seeds.sh
 
 set -euo pipefail
 
@@ -26,38 +22,38 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 REPO_ROOT="$(cd "${SCRIPT_DIR}/../.." && pwd)"
 cd "${REPO_ROOT}"
 
-SEEDS=(42 0 1)
+SEEDS=(42 0 1 2 3)
 MAX_ITERATIONS=20000
 
-# Paired so each morphology is trained on both terrains before the next robot.
 CONDITIONS=(
-  # "Quadrrl-Velocity-Flat-Unitree-Go2-v0"
-  # "Quadrrl-Velocity-Rough-Unitree-Go2-v0"
-  # "Quadrrl-Velocity-Flat-Unitree-Go2W-v0"
-  # "Quadrrl-Velocity-Rough-Unitree-Go2W-v0"
-  # "Quadrrl-Velocity-Flat-Unitree-B2-v0"
-  # "Quadrrl-Velocity-Rough-Unitree-B2-v0"
-  # "Quadrrl-Velocity-Flat-Unitree-B2W-v0"
-  # "Quadrrl-Velocity-Rough-Unitree-B2W-v0"
-  # "Quadrrl-Velocity-Flat-Zsibot-ZSL1-v0"
-  # "Quadrrl-Velocity-Rough-Zsibot-ZSL1-v0"
-  # "Quadrrl-Velocity-Flat-Zsibot-ZSL1W-v0"
-  # "Quadrrl-Velocity-Rough-Zsibot-ZSL1W-v0"
-  # "Quadrrl-Velocity-Flat-Deeprobotics-Lite3-v0"
-  "Quadrrl-Velocity-Rough-Deeprobotics-Lite3-v0"
-  "Quadrrl-Velocity-Flat-Deeprobotics-M20-v0"
-  "Quadrrl-Velocity-Rough-Deeprobotics-M20-v0"
+  "Quadrrl-Velocity-Flat-Unitree-Go2-Fair-v0"
+  "Quadrrl-Velocity-Rough-Unitree-Go2-Fair-v0"
+  "Quadrrl-Velocity-Flat-Unitree-Go2W-Fair-v0"
+  "Quadrrl-Velocity-Rough-Unitree-Go2W-Fair-v0"
+  "Quadrrl-Velocity-Flat-Unitree-B2-Fair-v0"
+  "Quadrrl-Velocity-Rough-Unitree-B2-Fair-v0"
+  "Quadrrl-Velocity-Flat-Unitree-B2W-Fair-v0"
+  "Quadrrl-Velocity-Rough-Unitree-B2W-Fair-v0"
+  "Quadrrl-Velocity-Flat-Zsibot-ZSL1-Fair-v0"
+  "Quadrrl-Velocity-Rough-Zsibot-ZSL1-Fair-v0"
+  "Quadrrl-Velocity-Flat-Zsibot-ZSL1W-Fair-v0"
+  "Quadrrl-Velocity-Rough-Zsibot-ZSL1W-Fair-v0"
+  "Quadrrl-Velocity-Flat-Deeprobotics-Lite3-Fair-v0"
+  "Quadrrl-Velocity-Rough-Deeprobotics-Lite3-Fair-v0"
+  "Quadrrl-Velocity-Flat-Deeprobotics-M20-Fair-v0"
+  "Quadrrl-Velocity-Rough-Deeprobotics-M20-Fair-v0"
 )
 
-# Quadrrl-Velocity-{Flat|Rough}-{Robot}-v0 -> {robot}_{flat|rough}
+# Quadrrl-Velocity-{Flat|Rough}-{Robot}-Fair-v0 -> {robot}_{flat|rough}_fair
 task_to_experiment() {
   local rest="${1#Quadrrl-Velocity-}"
   rest="${rest%-v0}"
+  rest="${rest%-Fair}"
   local terrain="${rest%%-*}"
   local robot="${rest#*-}"
   robot="$(echo "${robot}" | tr '[:upper:]' '[:lower:]' | tr '-' '_')"
   terrain="$(echo "${terrain}" | tr '[:upper:]' '[:lower:]')"
-  echo "${robot}_${terrain}"
+  echo "${robot}_${terrain}_fair"
 }
 
 run_is_complete() {
@@ -80,7 +76,7 @@ for task in "${CONDITIONS[@]}"; do
       SKIPPED_RUNS=$((SKIPPED_RUNS + 1))
       continue
     fi
-    echo "=== ${task} seed=${seed} max_iterations=${MAX_ITERATIONS} ==="
+    echo "=== ${task} seed=${seed} max_iterations=${MAX_ITERATIONS} exp=${exp_name} ==="
     if python scripts/reinforcement_learning/rsl_rl/train.py \
       --task="${task}" \
       --num_envs=1024 \
@@ -103,4 +99,4 @@ if ((${#FAILED_RUNS[@]})); then
   printf '  %s\n' "${FAILED_RUNS[@]}"
   exit 1
 fi
-echo "All 48 legged vs wheeled seed runs finished."
+echo "All 80 Fair-Morph-v2 seed runs finished."

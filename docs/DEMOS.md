@@ -86,7 +86,7 @@ Spot demonstrates velocity tracking on both flat and rough terrains using the ma
 
 - All videos show policies evaluated at the latest training checkpoint
 - Videos are recorded from the Isaac Lab simulation environment
-- Performance metrics for these runs can be found in the analysis notebooks (`notebooks/rsl_rl_performance.ipynb`)
+- Performance metrics for these runs can be found in the analysis notebooks (`notebooks/rsl_rl_performance.ipynb`, `notebooks/legged_vs_wheeled_performance.ipynb`)
 - Training configurations and hyperparameters are available in the respective task configuration files
 
 ## Related Documentation

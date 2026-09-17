@@ -37,6 +37,7 @@ docker/.container.cfg
 # Outputs
 **/output/*
 **/outputs/*
+notebooks/exports/
 **/videos/*
 **/wandb/*
 **/.neptune/*
@@ -47,8 +48,8 @@ docker/artifacts/
 **/docs/_build/*
 **/generated/*
 
-# Local ICCTA paper drafts (IEEE template, figures, bibliography)
-docs/iccta/
+# Local paper drafts (IEEE template, figures, bibliography)
+docs/papers/
 
 # Isaac-Sim packman
 _isaac_sim*

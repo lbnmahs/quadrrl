@@ -9,6 +9,8 @@ from . import agents
 # Register Gym environments.
 ##
 
+_FAIR_AGENT = "quadrrl.tasks.manager_based.locomotion.agents.fair_rsl_rl_ppo_cfg"
+
 gym.register(
     id="Quadrrl-Velocity-Flat-Unitree-B2-v0",
     entry_point="isaaclab.envs:ManagerBasedRLEnv",
@@ -26,5 +28,25 @@ gym.register(
     kwargs={
         "env_cfg_entry_point": f"{__name__}.rough_env_cfg:UnitreeB2RoughEnvCfg",
         "rsl_rl_cfg_entry_point": f"{agents.__name__}.rsl_rl_ppo_cfg:UnitreeB2RoughPPORunnerCfg",
+    },
+)
+
+gym.register(
+    id="Quadrrl-Velocity-Flat-Unitree-B2-Fair-v0",
+    entry_point="isaaclab.envs:ManagerBasedRLEnv",
+    disable_env_checker=True,
+    kwargs={
+        "env_cfg_entry_point": f"{__name__}.fair_env_cfg:UnitreeB2FlatFairEnvCfg",
+        "rsl_rl_cfg_entry_point": f"{_FAIR_AGENT}:UnitreeB2FlatFairPPORunnerCfg",
+    },
+)
+
+gym.register(
+    id="Quadrrl-Velocity-Rough-Unitree-B2-Fair-v0",
+    entry_point="isaaclab.envs:ManagerBasedRLEnv",
+    disable_env_checker=True,
+    kwargs={
+        "env_cfg_entry_point": f"{__name__}.fair_env_cfg:UnitreeB2RoughFairEnvCfg",
+        "rsl_rl_cfg_entry_point": f"{_FAIR_AGENT}:UnitreeB2RoughFairPPORunnerCfg",
     },
 )

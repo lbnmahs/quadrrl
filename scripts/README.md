@@ -8,12 +8,17 @@ This directory contains utility scripts, training scripts, and demonstration scr
 scripts/
 ├── analysis/                    # Log analysis utilities
 │   ├── analyze_logs.py         # Main analysis script
-│   └── rsl_rl_analysis_utils.py # RSL-RL specific utilities
+│   ├── rsl_rl_analysis_utils.py # RSL-RL specific utilities
+│   └── run_legged_vs_wheeled_analysis.py # LVW / Fair-Morph headless export
 ├── demos/                      # Demonstration scripts
 │   ├── quadrupeds.py           # General quadruped demos
 │   ├── usd_policy_inference.py # USD-based policy inference
 │   ├── il_anymal_d_usd.py      # ANYmal-D interactive locomotion
 │   └── il_go2_rough.py         # Go2 rough terrain demo
+├── experiments/                # Multi-seed campaign runners
+│   ├── run_table1_seeds.sh
+│   ├── run_legged_vs_wheeled_seeds.sh
+│   └── run_fair_morph_v2_seeds.sh
 ├── reinforcement_learning/     # RL framework training scripts
 │   ├── rl_games/              # RL Games framework
 │   ├── rsl_rl/                # RSL-RL framework
@@ -111,6 +116,22 @@ Utilities for RSL-RL log analysis. Used by analysis notebooks and scripts.
 - `extract_key_metrics()` - Extract specific metrics
 - `plot_comparison_bar()` - Generate comparison plots
 - `plot_training_curves()` - Plot training progress
+
+### run_legged_vs_wheeled_analysis.py
+
+Headless export for the legged-vs-wheeled (and Fair-Morph) analysis pipeline used by `notebooks/legged_vs_wheeled_performance.ipynb`. Writes CSV/LaTeX/PNG under `notebooks/exports/legged_vs_wheeled/`.
+
+```bash
+python scripts/analysis/run_legged_vs_wheeled_analysis.py
+```
+
+### Experiment seed runners
+
+Multi-seed campaign scripts under `scripts/experiments/`:
+
+- `run_table1_seeds.sh` — Table I (8-condition) campaign
+- `run_legged_vs_wheeled_seeds.sh` — native LVW morphology pairs
+- `run_fair_morph_v2_seeds.sh` — Fair-Morph-v2 matched re-run (`*-Fair-v0`)
 
 ## Demo Scripts
 
