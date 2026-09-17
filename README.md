@@ -46,7 +46,7 @@ The table below shows a list of all the supported quadruped robots:
 - **[Project Structure](docs/STRUCTURE.md)** - Code organization
 - **[Training Guide](docs/TRAINING.md)** - Single-agent and multi-agent RL training
 - **[Scripts Documentation](scripts/README.md)** - Available scripts and utilities
-- **[Notebooks](notebooks/README.md)** - Performance analysis with `rsl_rl_performance.ipynb`
+- **[Notebooks](notebooks/README.md)** - Performance analysis with `rsl_rl_performance.ipynb` (Table I) and `legged_vs_wheeled_performance.ipynb` (LVW / Fair-Morph)
 - **[Tasks Documentation](source/quadrrl/quadrrl/tasks/README.md)** - Task architecture
 
 
@@ -88,8 +88,8 @@ If you use Quadrrl in your research, please cite:
 
 ```bibtex
 @software{quadrrl2026,
-  title={Quadrrl: Isaac Lab-Based Multi-Quadruped Locomotion Training and Performance Evaluation Suite},
-  author={Mahihu, Laban Njoroge},
+  title={QUADRRL: Benchmarking Quadruped Locomotion Across Morphologies, Terrains, and Workflows Using GPU-Accelerated Simulation},
+  author={Laban Njoroge and Manal Helal},
   year={2026},
   url={https://github.com/lbnmahs/quadrrl}
 }

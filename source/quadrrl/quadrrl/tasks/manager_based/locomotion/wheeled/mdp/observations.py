@@ -8,10 +8,17 @@ from typing import TYPE_CHECKING
 import torch
 
 from isaaclab.assets import Articulation
+from isaaclab.envs.mdp.observations import height_scan as _isaaclab_height_scan
 from isaaclab.managers import SceneEntityCfg
 
 if TYPE_CHECKING:
     from isaaclab.envs import ManagerBasedEnv, ManagerBasedRLEnv
+
+
+def height_scan(env: ManagerBasedEnv, sensor_cfg: SceneEntityCfg, offset: float = 0.5) -> torch.Tensor:
+    """Height scan with non-finite hits replaced so PPO cannot receive NaN obs."""
+    heights = _isaaclab_height_scan(env, sensor_cfg, offset=offset)
+    return torch.nan_to_num(heights, nan=0.0, posinf=1.0, neginf=-1.0)
 
 
 def joint_pos_rel_without_wheel(

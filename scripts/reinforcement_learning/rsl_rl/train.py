@@ -76,13 +76,17 @@ if version.parse(installed_version) < version.parse(RSL_RL_VERSION):
 """Rest everything follows."""
 
 import logging
+import math
 import os
 import time
 from datetime import datetime
 
 import gymnasium as gym
 import torch
+from rsl_rl.modules.actor_critic import ActorCritic
+from rsl_rl.modules.actor_critic_recurrent import ActorCriticRecurrent
 from rsl_rl.runners import DistillationRunner, OnPolicyRunner
+from torch.distributions import Normal
 
 from isaaclab.envs import (
     DirectMARLEnv,
@@ -130,6 +134,85 @@ torch.backends.cuda.matmul.allow_tf32 = True
 torch.backends.cudnn.allow_tf32 = True
 torch.backends.cudnn.deterministic = False
 torch.backends.cudnn.benchmark = False
+
+# torch.normal requires std > 0. RSL-RL's unconstrained scalar std (and NaN grads from
+# non-finite observations) can violate that during long PPO runs.
+_MIN_ACTION_STD = 1e-4
+
+
+def _sanitize_tensor(value: torch.Tensor) -> torch.Tensor:
+    """Replace NaN/Inf so a single exploded env cannot poison the PPO update."""
+    return torch.nan_to_num(value, nan=0.0, posinf=10.0, neginf=-10.0)
+
+
+def _sanitize_obs(obs):
+    """In-place finite cleanup for TensorDict / dict observations."""
+    if obs is None:
+        return obs
+    keys = obs.keys() if hasattr(obs, "keys") else None
+    if keys is not None and not torch.is_tensor(obs):
+        for key in list(keys):
+            obs[key] = _sanitize_obs(obs[key])
+        return obs
+    if torch.is_tensor(obs):
+        return _sanitize_tensor(obs)
+    return obs
+
+
+class FiniteValueRslRlVecEnvWrapper(RslRlVecEnvWrapper):
+    """Drop-in RSL-RL env wrapper that strips non-finite obs/rewards/actions."""
+
+    def get_observations(self):
+        return _sanitize_obs(super().get_observations())
+
+    def reset(self):
+        obs, extras = super().reset()
+        return _sanitize_obs(obs), extras
+
+    def step(self, actions: torch.Tensor):
+        if torch.is_tensor(actions):
+            actions = torch.nan_to_num(actions, nan=0.0)
+        obs, rewards, dones, extras = super().step(actions)
+        obs = _sanitize_obs(obs)
+        if torch.is_tensor(rewards):
+            rewards = _sanitize_tensor(rewards)
+        return obs, rewards, dones, extras
+
+
+def _clamp_policy_action_std(policy, min_std: float = _MIN_ACTION_STD) -> None:
+    """Project the learnable action-noise parameter back into a valid range."""
+    with torch.no_grad():
+        if getattr(policy, "noise_std_type", None) == "scalar" and hasattr(policy, "std"):
+            torch.nan_to_num_(policy.std, nan=min_std, posinf=1.0, neginf=min_std)
+            policy.std.clamp_(min=min_std)
+        elif getattr(policy, "noise_std_type", None) == "log" and hasattr(policy, "log_std"):
+            log_min = math.log(min_std)
+            torch.nan_to_num_(policy.log_std, nan=0.0, posinf=2.0, neginf=log_min)
+            policy.log_std.clamp_(min=log_min)
+
+
+def _install_positive_action_std_guard() -> None:
+    """Keep Gaussian action noise strictly positive in ActorCritic.sample()."""
+
+    def _safe_update_distribution(self, obs):
+        mean = torch.nan_to_num(self.actor(obs), nan=0.0, posinf=10.0, neginf=-10.0)
+        if self.noise_std_type == "scalar":
+            std = self.std.expand_as(mean)
+        elif self.noise_std_type == "log":
+            std = torch.exp(self.log_std).expand_as(mean)
+        else:
+            raise ValueError(
+                f"Unknown standard deviation type: {self.noise_std_type}. Should be 'scalar' or 'log'"
+            )
+        std = torch.nan_to_num(std, nan=_MIN_ACTION_STD, posinf=1.0, neginf=_MIN_ACTION_STD)
+        std = torch.clamp(std, min=_MIN_ACTION_STD)
+        self.distribution = Normal(mean, std)
+
+    ActorCritic.update_distribution = _safe_update_distribution
+    ActorCriticRecurrent.update_distribution = _safe_update_distribution
+
+
+_install_positive_action_std_guard()
 
 
 @hydra_task_config(args_cli.task, args_cli.agent)
@@ -216,7 +299,7 @@ def main(env_cfg: ManagerBasedRLEnvCfg | DirectRLEnvCfg | DirectMARLEnvCfg, agen
     start_time = time.time()
 
     # wrap around environment for rsl-rl
-    env = RslRlVecEnvWrapper(env, clip_actions=agent_cfg.clip_actions)
+    env = FiniteValueRslRlVecEnvWrapper(env, clip_actions=agent_cfg.clip_actions)
 
     # create runner from rsl-rl
     if agent_cfg.class_name == "OnPolicyRunner":
@@ -225,6 +308,19 @@ def main(env_cfg: ManagerBasedRLEnvCfg | DirectRLEnvCfg | DirectMARLEnvCfg, agen
         runner = DistillationRunner(env, agent_cfg.to_dict(), log_dir=log_dir, device=agent_cfg.device)
     else:
         raise ValueError(f"Unsupported runner class: {agent_cfg.class_name}")
+    # Keep the learnable action std valid after every optimizer step. A single
+    # non-finite minibatch can otherwise push scalar std to NaN/negative and
+    # crash the next `torch.normal` call in the same PPO update.
+    if hasattr(runner, "alg") and hasattr(runner.alg, "optimizer"):
+        orig_optimizer_step = runner.alg.optimizer.step
+
+        def _step_and_clamp_std(*args, **kwargs):
+            result = orig_optimizer_step(*args, **kwargs)
+            _clamp_policy_action_std(runner.alg.policy)
+            return result
+
+        runner.alg.optimizer.step = _step_and_clamp_std
+        _clamp_policy_action_std(runner.alg.policy)
     # write git state to logs
     runner.add_git_repo_to_log(__file__)
     # load the checkpoint
@@ -232,6 +328,7 @@ def main(env_cfg: ManagerBasedRLEnvCfg | DirectRLEnvCfg | DirectMARLEnvCfg, agen
         print(f"[INFO]: Loading model checkpoint from: {resume_path}")
         # load previously trained model
         runner.load(resume_path)
+        _clamp_policy_action_std(runner.alg.policy)
 
     # dump the configuration into log-directory
     dump_yaml(os.path.join(log_dir, "params", "env.yaml"), env_cfg)

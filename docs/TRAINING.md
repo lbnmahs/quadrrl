@@ -2,7 +2,7 @@
 
 ## Available Environments
 
-> **Analysis scope:** Performance analysis covers trained **legged** and **wheel-legged** quadruped locomotion policies. Use TensorBoard logs, [`scripts/analysis/analyze_logs.py`](../scripts/analysis/analyze_logs.py), and [`notebooks/rsl_rl_performance.ipynb`](../notebooks/rsl_rl_performance.ipynb) to compare runs and report both policy performance and locomotion task success rate.
+> **Analysis scope:** Performance analysis covers trained **legged** and **wheel-legged** quadruped locomotion policies. Use TensorBoard logs, [`scripts/analysis/analyze_logs.py`](../scripts/analysis/analyze_logs.py), [`notebooks/rsl_rl_performance.ipynb`](../notebooks/rsl_rl_performance.ipynb) (Table I), and [`notebooks/legged_vs_wheeled_performance.ipynb`](../notebooks/legged_vs_wheeled_performance.ipynb) (legged-vs-wheeled / Fair-Morph) to compare runs and report both policy performance and locomotion task success rate. Multi-seed campaigns: [`scripts/experiments/run_legged_vs_wheeled_seeds.sh`](../scripts/experiments/run_legged_vs_wheeled_seeds.sh) and [`scripts/experiments/run_fair_morph_v2_seeds.sh`](../scripts/experiments/run_fair_morph_v2_seeds.sh).
 
 ### Single-Agent Locomotion Tasks
 
@@ -134,4 +134,5 @@ python scripts/reinforcement_learning/harl/play.py \
 - [Getting Started Guide](GETTING_STARTED.md) - Basic usage and commands
 - [Project Structure](STRUCTURE.md) - Code organization
 - [Tasks Documentation](../source/quadrrl/quadrrl/tasks/README.md) - Task implementation details
-- [Notebooks](../notebooks/README.md) - Performance analysis with `rsl_rl_performance.ipynb`
+- [Notebooks](../notebooks/README.md) - Performance analysis with `rsl_rl_performance.ipynb` (Table I) and `legged_vs_wheeled_performance.ipynb` (LVW / Fair-Morph)
+- [Seed runners](../scripts/experiments/) - `run_legged_vs_wheeled_seeds.sh`, `run_fair_morph_v2_seeds.sh`
